@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  fintra-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fintra-node:latest
+    container_name: fintra-node
+    ports:
+      - "30333:30333"  # P2P port
+      - "9933:9933"    # RPC port
+      - "9944:9944"    # WebSocket port
+      - "9615:9615"    # Prometheus metrics port
+    volumes:
+      - fintra-data:/data
+    command: --dev --ws-external --rpc-external
+    restart: unless-stopped
+    networks:
+      - fintra-network
+
+volumes:
+  fintra-data:
+    name: fintra-data
+
+networks:
+  fintra-network:
+    name: fintra-network 
