@@ -27,8 +27,6 @@ sc-tracing.default-features = true
 prometheus-endpoint.workspace = true
 prometheus-endpoint.default-features = true
 
-[build-dependencies]
-polkadot-sdk = { workspace = true, features = ["substrate-build-script-utils"] }
 
 [features]
 default = ["std"]

@@ -251,6 +251,7 @@ std = [
 	"fp-rpc/std",
 	"pallet-base-fee/std",
 	"pallet-dynamic-fee/std",
+	"pallet-evm-chain-id/std",
 	"substrate-wasm-builder",
 ]
 
