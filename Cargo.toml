@@ -1,0 +1,36 @@
+[workspace.package]
+license = "MIT-0"
+authors = ["FintradeX Team <team@fintradex.com>"]
+homepage = "https://github.com/fintradev/fintradex"
+repository = "https://github.com/fintradev/fintradex.git"
+edition = "2021"
+
+[workspace]
+default-members = [ "runtime"]
+members = [
+    "node",
+    "runtime",
+]
+resolver = "2"
+
+[workspace.dependencies]
+fintradex-runtime = { path = "./runtime", default-features = false }
+clap = { version = "4.5.13" }
+codec = { version = "3.6.12", default-features = false, package = "parity-scale-codec" }
+color-print = { version = "0.3.4" }
+docify = { version = "0.2.9" }
+futures = { version = "0.3.31" }
+jsonrpsee = { version = "0.24.3" }
+log = { version = "0.4.22", default-features = false }
+polkadot-sdk = { version = "0.12.2", default-features = false }
+pallet-contracts = {git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2412", default-features = false}
+prometheus-endpoint = { version = "0.17.1", default-features = false, package = "substrate-prometheus-endpoint" }
+sc-tracing = { version = "38.0.0", default-features = false }
+serde = { version = "1.0.214", default-features = false }
+serde_json = { version = "1.0.132", default-features = false }
+cumulus-pallet-parachain-system = { version = "0.18.1", default-features = false }
+hex-literal = { version = "0.4.1", default-features = false }
+scale-info = { version = "2.11.1", default-features = false }
+smallvec = { version = "1.11.0", default-features = false }
+substrate-wasm-builder = { version = "25.0.0", default-features = false }
+frame = { version = "0.8.1", default-features = false, package = "polkadot-sdk-frame" }
