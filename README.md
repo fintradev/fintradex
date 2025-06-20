@@ -2,8 +2,6 @@
 
 # FintradeX Parachain
 
-<img height="70px" alt="Polkadot SDK Logo" src="https://github.com/paritytech/polkadot-sdk/raw/master/docs/images/Polkadot_Logo_Horizontal_Pink_White.png#gh-dark-mode-only"/>
-<img height="70px" alt="Polkadot SDK Logo" src="https://github.com/paritytech/polkadot-sdk/raw/master/docs/images/Polkadot_Logo_Horizontal_Pink_Black.png#gh-light-mode-only"/>
 
 > This is the FintradeX parachain implementation based on Polkadot SDK.
 >
@@ -14,22 +12,15 @@
 ## Table of Contents
 
 - [Intro](#intro)
-
 - [Project Structure](#project-structure)
-
 - [Getting Started](#getting-started)
-
 - [Starting a Development Chain](#starting-a-development-chain)
-
   - [Omni Node](#omni-node-prerequisites)
   - [Zombienet setup with Omni Node](#zombienet-setup-with-omni-node)
   - [FintradeX Node](#fintradex-node)
-  - [Connect with the Polkadot-JS Apps Front-End](#connect-with-the-polkadot-js-apps-front-end)
   - [Takeaways](#takeaways)
-
 - [Runtime development](#runtime-development)
 - [Contributing](#contributing)
-- [Getting Help](#getting-help)
 
 ## Intro
 
@@ -173,19 +164,6 @@ We're left just with starting the network:
 zombienet --provider native spawn zombienet.toml
 ```
 
-### Connect with the Polkadot-JS Apps Front-End
-
-- 🌐 You can interact with your local node using the
-hosted version of the Polkadot/Substrate Portal:
-[relay chain](https://polkadot.js.org/apps/#/explorer?rpc=ws://localhost:9944)
-and [parachain](https://polkadot.js.org/apps/#/explorer?rpc=ws://localhost:9988).
-
-- 🪐 A hosted version is also
-available on [IPFS](https://dotapps.io/).
-
-- 🧑‍🔧 You can also find the source code and instructions for hosting your own instance in the
-[`polkadot-js/apps`](https://github.com/polkadot-js/apps) repository.
-
 ### Takeaways
 
 Development parachains:
@@ -197,12 +175,7 @@ Development parachains:
 
 ## Runtime development
 
-We recommend using [`chopsticks`](https://github.com/AcalaNetwork/chopsticks) when the focus is more on the runtime
-development and `OmniNode` is enough as is.
-
-### Install chopsticks
-
-To use `chopsticks`, please install the latest version according to the installation [guide](https://github.com/AcalaNetwork/chopsticks?tab=readme-ov-file#install).
+For runtime development, you can use `OmniNode` with the `--dev` flag for a simplified development environment.
 
 ### Build a raw chain spec
 
@@ -214,15 +187,9 @@ chain-spec-builder create --raw-storage --relay-chain "rococo-local" --para-id 1
     target/release/wbuild/fintradex-runtime/fintradex_runtime.wasm named-preset development
 ```
 
-### Start `chopsticks` with the chain spec
-
-```sh
-npx @acala-network/chopsticks@latest --chain-spec <path/to/chain_spec.json>
-```
-
 ### Alternatives
 
-`OmniNode` can be still used for runtime development if using the `--dev` flag, while `fintradex-node` doesn't
+`OmniNode` can be used for runtime development if using the `--dev` flag, while `fintradex-node` doesn't
 support it at this moment. It can still be used to test a runtime in a full setup where it is started alongside a
 relay chain network (see [FintradeX node](#fintradex-node) setup).
 
@@ -235,13 +202,3 @@ relay chain network (see [FintradeX node](#fintradex-node) setup).
 - 😇 Please refer to the FintradeX
 [contribution guidelines](https://github.com/fintradev/fintradex/blob/main/CONTRIBUTING.md) and
 [Code of Conduct](https://github.com/fintradev/fintradex/blob/main/CODE_OF_CONDUCT.md).
-
-## Getting Help
-
-- 🧑‍🏫 To learn about Polkadot in general, [Polkadot.network](https://polkadot.network/) website is a good starting point.
-
-- 🧑‍🔧 For technical introduction, [here](https://github.com/paritytech/polkadot-sdk#-documentation) are
-the Polkadot SDK documentation resources.
-
-- 👥 Additionally, there are [GitHub issues](https://github.com/paritytech/polkadot-sdk/issues) and
-[Substrate StackExchange](https://substrate.stackexchange.com/).
