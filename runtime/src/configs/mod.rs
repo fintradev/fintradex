@@ -24,6 +24,40 @@
 // For more information, please refer to <http://unlicense.org>
 
 mod xcm_config;
+mod asset_conversion;
+mod asset_rate;
+mod assets;
+mod bag_list;
+mod base_fee;
+mod beefy;
+mod bounties;
+mod child_bounties;
+mod collective;
+mod contracts;
+mod election;
+mod ethereum;
+mod evm;
+mod fellowship;
+mod im_online;
+mod indices;
+mod membership;
+mod mmr;
+mod multisig;
+mod nomination_pool;
+mod parameter;
+mod preimage;
+mod ranked;
+mod refrenda;
+mod salary;
+mod scheduler;
+mod staking;
+mod system;
+mod technical_collective;
+mod treasury;
+mod utility;
+mod vesting;
+mod voting;
+mod whitelist;
 
 use polkadot_sdk::{staging_parachain_info as parachain_info, staging_xcm as xcm, *};
 #[cfg(not(feature = "runtime-benchmarks"))]
@@ -141,6 +175,11 @@ impl pallet_authorship::Config for Runtime {
 	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
 	type EventHandler = (CollatorSelection,);
 }
+impl pallet_offences::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
+	type OnOffenceHandler = Staking;
+}
 
 parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
@@ -254,8 +293,9 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
 }
 
 parameter_types! {
-	pub const Period: u32 = 6 * HOURS;
-	pub const Offset: u32 = 0;
+	//pub const Period: u32 = 6 * HOURS;
+	pub const SessionDuration: BlockNumber = 6 * HOURS;
+    pub const Offset: BlockNumber = 0;
 }
 
 impl pallet_session::Config for Runtime {
@@ -263,8 +303,8 @@ impl pallet_session::Config for Runtime {
 	type ValidatorId = <Self as frame_system::Config>::AccountId;
 	// we don't have stash and controller, thus we don't need the convert as well.
 	type ValidatorIdOf = pallet_collator_selection::IdentityCollator;
-	type ShouldEndSession = pallet_session::PeriodicSessions<Period, Offset>;
-	type NextSessionRotation = pallet_session::PeriodicSessions<Period, Offset>;
+	type ShouldEndSession = pallet_session::PeriodicSessions<SessionDuration, Offset>;
+	type NextSessionRotation = pallet_session::PeriodicSessions<SessionDuration, Offset>;
 	type SessionManager = CollatorSelection;
 	// Essentially just Aura, but let's be pedantic.
 	type SessionHandler = <SessionKeys as sp_runtime::traits::OpaqueKeys>::KeyTypeIdProviders;
@@ -272,7 +312,10 @@ impl pallet_session::Config for Runtime {
 	type WeightInfo = ();
 	type DisablingStrategy = ();
 }
-
+impl pallet_session::historical::Config for Runtime {
+	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
+	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
+}
 #[docify::export(aura_config)]
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;

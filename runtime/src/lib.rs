@@ -10,8 +10,10 @@ pub mod apis;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarks;
 pub mod configs;
+pub mod constants;
 mod genesis_config_presets;
 mod weights;
+mod voter_bags;
 
 extern crate alloc;
 use alloc::vec::Vec;
@@ -28,13 +30,19 @@ use sp_runtime::{
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
-
+use pallet_session::historical as pallet_session_historical;
 use frame_support::weights::{
 	constants::WEIGHT_REF_TIME_PER_SECOND, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
 	WeightToFeePolynomial,
 };
+use frame_support::{
+	instances::{Instance1, Instance2},
+	ord_parameter_types, parameter_types,
+	traits::{AsEnsureOriginWithArg, ConstU128, ConstU32},
+};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
+pub use pallet_balances::Call as BalancesCall;
 
 use weights::ExtrinsicBaseWeight;
 
@@ -71,6 +79,7 @@ pub type SignedBlock = generic::SignedBlock<Block>;
 
 /// BlockId type as expected by this runtime.
 pub type BlockId = generic::BlockId<Block>;
+
 
 /// The extension to the basic transaction logic.
 #[docify::export(template_signed_extra)]
@@ -199,7 +208,13 @@ pub const DAYS: BlockNumber = HOURS * 24;
 pub const UNIT: Balance = 1_000_000_000_000;
 pub const MILLI_UNIT: Balance = 1_000_000_000;
 pub const MICRO_UNIT: Balance = 1_000_000;
-
+parameter_types! {
+pub MaxCollectivesProposalWeight: Weight = Perbill::from_percent(50) * RuntimeBlockWeights::get().max_block;
+pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
+pub const MaxAuthorities: u32 = 100;
+pub const MaxKeys: u32 = 10_000;
+pub const MaxPeerInHeartbeats: u32 = 10_000;
+}
 /// The existential deposit. Set to 1/10 of the Connected Relay Chain.
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLI_UNIT;
 
@@ -259,7 +274,7 @@ mod runtime {
 		RuntimeHoldReason,
 		RuntimeSlashReason,
 		RuntimeLockId,
-		RuntimeTask
+		RuntimeTask,RuntimeViewFunction
 	)]
 	pub struct Runtime;
 
@@ -273,36 +288,114 @@ mod runtime {
 	pub type ParachainInfo = parachain_info;
 
 	// Monetary stuff.
-	#[runtime::pallet_index(10)]
+	#[runtime::pallet_index(4)]
 	pub type Balances = pallet_balances;
-	#[runtime::pallet_index(11)]
-	pub type TransactionPayment = pallet_transaction_payment;
+	#[runtime::pallet_index(5)]
+	pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
+	#[runtime::pallet_index(6)]
+	pub type PoolAssets = pallet_assets::Pallet<Runtime, Instance2>;
 
+	#[runtime::pallet_index(37)]
+	pub type Salary = pallet_salary::Pallet<Runtime>;
+
+	#[runtime::pallet_index(38)]
+	pub type CoreFellowship = pallet_core_fellowship::Pallet<Runtime>;
+
+	#[runtime::pallet_index(39)]
+	pub type VoterList = pallet_bags_list::Pallet<Runtime, Instance1>;
+
+	#[runtime::pallet_index(40)]
+	pub type ChildBounties = pallet_child_bounties::Pallet<Runtime>;
+	#[runtime::pallet_index(7)]
+	pub type TransactionPayment = pallet_transaction_payment;
+	
 	// Governance
-	#[runtime::pallet_index(15)]
+	#[runtime::pallet_index(8)]
 	pub type Sudo = pallet_sudo;
 
+	#[runtime::pallet_index(9)]
+	pub type AssetConversion = pallet_asset_conversion::Pallet<Runtime>;
+	#[runtime::pallet_index(10)]
+	pub type AssetRate = pallet_asset_rate::Pallet<Runtime>;
+	
 	// Collator support. The order of these 4 are important and shall not change.
-	#[runtime::pallet_index(20)]
+	#[runtime::pallet_index(11)]
 	pub type Authorship = pallet_authorship;
-	#[runtime::pallet_index(21)]
+	#[runtime::pallet_index(12)]
 	pub type CollatorSelection = pallet_collator_selection;
-	#[runtime::pallet_index(22)]
+	#[runtime::pallet_index(13)]
 	pub type Session = pallet_session;
-	#[runtime::pallet_index(23)]
+	#[runtime::pallet_index(29)]
+	pub type Council = pallet_collective::Pallet<Runtime, Instance1>;
+
+	#[runtime::pallet_index(30)]
+	pub type TechnicalMembership = pallet_membership::Pallet<Runtime, Instance1>;
+
+	#[runtime::pallet_index(31)]
+	pub type TechnicalCommittee = pallet_collective::Pallet<Runtime, Instance2>;
+
+	#[runtime::pallet_index(32)]
+	pub type Preimage = pallet_preimage::Pallet<Runtime>;
+
+	#[runtime::pallet_index(33)]
+	pub type Treasury = pallet_treasury::Pallet<Runtime>;
+
+	#[runtime::pallet_index(34)]
+	pub type Contracts = pallet_contracts::Pallet<Runtime>;
+	#[runtime::pallet_index(14)]
 	pub type Aura = pallet_aura;
-	#[runtime::pallet_index(24)]
+	#[runtime::pallet_index(15)]
 	pub type AuraExt = cumulus_pallet_aura_ext;
 
 	// XCM helpers.
-	#[runtime::pallet_index(30)]
+	#[runtime::pallet_index(16)]
 	pub type XcmpQueue = cumulus_pallet_xcmp_queue;
-	#[runtime::pallet_index(31)]
+	#[runtime::pallet_index(17)]
 	pub type PolkadotXcm = pallet_xcm;
-	#[runtime::pallet_index(32)]
+	#[runtime::pallet_index(18)]
 	pub type CumulusXcm = cumulus_pallet_xcm;
-	#[runtime::pallet_index(33)]
+	#[runtime::pallet_index(19)]
 	pub type MessageQueue = pallet_message_queue;
+	#[runtime::pallet_index(46)]
+	pub type Whitelist = pallet_whitelist::Pallet<Runtime>;
+
+	#[runtime::pallet_index(47)]
+	pub type Scheduler = pallet_scheduler::Pallet<Runtime>;
+
+	#[runtime::pallet_index(48)]
+	pub type ConvictionVoting = pallet_conviction_voting::Pallet<Runtime>;
+
+	#[runtime::pallet_index(49)]
+	pub type NominationPools = pallet_nomination_pools::Pallet<Runtime>;
+
+	#[runtime::pallet_index(50)]
+	pub type RandomnessCollectiveFlip = pallet_insecure_randomness_collective_flip::Pallet<Runtime>;
+	#[runtime::pallet_index(20)]
+	pub type Ethereum = pallet_ethereum::Pallet<Runtime>;
+
+	#[runtime::pallet_index(21)]
+	pub type EVM = pallet_evm::Pallet<Runtime>;
+
+	#[runtime::pallet_index(22)]
+	pub type EVMChainId = pallet_evm_chain_id::Pallet<Runtime>;
+
+	#[runtime::pallet_index(23)]
+	pub type BaseFee = pallet_base_fee::Pallet<Runtime>;
+
+	#[runtime::pallet_index(24)]
+	pub type Beefy = pallet_beefy::Pallet<Runtime>;
+
+	#[runtime::pallet_index(25)]
+	pub type Mmr = pallet_mmr::Pallet<Runtime>;
+
+	#[runtime::pallet_index(26)]
+	pub type MmrLeaf = pallet_beefy_mmr::Pallet<Runtime>;
+
+	#[runtime::pallet_index(35)]
+	pub type Offences = pallet_offences::Pallet<Runtime>;
+
+	#[runtime::pallet_index(36)]
+	pub type Historical = pallet_session_historical::Pallet<Runtime>;
 
 }
 
