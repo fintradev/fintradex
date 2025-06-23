@@ -26,15 +26,48 @@ sc-tracing.workspace = true
 sc-tracing.default-features = true
 prometheus-endpoint.workspace = true
 prometheus-endpoint.default-features = true
-
+sc-cli.default-features = true
+sc-cli.workspace = true
+sc-client-api.default-features = true
+sc-client-api.workspace = true
+sc-service.default-features = true
+sc-service.workspace = true
+sc-executor.default-features = true
+sc-executor.workspace = true
+# Frontier
+fc-api = { workspace = true }
+fc-cli = { workspace = true }
+fc-consensus = { workspace = true }
+fc-db = { workspace = true }
+fc-mapping-sync = { workspace = true }
+fc-rpc = { workspace = true, features = ["aura"] }
+fc-rpc-core = { workspace = true }
+fc-storage = { workspace = true }
+fp-account = { workspace = true }
+fp-dynamic-fee = { workspace = true, features = ["default"] }
+fp-evm = { workspace = true, features = ["default"] }
+fp-rpc = { workspace = true, features = ["default"] }
 
 [features]
-default = ["std"]
+default = ["rocksdb",
+	"txpool",
+	"rpc-binary-search-estimate"]
 std = [
 	"log/std",
 	"fintradex-runtime/std",
 	"polkadot-sdk/std",
 ]
+rocksdb = [
+	"sc-cli/rocksdb",
+	"sc-service/rocksdb",
+	"fc-cli/rocksdb",
+	"fc-db/rocksdb",
+	"fc-mapping-sync/rocksdb",
+	"fc-rpc/rocksdb",
+	"fintradex-runtime/with-rocksdb-weights",
+]
+txpool = ["fc-rpc/txpool"]
+rpc-binary-search-estimate = ["fc-rpc/rpc-binary-search-estimate"]
 runtime-benchmarks = [
 	"fintradex-runtime/runtime-benchmarks",
 	"polkadot-sdk/runtime-benchmarks",
