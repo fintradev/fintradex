@@ -3,7 +3,7 @@
 <div align="center">
 
 ![FintradeX Node](https://img.shields.io/badge/FintradeX-Node-purple?style=for-the-badge&logo=polkadot)
-![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202412-green?style=for-the-badge)
+![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202503-green?style=for-the-badge)
 ![Rust](https://img.shields.io/badge/Rust-1.75+-orange?style=for-the-badge&logo=rust)
 ![High Performance](https://img.shields.io/badge/High%20Performance-Trading%20Optimized-red?style=for-the-badge)
 

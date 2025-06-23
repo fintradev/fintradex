@@ -3,7 +3,7 @@
 <div align="center">
 
 ![FintradeX Runtime](https://img.shields.io/badge/FintradeX-Runtime-blue?style=for-the-badge&logo=polkadot)
-![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202412-green?style=for-the-badge)
+![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202503-green?style=for-the-badge)
 ![Rust](https://img.shields.io/badge/Rust-1.75+-orange?style=for-the-badge&logo=rust)
 ![Trading Engine](https://img.shields.io/badge/Trading%20Engine-High%20Performance-red?style=for-the-badge)
 
@@ -191,7 +191,7 @@ let order = TradingOrder {
 
 ### Prerequisites
 - Rust 1.75 or higher
-- Polkadot SDK Stable 2412
+- Polkadot SDK Stable 2503
 - Cargo and related tools
 - Trading-specific development tools
 
