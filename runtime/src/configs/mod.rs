@@ -181,6 +181,9 @@ impl pallet_offences::Config for Runtime {
 }
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 impl pallet_evm_chain_id::Config for Runtime {}
+impl cumulus_pallet_weight_reclaim::Config for Runtime {
+	type WeightInfo = ();
+}
 parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 }

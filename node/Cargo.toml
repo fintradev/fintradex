@@ -1,6 +1,6 @@
 [package]
 name = "fintradex-node"
-description = "A parachain node template built with Substrate and Cumulus, part of Polkadot Sdk."
+description = "FintradeX Node - A high-performance blockchain node for the FintradeX decentralized financial trading parachain. Built with Polkadot SDK, featuring Ethereum compatibility, cross-chain communication, and optimized for DeFi trading operations."
 version = "0.1.0"
 license = "Unlicense"
 authors.workspace = true
