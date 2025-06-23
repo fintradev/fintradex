@@ -1,6 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
-#![recursion_limit = "256"]
+#![recursion_limit = "1024"]
 
 // Make the WASM binary available.
 #[cfg(feature = "std")]
@@ -11,6 +11,7 @@ pub mod apis;
 mod benchmarks;
 pub mod configs;
 pub mod constants;
+pub mod precompiles;
 mod genesis_config_presets;
 mod weights;
 mod voter_bags;
@@ -18,33 +19,38 @@ mod voter_bags;
 extern crate alloc;
 use alloc::vec::Vec;
 use smallvec::smallvec;
+use constants::currency::*;
 
 use polkadot_sdk::{staging_parachain_info as parachain_info, *};
 
 use sp_runtime::{
 	generic, impl_opaque_keys,
-	traits::{BlakeTwo256, IdentifyAccount, Verify},
-	MultiSignature,
+	traits::{BlakeTwo256, Block as BlockT, IdentifyAccount, Verify,NumberFor,DispatchInfoOf,PostDispatchInfoOf},
+	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity,TransactionValidityError},
+	ApplyExtrinsicResult, MultiSignature,MultiAddress
 };
 
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
+use codec::{Decode, Encode};
 use pallet_session::historical as pallet_session_historical;
-use frame_support::weights::{
+use frame_support::{weights::{
 	constants::WEIGHT_REF_TIME_PER_SECOND, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
-	WeightToFeePolynomial,
-};
+	WeightToFeePolynomial
+},BoundedVec,PalletId,StorageValue,};
 use frame_support::{
+	dynamic_params::{dynamic_pallet_params, dynamic_params},
+	dispatch::DispatchClass,
 	instances::{Instance1, Instance2},
 	ord_parameter_types, parameter_types,
 	traits::{AsEnsureOriginWithArg, ConstU128, ConstU32},
 };
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-pub use sp_runtime::{MultiAddress, Perbill, Permill};
+pub use sp_runtime::{Perbill, Permill};
 pub use pallet_balances::Call as BalancesCall;
-
-use weights::ExtrinsicBaseWeight;
+pub use weights::*;
+//use weights::ExtrinsicBaseWeight;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -170,7 +176,22 @@ impl_opaque_keys! {
 		pub aura: Aura,
 	}
 }
+#[dynamic_params(RuntimeParameters, pallet_parameters::Parameters::<Runtime>)]
+pub mod dynamic_params {
+	use super::*;
 
+	#[dynamic_pallet_params]
+	#[codec(index = 0)]
+	pub mod storage {
+		/// Configures the base deposit of storing some data.
+		#[codec(index = 0)]
+		pub static BaseDeposit: Balance = DOLLARS;
+
+		/// Configures the per-byte deposit of storing some data.
+		#[codec(index = 1)]
+		pub static ByteDeposit: Balance = CENTS;
+	}
+}
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
@@ -211,9 +232,39 @@ pub const MICRO_UNIT: Balance = 1_000_000;
 parameter_types! {
 pub MaxCollectivesProposalWeight: Weight = Perbill::from_percent(50) * RuntimeBlockWeights::get().max_block;
 pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
+
+	/// We prioritize im-online heartbeats over election solution submission.
+	pub const StakingUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;
 pub const MaxAuthorities: u32 = 100;
 pub const MaxKeys: u32 = 10_000;
 pub const MaxPeerInHeartbeats: u32 = 10_000;
+pub BlockWeights: frame_system::limits::BlockWeights =
+		frame_system::limits::BlockWeights::with_sensible_defaults(
+			Weight::from_parts(2u64 * WEIGHT_REF_TIME_PER_SECOND, u64::MAX),
+			NORMAL_DISPATCH_RATIO,
+		);
+	pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
+		::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+	pub RuntimeBlockLength: frame_system::limits::BlockLength =
+	frame_system::limits::BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+	pub RuntimeBlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::builder()
+		.base_block(BlockExecutionWeight::get())
+		.for_class(DispatchClass::all(), |weights| {
+			weights.base_extrinsic = ExtrinsicBaseWeight::get();
+		})
+		.for_class(DispatchClass::Normal, |weights| {
+			weights.max_total = Some(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT);
+		})
+		.for_class(DispatchClass::Operational, |weights| {
+			weights.max_total = Some(MAXIMUM_BLOCK_WEIGHT);
+			// Operational transactions have some extra reserved space, so that they
+			// are included even if block reached `MAXIMUM_BLOCK_WEIGHT`.
+			weights.reserved = Some(
+				MAXIMUM_BLOCK_WEIGHT - NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT
+			);
+		})
+		.avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
+		.build_or_panic();
 }
 /// The existential deposit. Set to 1/10 of the Connected Relay Chain.
 pub const EXISTENTIAL_DEPOSIT: Balance = MILLI_UNIT;
@@ -283,119 +334,154 @@ mod runtime {
 	#[runtime::pallet_index(1)]
 	pub type ParachainSystem = cumulus_pallet_parachain_system;
 	#[runtime::pallet_index(2)]
-	pub type Timestamp = pallet_timestamp;
+	pub type Utility = pallet_utility::Pallet<Runtime>;
 	#[runtime::pallet_index(3)]
-	pub type ParachainInfo = parachain_info;
-
-	// Monetary stuff.
+	pub type Timestamp = pallet_timestamp;
 	#[runtime::pallet_index(4)]
-	pub type Balances = pallet_balances;
+	pub type ParachainInfo = parachain_info;
 	#[runtime::pallet_index(5)]
-	pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
+	pub type Indices = pallet_indices::Pallet<Runtime>;
+	// Monetary stuff.
 	#[runtime::pallet_index(6)]
+	pub type Balances = pallet_balances;
+	#[runtime::pallet_index(7)]
+	pub type Assets = pallet_assets::Pallet<Runtime, Instance1>;
+	#[runtime::pallet_index(8)]
 	pub type PoolAssets = pallet_assets::Pallet<Runtime, Instance2>;
 
-	#[runtime::pallet_index(37)]
+	#[runtime::pallet_index(9)]
 	pub type Salary = pallet_salary::Pallet<Runtime>;
 
-	#[runtime::pallet_index(38)]
+	#[runtime::pallet_index(10)]
 	pub type CoreFellowship = pallet_core_fellowship::Pallet<Runtime>;
 
-	#[runtime::pallet_index(39)]
+	#[runtime::pallet_index(11)]
 	pub type VoterList = pallet_bags_list::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(40)]
+	#[runtime::pallet_index(12)]
 	pub type ChildBounties = pallet_child_bounties::Pallet<Runtime>;
-	#[runtime::pallet_index(7)]
+	#[runtime::pallet_index(13)]
+	pub type Referenda = pallet_referenda::Pallet<Runtime>;
+	#[runtime::pallet_index(14)]
 	pub type TransactionPayment = pallet_transaction_payment;
-	
+	#[runtime::pallet_index(15)]
+	pub type Bounties = pallet_bounties::Pallet<Runtime>;
 	// Governance
-	#[runtime::pallet_index(8)]
+	#[runtime::pallet_index(16)]
 	pub type Sudo = pallet_sudo;
 
-	#[runtime::pallet_index(9)]
+	#[runtime::pallet_index(17)]
+	pub type ImOnline = pallet_im_online::Pallet<Runtime>;
+
+	#[runtime::pallet_index(18)]
 	pub type AssetConversion = pallet_asset_conversion::Pallet<Runtime>;
-	#[runtime::pallet_index(10)]
+	#[runtime::pallet_index(19)]
 	pub type AssetRate = pallet_asset_rate::Pallet<Runtime>;
 	
 	// Collator support. The order of these 4 are important and shall not change.
-	#[runtime::pallet_index(11)]
+	#[runtime::pallet_index(20)]
 	pub type Authorship = pallet_authorship;
-	#[runtime::pallet_index(12)]
+	#[runtime::pallet_index(21)]
 	pub type CollatorSelection = pallet_collator_selection;
-	#[runtime::pallet_index(13)]
-	pub type Session = pallet_session;
+	#[runtime::pallet_index(22)]
+	pub type RankedPolls = pallet_referenda::Pallet<Runtime, Instance2>;
+
+	#[runtime::pallet_index(23)]
+	pub type RankedCollective = pallet_ranked_collective::Pallet<Runtime>;
+
+	#[runtime::pallet_index(24)]
+	pub type FastUnstake = pallet_fast_unstake::Pallet<Runtime>;
+
+	#[runtime::pallet_index(25)]
+	pub type Multisig = pallet_multisig::Pallet<Runtime>;
+
+	#[runtime::pallet_index(26)]
+	pub type Vesting = pallet_vesting::Pallet<Runtime>;
+
+	#[runtime::pallet_index(27)]
+	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase::Pallet<Runtime>;
+
+	#[runtime::pallet_index(28)]
+	pub type Staking = pallet_staking::Pallet<Runtime>;
 	#[runtime::pallet_index(29)]
+	pub type Session = pallet_session;
+	#[runtime::pallet_index(30)]
 	pub type Council = pallet_collective::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(30)]
+	#[runtime::pallet_index(31)]
 	pub type TechnicalMembership = pallet_membership::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(31)]
+	#[runtime::pallet_index(32)]
 	pub type TechnicalCommittee = pallet_collective::Pallet<Runtime, Instance2>;
 
-	#[runtime::pallet_index(32)]
+	#[runtime::pallet_index(33)]
 	pub type Preimage = pallet_preimage::Pallet<Runtime>;
 
-	#[runtime::pallet_index(33)]
+	#[runtime::pallet_index(34)]
 	pub type Treasury = pallet_treasury::Pallet<Runtime>;
 
-	#[runtime::pallet_index(34)]
+	#[runtime::pallet_index(35)]
 	pub type Contracts = pallet_contracts::Pallet<Runtime>;
-	#[runtime::pallet_index(14)]
+	#[runtime::pallet_index(36)]
 	pub type Aura = pallet_aura;
-	#[runtime::pallet_index(15)]
+	#[runtime::pallet_index(37)]
 	pub type AuraExt = cumulus_pallet_aura_ext;
 
 	// XCM helpers.
-	#[runtime::pallet_index(16)]
+	#[runtime::pallet_index(38)]
 	pub type XcmpQueue = cumulus_pallet_xcmp_queue;
-	#[runtime::pallet_index(17)]
+	#[runtime::pallet_index(39)]
 	pub type PolkadotXcm = pallet_xcm;
-	#[runtime::pallet_index(18)]
+	#[runtime::pallet_index(40)]
 	pub type CumulusXcm = cumulus_pallet_xcm;
-	#[runtime::pallet_index(19)]
+	#[runtime::pallet_index(41)]
 	pub type MessageQueue = pallet_message_queue;
-	#[runtime::pallet_index(46)]
+	#[runtime::pallet_index(42)]
 	pub type Whitelist = pallet_whitelist::Pallet<Runtime>;
 
-	#[runtime::pallet_index(47)]
+	#[runtime::pallet_index(43)]
 	pub type Scheduler = pallet_scheduler::Pallet<Runtime>;
 
-	#[runtime::pallet_index(48)]
+	#[runtime::pallet_index(44)]
 	pub type ConvictionVoting = pallet_conviction_voting::Pallet<Runtime>;
 
-	#[runtime::pallet_index(49)]
+	#[runtime::pallet_index(45)]
 	pub type NominationPools = pallet_nomination_pools::Pallet<Runtime>;
 
-	#[runtime::pallet_index(50)]
+	#[runtime::pallet_index(46)]
 	pub type RandomnessCollectiveFlip = pallet_insecure_randomness_collective_flip::Pallet<Runtime>;
-	#[runtime::pallet_index(20)]
+	#[runtime::pallet_index(47)]
 	pub type Ethereum = pallet_ethereum::Pallet<Runtime>;
 
-	#[runtime::pallet_index(21)]
+	#[runtime::pallet_index(48)]
 	pub type EVM = pallet_evm::Pallet<Runtime>;
 
-	#[runtime::pallet_index(22)]
+	#[runtime::pallet_index(49)]
 	pub type EVMChainId = pallet_evm_chain_id::Pallet<Runtime>;
 
-	#[runtime::pallet_index(23)]
+	#[runtime::pallet_index(50)]
 	pub type BaseFee = pallet_base_fee::Pallet<Runtime>;
 
-	#[runtime::pallet_index(24)]
+	#[runtime::pallet_index(51)]
 	pub type Beefy = pallet_beefy::Pallet<Runtime>;
 
-	#[runtime::pallet_index(25)]
+	#[runtime::pallet_index(52)]
 	pub type Mmr = pallet_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(26)]
+	#[runtime::pallet_index(53)]
 	pub type MmrLeaf = pallet_beefy_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(35)]
+	#[runtime::pallet_index(54)]
 	pub type Offences = pallet_offences::Pallet<Runtime>;
 
-	#[runtime::pallet_index(36)]
+	#[runtime::pallet_index(55)]
 	pub type Historical = pallet_session_historical::Pallet<Runtime>;
+
+	#[runtime::pallet_index(56)]
+	pub type AssetConversionMigration = pallet_asset_conversion_ops::Pallet<Runtime>;
+
+	#[runtime::pallet_index(57)]
+	pub type Parameters = pallet_parameters::Pallet<Runtime>;
 
 }
 
@@ -403,4 +489,9 @@ mod runtime {
 cumulus_pallet_parachain_system::register_validate_block! {
 	Runtime = Runtime,
 	BlockExecutor = cumulus_pallet_aura_ext::BlockExecutor::<Runtime, Executive>,
+}
+impl sp_core::Get<RuntimeVersion> for Runtime {
+	fn get() -> RuntimeVersion {
+		VERSION
+	}
 }

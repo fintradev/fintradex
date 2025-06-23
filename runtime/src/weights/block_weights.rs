@@ -27,8 +27,10 @@ pub mod constants {
 		/// Importing a block with 0 Extrinsics.
 		pub const BlockExecutionWeight: Weight =
 			Weight::from_parts(constants::WEIGHT_REF_TIME_PER_NANOS.saturating_mul(5_000_000), 0);
+		
+			
 	}
-
+	pub const WEIGHT_MILLISECS_PER_BLOCK: u64 = 2000;
 	#[cfg(test)]
 	mod test_weights {
 		use polkadot_sdk::*;

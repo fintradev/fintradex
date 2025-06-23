@@ -2,8 +2,8 @@ use sp_core::{crypto::ByteArray, H160, U256};
 use fp_evm::weight_per_gas;
 use pallet_evm::{EnsureAddressRoot,EnsureAddressNever,HashedAddressMapping,EnsureAccountId20};
 use core::marker::PhantomData;
-use crate::{AccountId,Balances, Runtime, RuntimeEvent,precompiles::FrontierPrecompiles,NORMAL_DISPATCH_RATIO,WEIGHT_MILLISECS_PER_BLOCK,BaseFee,EVMChainId,Timestamp,Aura};
-
+use crate::{AccountId,Balances, Runtime, RuntimeEvent,precompiles::FrontierPrecompiles,NORMAL_DISPATCH_RATIO,BaseFee,EVMChainId,Timestamp,Aura};
+use crate::weights::block_weights::constants::WEIGHT_MILLISECS_PER_BLOCK;
 use sp_runtime::{
 	traits::BlakeTwo256,ConsensusEngineId
 };

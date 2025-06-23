@@ -22,7 +22,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 // For more information, please refer to <http://unlicense.org>
-
+use crate::{Staking};
 mod xcm_config;
 mod asset_conversion;
 mod asset_rate;
@@ -51,7 +51,6 @@ mod refrenda;
 mod salary;
 mod scheduler;
 mod staking;
-mod system;
 mod technical_collective;
 mod treasury;
 mod utility;
@@ -180,7 +179,8 @@ impl pallet_offences::Config for Runtime {
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
 	type OnOffenceHandler = Staking;
 }
-
+impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
+impl pallet_evm_chain_id::Config for Runtime {}
 parameter_types! {
 	pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
 }
@@ -293,7 +293,7 @@ impl cumulus_pallet_xcmp_queue::Config for Runtime {
 }
 
 parameter_types! {
-	//pub const Period: u32 = 6 * HOURS;
+	pub const Period: u32 = 6 * HOURS;
 	pub const SessionDuration: BlockNumber = 6 * HOURS;
     pub const Offset: BlockNumber = 0;
 }
