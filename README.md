@@ -130,17 +130,12 @@ git clone https://github.com/fintradev/fintradex.git
 cd fintradex
 ```
 
-#### 2. Checkout the Correct Branch
-```bash
-git checkout parachain-evm-beta
-```
-
-#### 3. Compile the Runtime
+#### 2. Compile the Runtime
 ```bash
 cargo build --release --locked
 ```
 
-#### 4. Generate Chain Specification
+#### 3. Generate Chain Specification
 Create a development network chain specification file:
 ```bash
 chain-spec-builder create -t development \
@@ -150,7 +145,7 @@ chain-spec-builder create -t development \
   named-preset development
 ```
 
-#### 5. Start the Omni Node
+#### 4. Start the Omni Node
 Start the node in development mode (without a relay chain config), producing and finalizing blocks:
 ```bash
 polkadot-omni-node --chain ./chain_spec.json --dev
