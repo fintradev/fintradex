@@ -130,17 +130,12 @@ git clone https://github.com/fintradev/fintradex.git
 cd fintradex
 ```
 
-#### 2. Checkout the Correct Branch
-```bash
-git checkout parachain-evm-beta
-```
-
-#### 3. Compile the Runtime
+#### 2. Compile the Runtime
 ```bash
 cargo build --release --locked
 ```
 
-#### 4. Generate Chain Specification
+#### 3. Generate Chain Specification
 Create a development network chain specification file:
 ```bash
 chain-spec-builder create -t development \
@@ -150,13 +145,76 @@ chain-spec-builder create -t development \
   named-preset development
 ```
 
-#### 5. Start the Omni Node
+#### 4. Start the Omni Node
 Start the node in development mode (without a relay chain config), producing and finalizing blocks:
 ```bash
 polkadot-omni-node --chain ./chain_spec.json --dev
 ```
 
 **Note**: This setup runs the parachain in standalone development mode for testing and development purposes.
+
+### Parachain Deployment on Paseo Network
+
+The Polkadot.js Apps interface can be used to get you started for testing purposes.
+
+#### Account Preparation
+
+To prepare an account, follow these steps:
+
+1. **Open Polkadot.js Apps Interface**
+   - Navigate to the [Polkadot.js Apps](https://polkadot.js.org/apps/) interface
+   - Connect to the Paseo network
+   - Navigate to the Accounts section
+
+2. **Access Accounts**
+   - Click on the Accounts tab in the top menu
+   - Select the Accounts option from the dropdown menu
+
+3. **Get Test Tokens**
+   - Copy the address of the account you want to use for the parachain deployment from SubWallet after connecting with Paseo network
+   - Visit the [Polkadot Faucet](https://faucet.polkadot.io/) and paste the copied address in the input field
+   - Ensure that the network is set to Paseo and click on the "Get some PASs" button
+   - You will receive 100 PAS tokens per request (available every 24 hours)
+
+#### Reserve a Parachain Identifier
+
+You must reserve a parachain identifier (ID) before registering your parachain on Paseo. You'll be assigned the next available identifier.
+
+To reserve a parachain identifier, follow these steps:
+
+1. **Navigate to Parachains Section**
+   - Click on the Network tab in the top menu
+   - Select the Parachains option from the dropdown menu
+
+2. **Register a ParaId**
+   - Select the Parathreads tab
+   - Click on the "+ ParaId" button
+   - Review the transaction and click on the "+ Submit" button
+
+3. **Verify Registration**
+   - After submitting the transaction, navigate to the Explorer tab
+   - Check the list of recent events for successful `registrar.Reserved` event
+
+#### Generate Collator Keys
+
+To securely deploy your parachain, it is essential to generate custom keys specifically for your collators (block producers). You should generate two sets of keys for each collator:
+
+- **Account keys** - Used to interact with the network and manage funds. These should be protected carefully and should never exist on the filesystem of the collator node
+- **Session keys** - Used in block production to identify your node and its blocks on the network. These keys are stored in the parachain keystore and function as disposable "hot wallet" keys
+
+**Security Note**: If session keys are leaked, someone could impersonate your node, which could result in the slashing of your funds. To minimize these risks, rotating your session keys frequently is essential. Treat them with the same level of caution as you would a hot wallet.
+
+To generate keys, use `subkey`, a command-line tool for generating and managing keys:
+
+```bash
+# Generate account keys (sr25519)
+subkey generate --scheme sr25519
+
+# Generate session keys (sr25519 for Aura)
+subkey generate --scheme sr25519
+```
+
+**Important**: Store your account keys securely offline and never share them. Session keys can be rotated regularly for enhanced security.
 
 ### Development Environment
 
