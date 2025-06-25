@@ -1,4 +1,3 @@
-
 // External crates imports
 use alloc::vec::Vec;
 
@@ -49,6 +48,16 @@ impl Runtime {
 		ConsensusHook::can_build_upon(included_hash, slot)
 	}
 }
+
+// Add dispatch function for native execution
+pub fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+	// This function is called by the native executor to dispatch runtime API calls
+	// The method parameter contains the API name and the data contains the encoded parameters
+	// For now, we return None as this is a placeholder implementation
+	// In a full implementation, this would decode the method and data and call the appropriate runtime API
+	None
+}
+
 
 impl_runtime_apis! {
 	impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {

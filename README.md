@@ -82,26 +82,81 @@ The FintradeX parachain consists of:
 ## 🚀 Getting Started
 
 ### Prerequisites
-- 🦀 **Rust**: 1.75 or higher
+- 🦀 **Rust**: 1.86 or higher
 - 📦 **Cargo**: Latest version
 - 🔧 **System Dependencies**: 
   - Ubuntu/Debian: `build-essential`, `cmake`, `pkg-config`, `libssl-dev`
   - macOS: Xcode Command Line Tools
   - Windows: Visual Studio Build Tools
 
-### Quick Start
+#### Rust Setup
+Run the following commands to set up the correct Rust version:
 
 ```bash
-# Clone the repository
-git clone https://github.com/fintradev/fintradex.git fintradex-parachain
-cd fintradex-parachain
-
-# Build the project
-cargo build --release
-
-# Start a development node
-./target/release/fintradex-node --dev --name "My FintradeX Node"
+rustup default 1.86
+rustup target add wasm32-unknown-unknown --toolchain 1.86-aarch64-apple-darwin
+rustup component add rust-src --toolchain 1.86-aarch64-apple-darwin
 ```
+
+#### Required Tools
+
+**Chain Spec Builder** - A Polkadot SDK utility for generating chain specifications. Refer to the [Generate Chain Specs documentation](https://docs.substrate.io/build/chain-spec/) for detailed usage.
+
+Install it by executing the following command:
+
+```bash
+cargo install --locked staging-chain-spec-builder@10.0.0
+```
+
+This installs the `chain-spec-builder` binary.
+
+**Polkadot Omni Node** - A white-labeled binary, released as a part of Polkadot SDK that can act as the collator of a parachain in production, with all the related auxiliary functionalities that a normal collator node has: RPC server, archiving state, etc. Moreover, it can also run the wasm blob of the parachain locally for testing and development.
+
+To install it, run the following command:
+
+```bash
+cargo install --locked polkadot-omni-node@0.5.0
+```
+
+This installs the `polkadot-omni-node` binary.
+
+### Technical Setup Guide
+
+For advanced users and developers, follow these detailed steps to set up the parachain:
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/fintradev/fintradex.git
+cd fintradex
+```
+
+#### 2. Checkout the Correct Branch
+```bash
+git checkout parachain-evm-beta
+```
+
+#### 3. Compile the Runtime
+```bash
+cargo build --release --locked
+```
+
+#### 4. Generate Chain Specification
+Create a development network chain specification file:
+```bash
+chain-spec-builder create -t development \
+  --relay-chain paseo \
+  --para-id 1000 \
+  --runtime ./target/release/wbuild/fintradex-runtime/fintradex_runtime.compact.compressed.wasm \
+  named-preset development
+```
+
+#### 5. Start the Omni Node
+Start the node in development mode (without a relay chain config), producing and finalizing blocks:
+```bash
+polkadot-omni-node --chain ./chain_spec.json --dev
+```
+
+**Note**: This setup runs the parachain in standalone development mode for testing and development purposes.
 
 ### Development Environment
 
