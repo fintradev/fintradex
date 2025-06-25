@@ -124,18 +124,20 @@ This installs the `polkadot-omni-node` binary.
 
 For advanced users and developers, follow these detailed steps to set up the parachain:
 
-#### 1. Clone the Repository
+#### Development Mode Setup
+
+##### 1. Clone the Repository
 ```bash
 git clone https://github.com/fintradev/fintradex.git
 cd fintradex
 ```
 
-#### 2. Compile the Runtime
+##### 2. Compile the Runtime
 ```bash
 cargo build --release --locked
 ```
 
-#### 3. Generate Chain Specification
+##### 3. Generate Development Chain Specification
 Create a development network chain specification file:
 ```bash
 chain-spec-builder create -t development \
@@ -145,7 +147,7 @@ chain-spec-builder create -t development \
   named-preset development
 ```
 
-#### 4. Start the Omni Node
+##### 4. Start Development Node
 Start the node in development mode (without a relay chain config), producing and finalizing blocks:
 ```bash
 polkadot-omni-node --chain ./chain_spec.json --dev
@@ -155,9 +157,11 @@ polkadot-omni-node --chain ./chain_spec.json --dev
 
 ### Parachain Deployment on Paseo Network
 
-The Polkadot.js Apps interface can be used to get you started for testing purposes.
+The following steps guide you through deploying your parachain on the Paseo testnet.
 
-#### Account Preparation
+#### Prerequisites for Paseo Deployment
+
+##### Account Preparation
 
 To prepare an account, follow these steps:
 
@@ -176,7 +180,7 @@ To prepare an account, follow these steps:
    - Ensure that the network is set to Paseo and click on the "Get some PASs" button
    - You will receive 100 PAS tokens per request (available every 24 hours)
 
-#### Reserve a Parachain Identifier
+##### Reserve a Parachain Identifier
 
 You must reserve a parachain identifier (ID) before registering your parachain on Paseo. You'll be assigned the next available identifier.
 
@@ -195,7 +199,7 @@ To reserve a parachain identifier, follow these steps:
    - After submitting the transaction, navigate to the Explorer tab
    - Check the list of recent events for successful `registrar.Reserved` event
 
-#### Generate Collator Keys
+##### Generate Collator Keys
 
 To securely deploy your parachain, it is essential to generate custom keys specifically for your collators (block producers). You should generate two sets of keys for each collator:
 
@@ -216,15 +220,41 @@ subkey generate --scheme sr25519
 
 **Important**: Store your account keys securely offline and never share them. Session keys can be rotated regularly for enhanced security.
 
-### Development Environment
+#### Paseo Deployment Steps
 
+##### 1. Generate Plain Chain Spec
+Create a plain chain specification file for Paseo deployment:
 ```bash
-# Install development dependencies
-cargo install --path node
+chain-spec-builder --chain-spec-path ./fintradex_plain_chain_spec.json create \
+  --relay-chain paseo \
+  --para-id 4866 \
+  --runtime target/release/wbuild/fintradex-runtime/fintradex_runtime.compact.compressed.wasm \
+  named-preset local_testnet
+```
 
-# Run tests
-cargo test
+##### 2. Edit the Plain Chain Specification
+Edit the `fintradex_plain_chain_spec.json` file:
 
-# Start with zombienet (recommended for development)
-zombienet --provider native spawn zombienet.toml
+- **Update the name, id, and protocolId fields** to unique values for your parachain
+- **Change para_id and parachainInfo.parachainId fields** to the parachain ID you obtained previously. Make sure to use a number without quotes
+- **Modify the balances field** to specify the initial balances for your accounts in SS58 format
+- **Insert the account IDs and session keys** in SS58 format generated for your collators in the `collatorSelection.invulnerables` and `session.keys` fields
+- **Modify the sudo value** to specify the account that will have sudo access to the parachain
+
+##### 3. Generate Raw Chain Spec
+Convert the modified plain chain specification file to raw format:
+```bash
+chain-spec-builder --chain-spec-path ./fintradex_raw_chain_spec.json convert-to-raw fintradex_plain_chain_spec.json
+```
+
+##### 4. Export Wasm Runtime
+Export the Wasm runtime for the parachain by running the following command:
+```bash
+polkadot-omni-node export-genesis-wasm --chain fintradex_raw_chain_spec.json para-wasm
+```
+
+##### 5. Export Genesis State
+Export the genesis state for the parachain by running the following command:
+```bash
+polkadot-omni-node export-genesis-head --chain fintradex_raw_chain_spec.json para-state
 ```
