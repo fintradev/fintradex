@@ -258,3 +258,73 @@ Export the genesis state for the parachain by running the following command:
 ```bash
 polkadot-omni-node export-genesis-head --chain fintradex_raw_chain_spec.json para-state
 ```
+
+##### 6. Register Parachain on Paseo
+Go to the **Parachains > Parathreads** tab, and select **+ Parathread**.
+
+You should see fields to place your runtime Wasm and genesis state respectively, along with the parachain ID. Select your parachain ID, and upload:
+- **para-wasm** in the code field
+- **para-state** in the initial state field
+
+##### 7. Generate Node Key
+Before starting a collator, you need to generate a node key. This key is responsible for communicating with other nodes over Libp2p:
+
+```bash
+polkadot-omni-node key generate-node-key --base-path data --chain fintradex_raw_chain_spec.json
+```
+
+**Note**: Save both the generated key and the key path for reference: `data/chains/fintradexid4866/network/secret_ed25519`
+
+##### 8. Start Collator Node
+You must have the ports for the collator publicly accessible and discoverable to enable parachain nodes to peer with Paseo validator nodes to produce blocks. You can specify the ports with the `--port` command-line option.
+
+You can start the collator with a command similar to the following:
+
+```bash
+polkadot-omni-node --collator --chain fintradex_raw_chain_spec.json --base-path data --port 40333 --rpc-port 8845 --force-authoring --node-key-file ./data/chains/fintradexid4866/network/secret_ed25519 -- --sync warp --chain paseo --port 50343 --rpc-port 9988
+```
+
+##### 9. Insert Session Key into Collator Keystore
+Before proceeding, ensure that the collator node is running. Then, open a new terminal and insert your generated session key into the collator keystore by running the following command. Use the same port specified in the `--rpc-port` parameter when starting the collator node (8845 in this example) to connect to it. Replace `INSERT_SECRET_PHRASE` and `INSERT_PUBLIC_KEY_HEX_FORMAT` with the values from the session key you generated in the **Generate Collator Keys** section:
+
+```bash
+curl -H "Content-Type: application/json" \
+--data '{
+  "jsonrpc":"2.0",
+  "method":"author_insertKey",
+  "params":[
+    "aura",
+    "INSERT_SECRET_PHRASE",
+    "INSERT_PUBLIC_KEY_HEX_FORMAT"
+  ],
+  "id":1
+}' \
+http://localhost:8845
+```
+
+**Example:**
+```bash
+curl -H "Content-Type: application/json" \
+--data '{"jsonrpc":"2.0","method":"author_insertKey","params":["aura","payment image magnet bicycle before public inner tail cover host already result","a8691d9613dba3487faad0570eb6329d9a00cff2149bce11af7ec1d705ac066b"],"id":1}' \
+http://localhost:8845
+```
+
+**If successful, you should see the following response:**
+```json
+{"jsonrpc":"2.0","result":null,"id":1}
+```
+
+Once your collator is synced with the Paseo relay chain, and your parathread finished onboarding, it will be ready to start producing blocks. This process may take some time.
+
+##### 10. Obtain Coretime
+
+**Order On Demand Coretime**
+
+There are two extrinsics which allow you to place orders for on-demand coretime:
+
+- **`onDemand.placeOrderAllowDeath`** - will reap the account once the provided funds run out
+- **`onDemand.placeOrderKeepAlive`** - includes a check that will not reap the account if the provided funds run out, ensuring the account is kept alive
+
+To produce a block in your parachain, navigate to Polkadot.js Apps and ensure you're connected to the Paseo relay chain. Then, access the **Developer > Extrinsics** tab and execute the `onDemand.placeOrderAllowDeath` extrinsic from the account that registered the ParaID. 
+
+For this example, `maxAmount` is set to `1000000000000` (this value may vary depending on the network conditions), and `paraId` is set to `4866`.
