@@ -1,0 +1,18 @@
+apiVersion: v2
+name: fintradex-collator
+description: FintradeX Parachain Collator - A high-performance blockchain node for the FintradeX decentralized financial trading parachain
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - blockchain
+  - polkadot
+  - parachain
+  - trading
+  - defi
+home: https://fintradex.io
+sources:
+  - https://github.com/fintradev/fintradex
+maintainers:
+  - name: FintradeX Team
+    email: team@fintradex.io 

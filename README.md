@@ -281,7 +281,8 @@ You must have the ports for the collator publicly accessible and discoverable to
 You can start the collator with a command similar to the following:
 
 ```bash
-polkadot-omni-node --collator --chain fintradex_raw_chain_spec.json --base-path data --port 40333 --rpc-port 8845 --force-authoring --node-key-file ./data/chains/fintradexid4866/network/secret_ed25519 -- --sync warp --chain paseo --port 50343 --rpc-port 9988
+polkadot-omni-node --collator --chain fintradex_raw_chain_spec.json --base-path data --port 40333 --rpc-port 9944 --force-authoring --rpc-cors all --unsafe-rpc-external --rpc-methods=Unsafe 
+--node-key-file ./data/chains/fintradexid4878/network/secret_ed25519 -- --sync warp --chain paseo --port 50343 --rpc-port 9988
 ```
 
 ##### 9. Insert Session Key into Collator Keystore
@@ -301,7 +302,8 @@ curl -H "Content-Type: application/json" \
 }' \
 http://localhost:8845
 ```
-
+example 
+curl http://localhost:9944 -H "Content-Type: application/json" --data '{"id":1,"jsonrpc":"2.0","method":"author_insertKey","params":["aura","liar arm dinosaur floor card van genuine chief fever artefact census such","0x2ae64f322586069ff85c0db88b4215555e87d1963cec73462c5a7660ddf25916"]}'
 **Example:**
 ```bash
 curl -H "Content-Type: application/json" \

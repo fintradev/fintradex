@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fintradex-collator.fullname" . }}
+  labels:
+    {{- include "fintradex-collator.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "fintradex-collator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "fintradex-collator.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if .Values.image.buildFromSource }}
+      initContainers:
+      - name: build-image
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        command: ["/bin/sh"]
+        args:
+        - -c
+        - |
+          echo "Building image from source..."
+          # Build logic would go here if needed
+          echo "Build completed"
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "fintradex-collator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.command }}
+        command:
+          {{- toYaml .Values.command | nindent 12 }}
+        {{- end }}
+        {{- if .Values.args }}
+        args:
+          {{- toYaml .Values.args | nindent 12 }}
+        {{- end }}
+        env:
+          {{- range .Values.env }}
+          - name: {{ .name }}
+            value: {{ .value | quote }}
+          {{- end }}
+          {{- if .Values.collator.sessionKey.enabled }}
+          - name: SESSION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.collator.sessionKey.secretName }}
+                key: {{ .Values.collator.sessionKey.secretKey }}
+          {{- end }}
+          {{- if .Values.collator.nodeKey.enabled }}
+          - name: NODE_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.collator.nodeKey.secretName }}
+                key: {{ .Values.collator.nodeKey.secretKey }}
+          {{- end }}
+        ports:
+        - name: parachain-p2p
+          containerPort: {{ .Values.service.ports.parachainP2P }}
+          protocol: TCP
+        - name: relay-p2p
+          containerPort: {{ .Values.service.ports.relayP2P }}
+          protocol: TCP
+        - name: parachain-rpc
+          containerPort: {{ .Values.service.ports.parachainRPC }}
+          protocol: TCP
+        - name: relay-rpc
+          containerPort: {{ .Values.service.ports.relayRPC }}
+          protocol: TCP
+        - name: metrics
+          containerPort: {{ .Values.service.ports.metrics }}
+          protocol: TCP
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.ports.parachainRPC }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.service.ports.parachainRPC }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.persistence.mountPath }}
+          {{- if .Values.configMap.enabled }}
+        - name: chain-spec
+          mountPath: /chain-spec
+          readOnly: true
+          {{- end }}
+          {{- if .Values.collator.nodeKey.enabled }}
+        - name: node-key
+          mountPath: /data/chains/fintradexid{{ .Values.collator.chainSpec.paraId }}/network
+          readOnly: true
+          {{- end }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ include "fintradex-collator.fullname" . }}
+        {{- if .Values.configMap.enabled }}
+      - name: chain-spec
+        configMap:
+          name: {{ .Values.configMap.name }}
+        {{- end }}
+        {{- if .Values.collator.nodeKey.enabled }}
+      - name: node-key
+        secret:
+          secretName: {{ .Values.collator.nodeKey.secretName }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }} 
