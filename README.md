@@ -281,8 +281,8 @@ You must have the ports for the collator publicly accessible and discoverable to
 You can start the collator with a command similar to the following:
 
 ```bash
-polkadot-omni-node --collator --chain fintradex_raw_chain_spec.json --base-path data --port 40333 --rpc-port 9944 --force-authoring --rpc-cors all --unsafe-rpc-external --rpc-methods=Unsafe 
---node-key-file ./data/chains/fintradexid4878/network/secret_ed25519 -- --sync warp --chain paseo --port 50343 --rpc-port 9988
+polkadot-omni-node --collator --chain fintra_raw_chain_spec.json --base-path data --port 40333 --rpc-port 9944 --force-authoring --rpc-cors all --unsafe-rpc-external --rpc-methods=Unsafe 
+--node-key-file ./data/chains/fintradexid4889/network/secret_ed25519 -- --sync warp --chain paseo --port 50343 --rpc-port 9988
 ```
 
 ##### 9. Insert Session Key into Collator Keystore
