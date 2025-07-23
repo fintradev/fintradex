@@ -1,0 +1,278 @@
+# FintradeX Collator Helm Chart Values
+# Default configuration for FintradeX parachain collator deployment
+
+# Global settings
+global:
+  environment: production
+  clusterDomain: cluster.local
+
+# Image configuration
+image:
+  repository: fintradex-collator
+  tag: latest
+  pullPolicy: IfNotPresent
+  # For building from source
+  buildFromSource: true
+  buildContext: .
+  dockerfile: Dockerfile
+
+# Replica configuration
+replicaCount: 1
+
+# Service configuration
+service:
+  type: LoadBalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+  ports:
+    parachainP2P: 40333
+    relayP2P: 50343
+    parachainRPC: 9944
+    relayRPC: 9988
+    metrics: 9615
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: fintradex-collator.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: fintradex-tls
+      hosts:
+        - fintradex-collator.local
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 100Gi
+  mountPath: /data
+
+# Resources configuration
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+  requests:
+    cpu: 2000m
+    memory: 4Gi
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Security context
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+# Collator configuration
+collator:
+  # Chain specification
+  chainSpec:
+    name: fintradex
+    paraId: 4866
+    relayChain: paseo
+  
+  # Node configuration
+  node:
+    name: fintradex-collator
+    basePath: /data
+    port: 40333
+    rpcPort: 9944
+    wsPort: 9944
+    rpcCors: all
+    unsafeRpcExternal: true
+    unsafeWsExternal: true
+    rpcMethods: Unsafe
+    forceAuthoring: true
+  
+  # Relay chain configuration
+  relay:
+    chain: paseo
+    port: 50343
+    rpcPort: 9988
+  
+  # Session key configuration
+  sessionKey:
+    enabled: false
+    secretName: fintradex-session-key
+    secretKey: session-key
+  
+  # Node key configuration
+  nodeKey:
+    enabled: false
+    secretName: fintradex-node-key
+    secretKey: node-key
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s
+  prometheusRule:
+    enabled: true
+
+# Logging configuration
+logging:
+  level: info
+  format: json
+  retention: 7d
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+  successThreshold: 1
+
+# Liveness probe
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 3
+
+# Readiness probe
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Network policies
+networkPolicy:
+  enabled: false
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 40333
+        - protocol: TCP
+          port: 50343
+        - protocol: TCP
+          port: 9944
+        - protocol: TCP
+          port: 9988
+        - protocol: TCP
+          port: 9615
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Horizontal pod autoscaler
+hpa:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Vertical pod autoscaler
+vpa:
+  enabled: false
+  updatePolicy:
+    updateMode: Auto
+
+# Service account
+serviceAccount:
+  create: true
+  name: fintradex-collator
+  annotations: {}
+
+# RBAC
+rbac:
+  create: true
+  rules: []
+
+# ConfigMap for chain specification
+configMap:
+  enabled: true
+  name: fintradex-chain-spec
+  data:
+    fintradex_raw_chain_spec.json: |
+      # Chain specification will be mounted here
+
+# Secrets
+secrets:
+  sessionKey:
+    enabled: false
+    name: fintradex-session-key
+    data:
+      session-key: ""
+  nodeKey:
+    enabled: false
+    name: fintradex-node-key
+    data:
+      node-key: ""
+
+# Environment variables
+env:
+  - name: RUST_LOG
+    value: "info"
+  - name: RUST_BACKTRACE
+    value: "1"
+  - name: RUST_MIN_STACK
+    value: "8388608"
+
+# Command and arguments
+command:
+  - /usr/local/bin/polkadot-omni-node
+args:
+  - --collator
+  - --chain
+  - /chain-spec/fintradex_raw_chain_spec.json
+  - --base-path
+  - /data
+  - --port
+  - "40333"
+  - --rpc-port
+  - "9944"
+  - --ws-port
+  - "9944"
+  - --rpc-cors
+  - all
+  - --unsafe-rpc-external
+  - --unsafe-ws-external
+  - --rpc-methods
+  - Unsafe
+  - --force-authoring
+  - --name
+  - fintradex-collator
+  - --
+  - --chain
+  - paseo
+  - --port
+  - "50343"
+  - --rpc-port
+  - "9988" 

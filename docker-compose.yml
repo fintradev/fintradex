@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  fintradex-collator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fintradex-collator
+    restart: unless-stopped
+    ports:
+      # P2P ports for parachain and relay chain
+      - "40333:40333"  # Parachain P2P
+      - "50343:50343"  # Relay chain P2P
+      # RPC ports
+      - "9944:9944"    # Parachain RPC/WS
+      - "9988:9988"    # Relay chain RPC
+      # Prometheus metrics
+      - "9615:9615"
+    volumes:
+      - fintradex_data:/data
+      - ./fintradex_raw_chain_spec.json:/fintradex_raw_chain_spec.json:ro
+      - ./node-key:/data/chains/fintradexid4866/network/secret_ed25519:ro
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+    command: [
+      "--collator",
+      "--chain", "/fintradex_raw_chain_spec.json",
+      "--base-path", "/data",
+      "--port", "40333",
+      "--rpc-port", "9944",
+      "--ws-port", "9944",
+      "--rpc-cors", "all",
+      "--unsafe-rpc-external",
+      "--unsafe-ws-external",
+      "--rpc-methods", "Unsafe",
+      "--force-authoring",
+      "--name", "fintradex-collator",
+      "--",
+      "--chain", "paseo",
+      "--port", "50343",
+      "--rpc-port", "9988"
+    ]
+    networks:
+      - fintradex_network
+
+volumes:
+  fintradex_data:
+    driver: local
+
+networks:
+  fintradex_network:
+    driver: bridge 
