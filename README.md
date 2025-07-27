@@ -39,7 +39,7 @@ graph TB
         %% Node Layer
         subgraph NL[Node Layer]
             HP[High-Performance Collator]
-            RPC[RPC Server (9944)]
+            RPC[RPC Server Port 9944]
             WS[WebSocket API]
             P2P[P2P Networking]
             BP[Block Production]
@@ -79,7 +79,7 @@ graph TB
         %% Trading Features
         subgraph TF[Trading Features]
             ST[Spot Trading]
-            DT[Derivatives<br/>Futures/Options]
+            DT[Derivatives Futures Options]
             LT[Leverage Trading]
             SA[Synthetic Assets]
             YF[Yield Farming]
