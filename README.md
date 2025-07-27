@@ -27,116 +27,73 @@ FintradeX is revolutionizing decentralized finance by creating the most advanced
 <div align="center">
 
 ```mermaid
-graph TB
-    %% External Networks
-    EN[External Networks<br/>Polkadot Relay Chain<br/>Ethereum<br/>Other Parachains]
+graph LR
+    %% External
+    EN[External Networks<br/>Polkadot • Ethereum • Other Chains]
     
-    %% Cross-Chain Bridge
-    CCB[Cross-Chain Bridge<br/>Asset Transfer<br/>Message Relay<br/>Liquidity Pool]
+    %% Bridge
+    BR[Cross-Chain Bridge<br/>Asset Transfer • Message Relay]
     
-    %% FintradeX Parachain
+    %% Main Platform
     subgraph FX[FintradeX Parachain]
-        %% Node Layer
         subgraph NL[Node Layer]
-            HP[High-Performance Collator]
-            RPC[RPC Server Port 9944]
-            WS[WebSocket API]
-            P2P[P2P Networking]
-            BP[Block Production]
-            TP[Transaction Pool]
-            SM[State Management]
-            CE[Consensus Engine]
+            N1[High-Performance Collator]
+            N2[RPC & WebSocket APIs]
         end
         
-        %% Runtime Layer
         subgraph RL[Runtime Layer]
-            TE[Trading Engine]
-            OBM[Order Book Management]
-            AR[Asset Registry]
-            RM[Risk Management]
-            FD[Fee Distribution]
-            GOV[Governance]
-            SR[Staking & Rewards]
-            TR[Treasury]
-            EVM[EVM Compatibility]
-            PRE[Precompiles]
+            R1[Trading Engine]
+            R2[Order Book Management]
+            R3[Governance & Staking]
         end
         
-        %% Market Data Engine
-        subgraph MDE[Market Data Engine]
-            RT[Real-Time Price Feeds]
-            MA[Market Analytics]
-            CD[Chart Data]
+        subgraph MD[Market Data]
+            M1[Real-Time Price Feeds]
+            M2[Market Analytics]
         end
         
-        %% Security Layer
-        subgraph SL[Security Layer]
-            AC[Access Control]
-            AL[Audit Logging]
-            CC[Compliance Checks]
-        end
-        
-        %% Trading Features
-        subgraph TF[Trading Features]
-            ST[Spot Trading]
-            DT[Derivatives Futures Options]
-            LT[Leverage Trading]
-            SA[Synthetic Assets]
-            YF[Yield Farming]
-            AOT[Advanced Order Types]
-            PM[Portfolio Management]
-            RH[Risk Hedging]
-            IP[Insurance Products]
-            SP[Staking Protocols]
+        subgraph SF[Trading Features]
+            T1[Spot Trading]
+            T2[Derivatives]
+            T3[Leverage Trading]
+            T4[Yield Farming]
         end
     end
     
-    %% Client Applications
-    CA[Client Applications<br/>Web Interface<br/>Mobile Apps<br/>API Clients]
-    
-    %% DeFi Protocols
-    DFP[DeFi Protocols<br/>Lending Platforms<br/>DEX Aggregators<br/>Yield Optimizers]
-    
-    %% Institutional Clients
-    IC[Institutional Clients<br/>Trading Firms<br/>Asset Managers<br/>Hedge Funds]
+    %% Clients
+    CA[Client Applications<br/>Web • Mobile • APIs]
+    DF[DeFi Protocols<br/>Lending • DEX • Yield]
+    IC[Institutional Clients<br/>Trading Firms • Asset Managers]
     
     %% Connections
-    EN -->|XCM| CCB
-    CCB -->|Bridge| FX
-    FX -->|APIs/SDKs| CA
-    FX -->|Integration| DFP
-    FX -->|Institutional APIs| IC
+    EN --> BR
+    BR --> FX
+    FX --> CA
+    FX --> DF
+    FX --> IC
     
     %% Internal Flow
     NL --> RL
-    RL --> MDE
-    RL --> SL
-    MDE --> TF
-    SL --> TF
+    RL --> MD
+    MD --> SF
     
     %% Styling
     classDef external fill:#ecf0f1,stroke:#bdc3c7,stroke-width:2px
     classDef bridge fill:#e8f5e8,stroke:#27ae60,stroke-width:2px
-    classDef parachain fill:#f0f8ff,stroke:#3498db,stroke-width:3px
+    classDef platform fill:#f0f8ff,stroke:#3498db,stroke-width:3px
     classDef nodeLayer fill:#fff3cd,stroke:#ffc107,stroke-width:2px
     classDef runtimeLayer fill:#d1ecf1,stroke:#17a2b8,stroke-width:2px
     classDef marketData fill:#f8d7da,stroke:#dc3545,stroke-width:2px
-    classDef securityLayer fill:#d4edda,stroke:#28a745,stroke-width:2px
     classDef tradingFeatures fill:#e2e3e5,stroke:#6c757d,stroke-width:2px
     classDef clients fill:#f8f9fa,stroke:#6c757d,stroke-width:2px
-    classDef defi fill:#fff3cd,stroke:#ffc107,stroke-width:2px
-    classDef institutional fill:#d1ecf1,stroke:#17a2b8,stroke-width:2px
     
-    class EN,CA external
-    class CCB bridge
-    class FX parachain
+    class EN,CA,DF,IC external
+    class BR bridge
+    class FX platform
     class NL nodeLayer
     class RL runtimeLayer
-    class MDE marketData
-    class SL securityLayer
-    class TF tradingFeatures
-    class DFP defi
-    class IC institutional
+    class MD marketData
+    class SF tradingFeatures
 ```
 
 *FintradeX Architecture - High-Performance Cross-Chain Trading Platform*
