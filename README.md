@@ -60,6 +60,14 @@ graph LR
         end
     end
     
+    %% RISC0 Off-Chain Layer
+    subgraph RISC[RISC0 Off-Chain Layer]
+        R0[Order Matching Engine]
+        R1[Computational Proofs]
+        R2[Risk Calculations]
+        R3[Market Analysis]
+    end
+    
     %% Clients
     CA[Client Applications<br/>Web • Mobile • APIs]
     DF[DeFi Protocols<br/>Lending • DEX • Yield]
@@ -68,6 +76,8 @@ graph LR
     %% Connections
     EN --> BR
     BR --> FX
+    FX --> RISC
+    RISC --> FX
     FX --> CA
     FX --> DF
     FX --> IC
@@ -81,6 +91,7 @@ graph LR
     classDef external fill:#ecf0f1,stroke:#bdc3c7,stroke-width:2px
     classDef bridge fill:#e8f5e8,stroke:#27ae60,stroke-width:2px
     classDef platform fill:#f0f8ff,stroke:#3498db,stroke-width:3px
+    classDef risc0 fill:#ffeaa7,stroke:#fdcb6e,stroke-width:3px
     classDef nodeLayer fill:#fff3cd,stroke:#ffc107,stroke-width:2px
     classDef runtimeLayer fill:#d1ecf1,stroke:#17a2b8,stroke-width:2px
     classDef marketData fill:#f8d7da,stroke:#dc3545,stroke-width:2px
@@ -90,13 +101,14 @@ graph LR
     class EN,CA,DF,IC external
     class BR bridge
     class FX platform
+    class RISC risc0
     class NL nodeLayer
     class RL runtimeLayer
     class MD marketData
     class SF tradingFeatures
 ```
 
-*FintradeX Architecture - High-Performance Cross-Chain Trading Platform*
+*FintradeX Architecture - High-Performance Cross-Chain Trading Platform with RISC0 Off-Chain Processing*
 
 </div>
 
@@ -107,6 +119,7 @@ The FintradeX parachain consists of:
 - 🔗 **Cross-Chain Bridge** - Seamless asset transfer between blockchains
 - 📊 **Market Data Engine** - Real-time price feeds and market analytics
 - 🛡️ **Security Layer** - Advanced security and risk management systems
+- ⚡ **RISC0 Off-Chain Layer** - High-performance order matching and computational proofs
 
 ## 🌟 Key Features
 
