@@ -121,19 +121,6 @@ The FintradeX Runtime is the core state transition function of the FintradeX par
 
 ## Trading-Specific Features
 
-### Order Management System
-```rust
-// Example: Place a limit order
-let order = TradingOrder {
-    symbol: "BTC-USD",
-    side: OrderSide::Buy,
-    order_type: OrderType::Limit,
-    price: 50000,
-    size: 0.1,
-    time_in_force: TimeInForce::GTC,
-};
-```
-
 ### Market Data Processing
 - **Real-Time Feeds**: Live price updates from multiple sources
 - **Order Book Depth**: Real-time order book with depth analysis

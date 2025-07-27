@@ -172,8 +172,6 @@ The FintradeX parachain consists of:
 
 - [Runtime Documentation](./runtime/README.md) - Core trading logic and state management
 - [Node Documentation](./node/README.md) - High-performance blockchain node
-- [API Documentation](./docs/api.md) - REST API endpoints
-- [Deployment Guide](./docs/deployment.md) - Production deployment instructions
 
 ## 🤝 Contributing
 
@@ -186,7 +184,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## 🌐 Links
 
 - **Website**: [https://fintradex.io/](https://fintradex.io/)
-- **Documentation**: [https://docs.fintradex.io/](https://docs.fintradex.io/)
 - **Discord**: [https://discord.gg/fintradex](https://discord.gg/fintradex)
 - **Twitter**: [https://twitter.com/fintradex](https://twitter.com/fintradex)
 - **Telegram**: [https://t.me/fintradex](https://t.me/fintradex)
