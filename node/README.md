@@ -63,6 +63,66 @@ The FintradeX Node is a high-performance blockchain node specifically designed f
 - **Transaction Pool**: Transaction validation and queuing for trading
 - **Block Production**: Block creation and validation with trading optimization
 
+## Trading API Integration
+
+### REST API Endpoints
+
+The FintradeX node provides comprehensive trading APIs:
+
+```bash
+# Market Data
+GET /api/v1/markets                    # Get all trading pairs
+GET /api/v1/markets/{symbol}/ticker    # Get market ticker
+GET /api/v1/markets/{symbol}/orderbook # Get order book
+GET /api/v1/markets/{symbol}/trades    # Get recent trades
+GET /api/v1/markets/{symbol}/candles   # Get candlestick data
+
+# Trading Operations
+POST /api/v1/orders                    # Place new order
+GET /api/v1/orders                     # Get open orders
+DELETE /api/v1/orders/{id}             # Cancel order
+GET /api/v1/positions                  # Get positions
+GET /api/v1/fills                      # Get trade fills
+
+# Account Management
+GET /api/v1/account                    # Get account info
+GET /api/v1/balances                   # Get balances
+GET /api/v1/history                    # Get trading history
+GET /api/v1/ledger                     # Get account ledger
+```
+
+### WebSocket API for Real-Time Trading
+
+```javascript
+// Connect to trading WebSocket
+const ws = new WebSocket('wss://fintradex.io/ws');
+
+// Subscribe to market data
+ws.send(JSON.stringify({
+  method: 'subscribe',
+  params: ['market.ticker.BTC-USD', 'market.orderbook.BTC-USD']
+}));
+
+// Subscribe to account updates
+ws.send(JSON.stringify({
+  method: 'subscribe',
+  params: ['account.orders', 'account.positions']
+}));
+
+// Place trading order
+ws.send(JSON.stringify({
+  method: 'place_order',
+  params: {
+    symbol: 'BTC-USD',
+    side: 'buy',
+    type: 'limit',
+    price: '50000',
+    size: '0.1',
+    time_in_force: 'gtc'
+  }
+}));
+```
+
 ## Ethereum Compatibility
 
 ### EVM RPC Support
@@ -94,6 +154,95 @@ The FintradeX node provides full Ethereum compatibility for DeFi trading:
 - **Yield Farming**: Automated yield farming strategies
 - **Liquidity Provision**: Provide liquidity to trading pools
 - **Flash Loans**: Advanced trading strategies with flash loans
+
+## Trading Performance Monitoring
+
+### Trading-Specific Logging
+
+```bash
+# Enable detailed trading logging
+./target/release/fintradex-node \
+  --log runtime,trading::engine=trace,trading::orderbook=trace \
+  --rpc-cors all
+
+# Log to file for trading analysis
+./target/release/fintradex-node \
+  --log runtime,trading::engine \
+  --log-file /path/to/logs/trading-node.log \
+  --rpc-cors all
+```
+
+### Trading Performance Metrics
+
+```bash
+# Available trading metrics:
+# - trading_orders_per_second
+# - trading_volume_per_second
+# - trading_latency_milliseconds
+# - trading_success_rate
+# - market_data_latency
+# - order_book_depth
+# - cross_chain_transfers
+```
+
+## Trading Security
+
+### Trading Key Management
+
+```bash
+# Generate trading keys
+./target/release/fintradex-node key generate --scheme sr25519 --password-interactive
+
+# Import existing trading keys
+./target/release/fintradex-node key insert \
+  --suri "your seed phrase" \
+  --scheme sr25519 \
+  --key-type aura
+
+# List trading keys
+./target/release/fintradex-node key list --key-type aura
+```
+
+### Trading Network Security
+
+- **Firewall Configuration**: Open ports 30333 (P2P), 9944 (RPC), 9615 (Prometheus)
+- **SSL/TLS**: Use reverse proxy for production trading deployments
+- **Access Control**: Restrict RPC access to trusted IPs for trading
+- **DDoS Protection**: Implement rate limiting and connection limits
+- **Trading API Security**: API key authentication and rate limiting
+
+### Trading Risk Management
+
+- **Position Limits**: Automatic position size controls
+- **Margin Requirements**: Dynamic margin calculation
+- **Liquidation Engine**: Automatic liquidation of risky positions
+- **Circuit Breakers**: Market-wide trading halts during extreme volatility
+- **Insurance Fund**: Community-funded insurance against losses
+
+## Trading Analytics & Reporting
+
+### Trading Performance Analytics
+
+```bash
+# Export trading performance data
+./target/release/fintradex-node \
+  --export-trading-data \
+  --output-file trading-performance.json \
+  --rpc-cors all
+
+# Generate trading reports
+./target/release/fintradex-node \
+  --generate-trading-report \
+  --report-type performance \
+  --rpc-cors all
+```
+
+### Trading Market Data
+
+- **Real-Time Feeds**: Live price updates from multiple sources
+- **Order Book Depth**: Real-time order book with depth analysis
+- **Trade History**: Complete trade history with analytics
+- **Market Statistics**: Volume, volatility, and trend indicators
 
 ## Contributing
 

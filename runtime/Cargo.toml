@@ -28,7 +28,7 @@ polkadot-sdk = { workspace = true, features = ["cumulus-pallet-aura-ext", "cumul
  "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", 
  "pallet-xcm", "parachains-common", "polkadot-parachain-primitives", "polkadot-runtime-common", 
  "runtime", "staging-parachain-info", "staging-xcm", 
- "staging-xcm-builder", "staging-xcm-executor","cumulus-pallet-weight-reclaim"], default-features = false }
+ "staging-xcm-builder", "staging-xcm-executor","cumulus-pallet-weight-reclaim","pallet-broker","pallet-democracy"], default-features = false }
 cumulus-pallet-parachain-system.workspace = true
 
 frame-benchmarking = { optional = true, workspace = true }
@@ -84,6 +84,8 @@ pallet-nomination-pools-runtime-api.workspace = true
 pallet-staking-reward-curve.workspace = true
 pallet-authority-discovery.workspace = true
 pallet-insecure-randomness-collective-flip.workspace = true
+pallet-broker.workspace = true
+pallet-democracy.workspace = true
 scale-info = { features = ["derive", "serde"], workspace = true }
 serde_json = { workspace = true, default-features = false, features = ["alloc"] }
 sp-api.workspace = true
@@ -208,6 +210,8 @@ std = [
 	"pallet-xcm/std",
 	"polkadot-parachain-primitives/std",
 	"polkadot-runtime-common/std",
+	"pallet-broker/std",
+	"pallet-democracy/std",
 	"staging-xcm/std",
 	"staging-xcm-builder/std",
 	"staging-xcm-executor/std",
