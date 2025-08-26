@@ -10,6 +10,8 @@ polkadot_sdk::frame_benchmarking::define_benchmarks!(
 	[pallet_bags_list, VoterList]
 	[pallet_balances, Balances]
 	[pallet_bounties, Bounties]
+	[pallet_broker, Broker]
+	[pallet_democracy, Democracy]
 	[pallet_child_bounties, ChildBounties]
 	[pallet_collective, Council]
 	[pallet_conviction_voting, ConvictionVoting]

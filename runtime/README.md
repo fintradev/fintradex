@@ -121,6 +121,19 @@ The FintradeX Runtime is the core state transition function of the FintradeX par
 
 ## Trading-Specific Features
 
+### Order Management System
+```rust
+// Example: Place a limit order
+let order = TradingOrder {
+    symbol: "BTC-USD",
+    side: OrderSide::Buy,
+    order_type: OrderType::Limit,
+    price: 50000,
+    size: 0.1,
+    time_in_force: TimeInForce::GTC,
+};
+```
+
 ### Market Data Processing
 - **Real-Time Feeds**: Live price updates from multiple sources
 - **Order Book Depth**: Real-time order book with depth analysis
@@ -173,6 +186,53 @@ The FintradeX Runtime is the core state transition function of the FintradeX par
 - **Max Peer Heartbeats**: 10,000
 - **Unincluded Segment Capacity**: 3 blocks
 - **Block Processing Velocity**: 1 block per parent
+
+## Trading API Integration
+
+### REST API Endpoints
+```bash
+# Trading Operations
+POST /api/v1/orders                    # Place new order
+GET /api/v1/orders                     # Get open orders
+DELETE /api/v1/orders/{id}             # Cancel order
+GET /api/v1/positions                  # Get positions
+
+# Market Data
+GET /api/v1/markets                    # Get all trading pairs
+GET /api/v1/markets/{symbol}/ticker    # Get market ticker
+GET /api/v1/markets/{symbol}/orderbook # Get order book
+GET /api/v1/markets/{symbol}/trades    # Get recent trades
+
+# Account Management
+GET /api/v1/account                    # Get account info
+GET /api/v1/balances                   # Get balances
+GET /api/v1/history                    # Get trading history
+```
+
+### WebSocket API
+```javascript
+// Connect to trading WebSocket
+const ws = new WebSocket('wss://fintradex.io/ws');
+
+// Subscribe to market data
+ws.send(JSON.stringify({
+  method: 'subscribe',
+  params: ['market.ticker.BTC-USD', 'market.orderbook.BTC-USD']
+}));
+
+// Place trading order
+ws.send(JSON.stringify({
+  method: 'place_order',
+  params: {
+    symbol: 'BTC-USD',
+    side: 'buy',
+    type: 'limit',
+    price: '50000',
+    size: '0.1',
+    time_in_force: 'gtc'
+  }
+}));
+```
 
 ## Ethereum Compatibility
 

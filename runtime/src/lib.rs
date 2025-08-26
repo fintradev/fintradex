@@ -484,88 +484,93 @@ mod runtime {
 	pub type Vesting = pallet_vesting::Pallet<Runtime>;
 
 	#[runtime::pallet_index(27)]
-	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase::Pallet<Runtime>;
+	pub type Broker = pallet_broker::Pallet<Runtime>;
 
 	#[runtime::pallet_index(28)]
-	pub type Staking = pallet_staking::Pallet<Runtime>;
+	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase::Pallet<Runtime>;
+
 	#[runtime::pallet_index(29)]
-	pub type Session = pallet_session;
+	pub type Staking = pallet_staking::Pallet<Runtime>;
 	#[runtime::pallet_index(30)]
+	pub type Session = pallet_session;
+	#[runtime::pallet_index(31)]
+	pub type Democracy = pallet_democracy::Pallet<Runtime>;
+	#[runtime::pallet_index(32)]
 	pub type Council = pallet_collective::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(31)]
+	#[runtime::pallet_index(33)]
 	pub type TechnicalMembership = pallet_membership::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(32)]
+	#[runtime::pallet_index(34)]
 	pub type TechnicalCommittee = pallet_collective::Pallet<Runtime, Instance2>;
 
-	#[runtime::pallet_index(33)]
+	#[runtime::pallet_index(35)]
 	pub type Preimage = pallet_preimage::Pallet<Runtime>;
 
-	#[runtime::pallet_index(34)]
+	#[runtime::pallet_index(36)]
 	pub type Treasury = pallet_treasury::Pallet<Runtime>;
 
-	#[runtime::pallet_index(35)]
-	pub type Contracts = pallet_contracts::Pallet<Runtime>;
-	#[runtime::pallet_index(36)]
-	pub type Aura = pallet_aura;
 	#[runtime::pallet_index(37)]
+	pub type Contracts = pallet_contracts::Pallet<Runtime>;
+	#[runtime::pallet_index(38)]
+	pub type Aura = pallet_aura;
+	#[runtime::pallet_index(39)]
 	pub type AuraExt = cumulus_pallet_aura_ext;
 
 	// XCM helpers.
-	#[runtime::pallet_index(38)]
-	pub type XcmpQueue = cumulus_pallet_xcmp_queue;
-	#[runtime::pallet_index(39)]
-	pub type PolkadotXcm = pallet_xcm;
 	#[runtime::pallet_index(40)]
-	pub type CumulusXcm = cumulus_pallet_xcm;
+	pub type XcmpQueue = cumulus_pallet_xcmp_queue;
 	#[runtime::pallet_index(41)]
-	pub type MessageQueue = pallet_message_queue;
+	pub type PolkadotXcm = pallet_xcm;
 	#[runtime::pallet_index(42)]
+	pub type CumulusXcm = cumulus_pallet_xcm;
+	#[runtime::pallet_index(43)]
+	pub type MessageQueue = pallet_message_queue;
+	#[runtime::pallet_index(44)]
 	pub type Whitelist = pallet_whitelist::Pallet<Runtime>;
 
-	#[runtime::pallet_index(43)]
+	#[runtime::pallet_index(45)]
 	pub type Scheduler = pallet_scheduler::Pallet<Runtime>;
 
-	#[runtime::pallet_index(44)]
+	#[runtime::pallet_index(46)]
 	pub type ConvictionVoting = pallet_conviction_voting::Pallet<Runtime>;
 
-	#[runtime::pallet_index(45)]
+	#[runtime::pallet_index(47)]
 	pub type NominationPools = pallet_nomination_pools::Pallet<Runtime>;
 
-	#[runtime::pallet_index(46)]
+	#[runtime::pallet_index(48)]
 	pub type RandomnessCollectiveFlip = pallet_insecure_randomness_collective_flip::Pallet<Runtime>;
-	#[runtime::pallet_index(47)]
+	#[runtime::pallet_index(49)]
 	pub type Ethereum = pallet_ethereum::Pallet<Runtime>;
 
-	#[runtime::pallet_index(48)]
+	#[runtime::pallet_index(50)]
 	pub type EVM = pallet_evm::Pallet<Runtime>;
 
-	#[runtime::pallet_index(49)]
+	#[runtime::pallet_index(51)]
 	pub type EVMChainId = pallet_evm_chain_id::Pallet<Runtime>;
 
-	#[runtime::pallet_index(50)]
+	#[runtime::pallet_index(52)]
 	pub type BaseFee = pallet_base_fee::Pallet<Runtime>;
 
-	#[runtime::pallet_index(51)]
+	#[runtime::pallet_index(53)]
 	pub type Beefy = pallet_beefy::Pallet<Runtime>;
 
-	#[runtime::pallet_index(52)]
+	#[runtime::pallet_index(54)]
 	pub type Mmr = pallet_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(53)]
+	#[runtime::pallet_index(55)]
 	pub type MmrLeaf = pallet_beefy_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(54)]
+	#[runtime::pallet_index(56)]
 	pub type Offences = pallet_offences::Pallet<Runtime>;
 
-	#[runtime::pallet_index(55)]
+	#[runtime::pallet_index(57)]
 	pub type Historical = pallet_session_historical::Pallet<Runtime>;
 
-	#[runtime::pallet_index(56)]
+	#[runtime::pallet_index(58)]
 	pub type AssetConversionMigration = pallet_asset_conversion_ops::Pallet<Runtime>;
 
-	#[runtime::pallet_index(57)]
+	#[runtime::pallet_index(59)]
 	pub type Parameters = pallet_parameters::Pallet<Runtime>;
 
 }
