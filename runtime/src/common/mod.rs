@@ -1,0 +1,1 @@
+pub mod xcm_config_common;

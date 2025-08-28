@@ -23,7 +23,7 @@
 //
 // For more information, please refer to <http://unlicense.org>
 use crate::{Staking};
-mod xcm_config;
+pub mod xcm_config;
 mod asset_conversion;
 mod asset_rate;
 mod assets;

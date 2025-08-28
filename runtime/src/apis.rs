@@ -24,15 +24,32 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
+use assets_common::{
+	foreign_creators::ForeignCreators,
+	local_and_foreign_assets::{LocalFromLeft, TargetFromLeft},
+	matching::{FromNetwork, FromSiblingParachain},
+};
+use crate::{
+	constants::currency::*,  Assets, Balances, PoolAssets, RuntimeEvent,OriginCaller,
+	staging_xcm::prelude::{XcmVersion,VersionedLocation,VersionedXcm,VersionedAssetId,
+		VersionedAssets,AssetId},common::xcm_config_common,configs::{xcm_config::{XcmRouter,XcmConfig,FintraLocation}}
+};
 use sp_version::RuntimeVersion;
-
+use xcm_runtime_apis::{
+	dry_run::{CallDryRunEffects, Error as XcmDryRunApiError, XcmDryRunEffects},
+	fees::Error as XcmPaymentApiError,
+};
+use polkadot_sdk::sp_weights::WeightToFee;
 // Local module imports
 use super::{
 	AccountId, Balance, Block, ConsensusHook, Executive, InherentDataExt, Nonce, ParachainSystem,
 	Runtime, RuntimeCall, RuntimeGenesisConfig, SessionKeys, System, TransactionPayment,
-	SLOT_DURATION, VERSION,Ethereum,UncheckedExtrinsic
+	SLOT_DURATION, VERSION,Ethereum,UncheckedExtrinsic,PolkadotXcm
 };
-
+use polkadot_sdk::{
+	staging_xcm as xcm, staging_xcm_builder as xcm_builder, staging_xcm_executor as xcm_executor, *,polkadot_sdk_frame::traits::Disabled
+};
+use sp_std::vec;
 // we move some impls outside so we can easily use them with `docify`.
 impl Runtime {
 	#[docify::export]
@@ -461,7 +478,45 @@ impl_runtime_apis! {
 			ParachainSystem::collect_collation_info(header)
 		}
 	}
+	impl xcm_runtime_apis::dry_run::DryRunApi<Block, RuntimeCall, RuntimeEvent, OriginCaller> for Runtime {
+		fn dry_run_call(origin: OriginCaller, call: RuntimeCall, result_xcms_version: XcmVersion) -> Result<CallDryRunEffects<RuntimeEvent>, XcmDryRunApiError> {
+			PolkadotXcm::dry_run_call::<Runtime, XcmRouter, OriginCaller, RuntimeCall>(origin, call, result_xcms_version)
+		}
 
+		fn dry_run_xcm(origin_location: VersionedLocation, xcm: VersionedXcm<RuntimeCall>) -> Result<XcmDryRunEffects<RuntimeEvent>, XcmDryRunApiError> {
+			PolkadotXcm::dry_run_xcm::<Runtime,XcmRouter, RuntimeCall, XcmConfig>(origin_location, xcm)
+		}
+	}
+	impl xcm_runtime_apis::fees::XcmPaymentApi<Block> for Runtime {
+		fn query_acceptable_payment_assets(xcm_version: xcm::Version) -> Result<Vec<VersionedAssetId>, XcmPaymentApiError> {
+			let native_asset = FintraLocation::get();
+			// We accept the native asset to pay fees.
+			let acceptable_assets = vec![AssetId(native_asset.clone())];
+			// For now, we only accept the native asset. In the future, we could extend this
+			// to include other assets that are in pools with the native token.
+			PolkadotXcm::query_acceptable_payment_assets(xcm_version, acceptable_assets)
+		}
+
+		fn query_weight_to_asset_fee(weight: Weight, asset: VersionedAssetId) -> Result<u128, XcmPaymentApiError> {
+			use crate::configs::xcm_config::FintraLocation;
+			
+			// Convert weight to fee using the runtime's WeightToFee implementation
+			let fee: Balance = <crate::WeightToFee as WeightToFee>::weight_to_fee(&weight);
+			
+			// For now, we'll return the fee as-is since we're primarily dealing with native asset
+			// In a more sophisticated implementation, you might want to convert between different assets
+			// based on the asset parameter
+			Ok(fee.unique_saturated_into())
+		}
+
+		fn query_xcm_weight(message: VersionedXcm<()>) -> Result<Weight, XcmPaymentApiError> {
+			PolkadotXcm::query_xcm_weight(message)
+		}
+
+		fn query_delivery_fees(destination: VersionedLocation, message: VersionedXcm<()>) -> Result<VersionedAssets, XcmPaymentApiError> {
+			PolkadotXcm::query_delivery_fees(destination, message)
+		}
+	}
 	#[cfg(feature = "try-runtime")]
 	impl frame_try_runtime::TryRuntime<Block> for Runtime {
 		fn on_runtime_upgrade(checks: frame_try_runtime::UpgradeCheckSelect) -> (Weight, Weight) {
