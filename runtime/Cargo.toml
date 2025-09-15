@@ -140,6 +140,7 @@ cumulus-primitives-utility={workspace = true}
 xcm-runtime-apis={workspace = true}
 assets-common={workspace = true}
 pallet-collator-selection={workspace = true}
+pallet-ismp = { workspace = true, features = ["unsigned"]  }
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
 
@@ -213,6 +214,7 @@ std = [
 	"polkadot-runtime-common/std",
 	"pallet-broker/std",
 	"pallet-democracy/std",
+	"pallet-ismp/std",
 	"staging-xcm/std",
 	"staging-xcm-builder/std",
 	"staging-xcm-executor/std",
@@ -277,6 +279,7 @@ try-runtime = [
 	"cumulus-pallet-parachain-system/try-runtime",
 	"polkadot-sdk/try-runtime",
 	"pallet-contracts/try-runtime",
+	"pallet-ismp/try-runtime",
 ]
 
 # Enable the metadata hash generation.
