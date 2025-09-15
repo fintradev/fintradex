@@ -146,7 +146,6 @@ pallet-ismp ={workspace = true, features = ["unsigned"]}
 pallet-ismp-runtime-api={workspace = true}
 pallet-hyperbridge={workspace = true}
 pallet-token-gateway = { workspace = true }
-pallet-token-gateway-inspector={workspace = true}
 token-gateway-primitives = { workspace = true }
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
@@ -219,7 +218,6 @@ std = [
 	"pallet-xcm/std",
 	"ismp-parachain/std",
 	"ismp-parachain-runtime-api/std",
-	"pallet-token-gateway-inspector/std",
 	"polkadot-parachain-primitives/std",
 	"polkadot-runtime-common/std",
 	"pallet-broker/std",
