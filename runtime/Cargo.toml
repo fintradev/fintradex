@@ -143,7 +143,6 @@ pallet-collator-selection={workspace = true}
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
 
-
 [features]
 default = ["std", "with-rocksdb-weights"]
 with-rocksdb-weights = []
