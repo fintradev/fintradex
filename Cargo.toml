@@ -138,6 +138,12 @@ pallet-democracy = { git = "https://github.com/paritytech/polkadot-sdk", branch 
 pallet-broker = { git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2503", default-features = false }
 pallet-xcm={git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2503", default-features = false}
 pallet-ismp = {version = "2506.1.0", default-features = false}
+pallet-ismp-runtime-api = { version = "2506.1.0", default-features = false }
+pallet-hyperbridge = { version = "2506.1.1", default-features = false }
+ismp-parachain = { version = "2506.1.0", default-features = false }
+pallet-ismp-rpc = { version = "2506.1.0", default-features = false }
+ismp-parachain-runtime-api = { version = "2506.0.0", default-features = false }
+ismp-parachain-inherent = { version = "2506.1.0"}
 polkadot-parachain-primitives={git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2503", default-features = false}
 polkadot-runtime-common={git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2503", default-features = false}
 staging-xcm={git = "https://github.com/paritytech/polkadot-sdk", branch = "stable2503", default-features = false}

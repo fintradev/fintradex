@@ -5857,8 +5857,10 @@ dependencies = [
  "fp-evm",
  "fp-rpc",
  "futures",
+ "ismp-parachain-inherent",
  "jsonrpsee",
  "log",
+ "pallet-ismp-rpc",
  "parity-scale-codec",
  "polkadot-sdk 2503.0.1",
  "sc-cli 0.51.1",
@@ -5898,6 +5900,8 @@ dependencies = [
  "frame-system-rpc-runtime-api 36.0.0",
  "frame-try-runtime 0.46.0",
  "hex-literal",
+ "ismp-parachain",
+ "ismp-parachain-runtime-api",
  "log",
  "pallet-asset-conversion 22.0.0",
  "pallet-asset-conversion-ops 0.8.0",
@@ -5930,10 +5934,12 @@ dependencies = [
  "pallet-evm-precompile-simple",
  "pallet-fast-unstake 39.0.0",
  "pallet-grandpa 40.0.0",
+ "pallet-hyperbridge",
  "pallet-im-online 39.1.0",
  "pallet-indices 40.0.0",
  "pallet-insecure-randomness-collective-flip 28.0.0",
  "pallet-ismp",
+ "pallet-ismp-runtime-api",
  "pallet-membership 40.0.0",
  "pallet-mmr 40.0.0",
  "pallet-multisig 40.1.0",
@@ -8239,6 +8245,51 @@ dependencies = [
  "serde-hex-utils",
  "sp-weights 32.0.0",
  "thiserror 2.0.12",
+]
+
+[[package]]
+name = "ismp-parachain"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "25ac6ef31865723c47bb17ea7cea3f10454cd293ed09d6bd3872a478f60ca58d"
+dependencies = [
+ "hex",
+ "hex-literal",
+ "ismp",
+ "log",
+ "pallet-ismp",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+ "primitive-types 0.13.1",
+ "scale-info",
+ "serde",
+ "substrate-state-machine",
+]
+
+[[package]]
+name = "ismp-parachain-inherent"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b009acea1ad0ff0d6976f95a493abf7969dadae5e8b5ae33a2452d20e96ebca"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ismp",
+ "ismp-parachain",
+ "ismp-parachain-runtime-api",
+ "log",
+ "pallet-ismp-runtime-api",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+]
+
+[[package]]
+name = "ismp-parachain-runtime-api"
+version = "2506.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af29d238eee628863bf181cb568ecb5a94b37e836081679de406e0734deefd85"
+dependencies = [
+ "polkadot-sdk 2506.0.0",
 ]
 
 [[package]]
@@ -12067,6 +12118,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-hyperbridge"
+version = "2506.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0440d94f915fb973720c1396c03fd47fa692b4e1595572f6e7f15691863f2b68"
+dependencies = [
+ "anyhow",
+ "ismp",
+ "pallet-ismp",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+ "primitive-types 0.13.1",
+ "scale-info",
+]
+
+[[package]]
 name = "pallet-identity"
 version = "40.1.0"
 source = "git+https://github.com/paritytech/polkadot-sdk?branch=stable2503#ab3592b2915ede172953242988aeef2e81d18a1a"
@@ -12209,6 +12275,42 @@ dependencies = [
  "scale-info",
  "serde",
  "sp-io 41.0.1",
+]
+
+[[package]]
+name = "pallet-ismp-rpc"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f554fd8c35b0dfc503c89c899cbc7b766ba48b6c12ba0441923aec21909f72f"
+dependencies = [
+ "anyhow",
+ "hash-db",
+ "hex",
+ "hex-literal",
+ "ismp",
+ "jsonrpsee",
+ "pallet-ismp",
+ "pallet-ismp-runtime-api",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+ "serde",
+ "serde_json",
+ "tower",
+ "trie-db",
+]
+
+[[package]]
+name = "pallet-ismp-runtime-api"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f86e41f489298d973c93efae8bc85c10b7fad9a114df8674c626418d8b5b092d"
+dependencies = [
+ "ismp",
+ "pallet-ismp",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+ "primitive-types 0.13.1",
+ "serde",
 ]
 
 [[package]]
@@ -17342,6 +17444,7 @@ dependencies = [
  "cumulus-primitives-storage-weight-reclaim 12.0.0",
  "cumulus-primitives-timestamp 0.20.0",
  "cumulus-primitives-utility 0.21.0",
+ "cumulus-relay-chain-interface 0.24.0",
  "cumulus-test-relay-sproof-builder 0.20.0",
  "frame-benchmarking 41.0.1",
  "frame-benchmarking-pallet-pov 31.0.0",
@@ -17480,7 +17583,9 @@ dependencies = [
  "polkadot-runtime-parachains 20.0.2",
  "polkadot-sdk-frame 0.10.0",
  "polkadot-service 25.0.0",
+ "sc-client-api 40.0.0",
  "sc-executor 0.43.0",
+ "sc-rpc 46.0.0",
  "slot-range-helper 18.0.0",
  "sp-api 37.0.0",
  "sp-api-proc-macro 23.0.0",
@@ -17488,6 +17593,7 @@ dependencies = [
  "sp-arithmetic 27.0.0",
  "sp-authority-discovery 37.0.0",
  "sp-block-builder 37.0.0",
+ "sp-blockchain 40.0.0",
  "sp-consensus-aura 0.43.0",
  "sp-consensus-babe 0.43.0",
  "sp-consensus-beefy 25.0.0",
@@ -25710,6 +25816,23 @@ dependencies = [
  "sc-rpc-api 0.48.0",
  "serde",
  "sp-runtime 41.1.0",
+]
+
+[[package]]
+name = "substrate-state-machine"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8907449b7f7a5e01ff089d81979a4ff979a8882952e749a36d6cc3ed6f207438"
+dependencies = [
+ "hash-db",
+ "ismp",
+ "pallet-ismp",
+ "parity-scale-codec",
+ "polkadot-sdk 2506.0.0",
+ "primitive-types 0.13.1",
+ "scale-info",
+ "serde",
+ "trie-db",
 ]
 
 [[package]]

@@ -119,6 +119,8 @@ pallet-beefy-mmr = {workspace = true}
 pallet-im-online = {workspace = true}
 pallet-offences = {workspace = true}
 pallet-offences-benchmarking = {workspace = true}
+ismp-parachain = {workspace = true}
+ismp-parachain-runtime-api={workspace = true}
 fp-evm = {workspace = true, features = ["serde"] }
 fp-self-contained = {workspace = true, features = ["serde"] }
 fp-rpc = {workspace = true }
@@ -140,7 +142,9 @@ cumulus-primitives-utility={workspace = true}
 xcm-runtime-apis={workspace = true}
 assets-common={workspace = true}
 pallet-collator-selection={workspace = true}
-pallet-ismp = { workspace = true, features = ["unsigned"]  }
+pallet-ismp ={workspace = true, features = ["unsigned"]}
+pallet-ismp-runtime-api={workspace = true}
+pallet-hyperbridge={workspace = true}
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
 
@@ -210,11 +214,15 @@ std = [
 	"pallet-offences/std",
 	"pallet-offences-benchmarking/std",
 	"pallet-xcm/std",
+	"ismp-parachain/std",
+	"ismp-parachain-runtime-api/std",
 	"polkadot-parachain-primitives/std",
 	"polkadot-runtime-common/std",
 	"pallet-broker/std",
 	"pallet-democracy/std",
 	"pallet-ismp/std",
+	"pallet-ismp-runtime-api/std",
+	"pallet-hyperbridge/std",
 	"staging-xcm/std",
 	"staging-xcm-builder/std",
 	"staging-xcm-executor/std",
@@ -280,6 +288,7 @@ try-runtime = [
 	"polkadot-sdk/try-runtime",
 	"pallet-contracts/try-runtime",
 	"pallet-ismp/try-runtime",
+	"pallet-hyperbridge/try-runtime",
 ]
 
 # Enable the metadata hash generation.

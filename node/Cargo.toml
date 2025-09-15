@@ -47,6 +47,8 @@ fp-account = { workspace = true }
 fp-dynamic-fee = { workspace = true, features = ["default"] }
 fp-evm = { workspace = true, features = ["default"] }
 fp-rpc = { workspace = true, features = ["default"] }
+ismp-parachain-inherent = { workspace = true }
+pallet-ismp-rpc = { workspace = true }
 
 [features]
 default = ["rocksdb",
