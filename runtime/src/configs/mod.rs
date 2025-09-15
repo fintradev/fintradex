@@ -59,6 +59,7 @@ mod voting;
 mod whitelist;
 mod democracy;
 mod broker;
+mod ismp;
 
 use polkadot_sdk::{staging_parachain_info as parachain_info, staging_xcm as xcm, *};
 #[cfg(not(feature = "runtime-benchmarks"))]
