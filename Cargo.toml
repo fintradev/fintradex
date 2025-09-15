@@ -140,6 +140,8 @@ pallet-xcm={git = "https://github.com/paritytech/polkadot-sdk", branch = "stable
 pallet-ismp = {version = "2506.1.0", default-features = false}
 pallet-ismp-runtime-api = { version = "2506.1.0", default-features = false }
 pallet-hyperbridge = { version = "2506.1.1", default-features = false }
+pallet-token-gateway = { version = "2506.1.0", default-features = false }
+token-gateway-primitives = { version = "2506.1.0", default-features = false }
 ismp-parachain = { version = "2506.1.0", default-features = false }
 pallet-ismp-rpc = { version = "2506.1.0", default-features = false }
 ismp-parachain-runtime-api = { version = "2506.0.0", default-features = false }
