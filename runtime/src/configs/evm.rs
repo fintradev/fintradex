@@ -51,7 +51,7 @@ impl pallet_evm::Config for Runtime {
 	type WithdrawOrigin = EnsureAddressNever<AccountId>;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
 	type Currency = Balances;
-	type RuntimeEvent = RuntimeEvent;
+	//type RuntimeEvent = RuntimeEvent;
 	type PrecompilesType = FrontierPrecompiles<Self>;
 	type PrecompilesValue = PrecompilesValue;
 	type ChainId = EVMChainId;

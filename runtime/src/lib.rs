@@ -574,6 +574,11 @@ mod runtime {
 	#[runtime::pallet_index(59)]
 	pub type Parameters = pallet_parameters::Pallet<Runtime>;
 
+	/*#[runtime::pallet_index(60)]
+	pub type Ismp = pallet_ismp::Pallet<Runtime>;
+	#[runtime::pallet_index(61)]
+	pub type IsmpParachain = ismp_parachain::Pallet<Runtime>;*/
+
 }
 
 #[docify::export(register_validate_block)]
