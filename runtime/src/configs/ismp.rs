@@ -6,7 +6,7 @@ use ismp::{
 };
 use frame_support::parameter_types;
 use frame_system::EnsureRoot;
-//use pallet_ismp::fee_handler::WeightFeeHandler;
+use pallet_ismp::fee_handler::WeightFeeHandler;
 use alloc::vec::Vec;
 use alloc::boxed::Box;
 /*use crate::{

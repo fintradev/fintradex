@@ -5,7 +5,7 @@ pub use frame_support::{
 	construct_runtime, derive_impl, parameter_types,
 	traits::{
 		ConstBool, ConstU128, ConstU32, ConstU64, ConstU8, KeyOwnerProofSystem, Randomness,
-		StorageInfo,FindAuthor,OnFinalize
+		StorageInfo,FindAuthor,OnFinalize,Get
 	},
 	weights::{
 		constants::{
@@ -25,7 +25,7 @@ parameter_types! {
 
 impl pallet_ethereum::Config for Runtime {
 	//type RuntimeEvent = RuntimeEvent;
-	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self>;
+	type StateRoot = pallet_ethereum::IntermediateStateRoot<Self::Version>;
 	type PostLogContent = PostBlockAndTxnHashes;
 	type ExtraDataLength = ConstU32<30>;
 }

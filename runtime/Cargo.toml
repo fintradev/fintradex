@@ -151,6 +151,8 @@ pallet-token-gateway = { workspace = true }
 token-gateway-primitives = { workspace = true }
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
+sp-externalities={workspace = true}
+sp-state-machine={workspace = true}
 
 [features]
 default = ["std", "with-rocksdb-weights"]
@@ -161,6 +163,7 @@ std = [
 	"polkadot-sdk/std",
 	"serde_json/std",
 	"codec/std",
+	"sp-externalities/std",
 	"frame-benchmarking?/std",
 	"frame-executive/std",
 	"frame-metadata-hash-extension/std",
