@@ -16,7 +16,11 @@ use crate::{
 };
 
 
-
+impl pallet_hyperbridge::Config for Runtime {
+	//type RuntimeEvent = RuntimeEvent;
+	// pallet-ismp implements the IsmpHost
+	type IsmpHost = Ismp;
+}
 impl ismp_parachain::Config for Runtime {
 	type IsmpHost = Ismp;
 	type WeightInfo = IsmpWeights;
