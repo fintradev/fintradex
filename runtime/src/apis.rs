@@ -31,7 +31,7 @@ use assets_common::{
 	matching::{FromNetwork, FromSiblingParachain},
 };
 use crate::{
-	constants::currency::*,  Assets, Balances, PoolAssets, RuntimeEvent,OriginCaller,
+	constants::currency::*,  Assets, Balances, PoolAssets, RuntimeEvent,OriginCaller,IsmpParachain,
 	staging_xcm::prelude::{XcmVersion,VersionedLocation,VersionedXcm,VersionedAssetId,
 		VersionedAssets,AssetId},common::xcm_config_common,configs::{xcm_config::{XcmRouter,XcmConfig,FintraLocation}}
 };
@@ -40,6 +40,8 @@ use xcm_runtime_apis::{
 	dry_run::{CallDryRunEffects, Error as XcmDryRunApiError, XcmDryRunEffects},
 	fees::Error as XcmPaymentApiError,
 };
+use cumulus_pallet_parachain_system::RelayChainState;
+use ismp::{host::StateMachine,consensus::{StateMachineId,StateMachineHeight,ConsensusClientId}};
 use polkadot_sdk::sp_weights::WeightToFee;
 // Local module imports
 use super::{
@@ -606,6 +608,60 @@ impl_runtime_apis! {
 
 		fn preset_names() -> Vec<sp_genesis_builder::PresetId> {
 			crate::genesis_config_presets::preset_names()
+		}
+	}
+	// Hyperbridge
+	impl pallet_ismp_runtime_api::IsmpRuntimeApi<Block, <Block as BlockT>::Hash> for Runtime {
+		fn host_state_machine() -> StateMachine {
+			<Runtime as pallet_ismp::Config>::HostStateMachine::get()
+		}
+
+		fn challenge_period(state_machine_id: StateMachineId) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::challenge_period(state_machine_id)
+		}
+
+		/// Fetch all ISMP events in the block, should only be called from runtime-api.
+		fn block_events() -> Vec<::ismp::events::Event> {
+			pallet_ismp::Pallet::<Runtime>::block_events()
+		}
+
+		/// Fetch all ISMP events and their extrinsic metadata, should only be called from runtime-api.
+		fn block_events_with_metadata() -> Vec<(::ismp::events::Event, Option<u32>)> {
+			pallet_ismp::Pallet::<Runtime>::block_events_with_metadata()
+		}
+
+		/// Return the scale encoded consensus state
+		fn consensus_state(id: ConsensusClientId) -> Option<Vec<u8>> {
+			pallet_ismp::Pallet::<Runtime>::consensus_states(id)
+		}
+
+		/// Return the timestamp this client was last updated in seconds
+		fn state_machine_update_time(height: StateMachineHeight) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::state_machine_update_time(height)
+		}
+
+		/// Return the latest height of the state machine
+		fn latest_state_machine_height(id: StateMachineId) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::latest_state_machine_height(id)
+		}
+
+		/// Get actual requests
+		fn requests(commitments: Vec<H256>) -> Vec<ismp::router::Request> {
+			pallet_ismp::Pallet::<Runtime>::requests(commitments)
+		}
+
+		/// Get actual requests
+		fn responses(commitments: Vec<H256>) -> Vec<ismp::router::Response> {
+			pallet_ismp::Pallet::<Runtime>::responses(commitments)
+		}
+	}
+	impl ismp_parachain_runtime_api::IsmpParachainApi<Block> for Runtime {
+		fn para_ids() -> Vec<u32> {
+			IsmpParachain::para_ids()
+		}
+
+		fn current_relay_chain_state() -> RelayChainState {
+			IsmpParachain::current_relay_chain_state()
 		}
 	}
 }
