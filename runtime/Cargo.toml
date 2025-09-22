@@ -149,6 +149,7 @@ pallet-ismp-runtime-api={workspace = true}
 pallet-hyperbridge={workspace = true}
 pallet-token-gateway = { workspace = true }
 token-gateway-primitives = { workspace = true }
+anyhow = { workspace = true }
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
 sp-externalities={workspace = true}
@@ -227,6 +228,7 @@ std = [
 	"polkadot-runtime-common/std",
 	"pallet-broker/std",
 	"pallet-democracy/std",
+	"anyhow/std",
 	"pallet-ismp/std",
 	"pallet-ismp-runtime-api/std",
 	"ismp/std",
@@ -292,14 +294,14 @@ runtime-benchmarks = [
 	"hex-literal",
 	"polkadot-sdk/runtime-benchmarks",
 	"pallet-contracts/runtime-benchmarks",
+	"ismp-parachain/runtime-benchmarks",
+    "pallet-token-gateway/runtime-benchmarks",
 ]
 
 try-runtime = [
 	"cumulus-pallet-parachain-system/try-runtime",
 	"polkadot-sdk/try-runtime",
-	"pallet-contracts/try-runtime",
-	"pallet-ismp/try-runtime",
-	"pallet-hyperbridge/try-runtime",
+	"pallet-contracts/try-runtime"
 ]
 
 # Enable the metadata hash generation.

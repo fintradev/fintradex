@@ -14,6 +14,7 @@ members = [
 resolver = "2"
 
 [workspace.dependencies]
+anyhow = { version = "1.0", default-features = false }
 fintradex-runtime = { path = "./runtime", default-features = false }
 clap = { version = "4.5.13" }
 codec = { version = "3.6.12", default-features = false, package = "parity-scale-codec" }

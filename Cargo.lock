@@ -4876,6 +4876,7 @@ dependencies = [
 name = "fintradex-runtime"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "assets-common",
  "cumulus-pallet-aura-ext",
  "cumulus-pallet-parachain-system",
