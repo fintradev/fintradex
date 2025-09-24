@@ -22,7 +22,7 @@ use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_consensus_aura::{sr25519::AuthorityId as AuraId, AuraApi};
 use sp_runtime::traits::Block as BlockT;
 use substrate_frame_rpc_system::SystemApiServer;
-
+use pallet_ismp_rpc::{IsmpApiServer, IsmpRpcHandler};
 mod eth;
 pub use self::eth::{create_eth, overrides_handle, EthDeps};
 
@@ -79,6 +79,7 @@ where
 	C::Api: fp_rpc::ConvertTransactionRuntimeApi<Block>,
 	C::Api: fp_rpc::EthereumRuntimeRPCApi<Block>,
 	C::Api: AuraApi<Block, AuraId>,
+	C::Api: pallet_ismp_runtime_api::IsmpRuntimeApi<Block, sp_core::H256>,
 	BE: Backend<Block> + 'static,
 	P: TransactionPool<Block = Block> + 'static,
 	A: ChainApi<Block = Block> + 'static,
@@ -93,6 +94,7 @@ where
 
 	io.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
 	io.merge(TransactionPayment::new(client).into_rpc())?;
+	module.merge(IsmpRpcHandler::new(client, backend)?.into_rpc())?;
 
 	// Ethereum compatibility RPCs
 	let io = create_eth::<Block, C, P, CT, BE, A, CIDP, DefaultEthConfig<C, BE>>(
