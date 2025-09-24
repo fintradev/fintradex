@@ -1,3 +1,24 @@
+//! # FintradeX Command Implementation
+//!
+//! This module implements the command-line interface for the FintradeX parachain node,
+//! handling various operations including node startup, benchmarking, and chain management.
+//!
+//! ## Available Commands
+//!
+//! - **Start Node**: Launch the FintradeX parachain node
+//! - **Benchmark**: Performance testing and optimization
+//! - **Chain Operations**: Genesis block generation and validation
+//! - **Key Management**: Account and key operations
+//!
+//! ## Features
+//!
+//! - Collator functionality for parachain consensus
+//! - Ethereum-compatible RPC endpoints
+//! - Cross-chain asset management
+//! - High-performance trading infrastructure
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use std::{net::SocketAddr, sync::Arc};
 
 use codec::Encode;

@@ -1,3 +1,23 @@
+//! # FintradeX EVM Configuration
+//!
+//! This module configures the Ethereum Virtual Machine (EVM) integration for the FintradeX parachain,
+//! enabling full compatibility with Ethereum smart contracts and DeFi protocols.
+//!
+//! ## Features
+//!
+//! - **EVM Compatibility**: Full Ethereum Virtual Machine support
+//! - **Account Mapping**: Seamless integration between Substrate and Ethereum accounts
+//! - **Gas Configuration**: Optimized gas pricing for trading operations
+//! - **Precompiles**: Ethereum precompiles for cryptographic operations
+//!
+//! ## Configuration
+//!
+//! - Chain ID: 0x1 (Ethereum mainnet compatible)
+//! - Gas limit per block: Optimized for high-frequency trading
+//! - Account mapping: H160 to AccountId32 conversion
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use sp_core::{crypto::ByteArray, H160, U256};
 use fp_evm::weight_per_gas;
 use pallet_evm::{EnsureAddressRoot,EnsureAddressNever,HashedAddressMapping,EnsureAccountId20};

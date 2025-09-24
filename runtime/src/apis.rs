@@ -1,3 +1,24 @@
+//! # FintradeX Runtime APIs
+//!
+//! This module defines the runtime APIs for the FintradeX parachain, providing
+//! essential interfaces for blockchain operations, governance, and trading functionality.
+//!
+//! ## Available APIs
+//!
+//! - **Genesis Builder API**: Runtime genesis configuration
+//! - **Trading APIs**: Order management and execution
+//! - **Governance APIs**: Democratic decision making
+//! - **Asset Management**: Cross-chain asset operations
+//!
+//! ## Features
+//!
+//! - Runtime version management
+//! - Genesis state configuration
+//! - Trading operation interfaces
+//! - Cross-chain communication
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 // External crates imports
 use alloc::vec::Vec;
 

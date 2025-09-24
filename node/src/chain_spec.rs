@@ -1,3 +1,23 @@
+//! # FintradeX Chain Specification
+//!
+//! This module defines the chain specifications for the FintradeX parachain,
+//! including genesis configuration, network parameters, and validator setup.
+//!
+//! ## Supported Networks
+//!
+//! - **Development**: Local development network
+//! - **Testnet**: FintradeX testnet (testnet.fintra.network)
+//! - **Mainnet**: Production FintradeX parachain
+//!
+//! ## Features
+//!
+//! - EVM-compatible account system
+//! - Cross-chain asset support
+//! - Governance and staking mechanisms
+//! - Hyperbridge integration
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use cumulus_primitives_core::ParaId;
 use fintradex_runtime::{AccountId, AuraId, Signature, EXISTENTIAL_DEPOSIT};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};

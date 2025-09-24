@@ -1,3 +1,24 @@
+//! # FintradeX Ethereum Configuration
+//!
+//! This module configures the Ethereum integration for the FintradeX parachain,
+//! providing full compatibility with Ethereum smart contracts and DeFi protocols.
+//!
+//! ## Features
+//!
+//! - **Ethereum Compatibility**: Full EVM support for smart contracts
+//! - **DeFi Integration**: Seamless integration with Ethereum DeFi protocols
+//! - **Precompiles**: Optimized cryptographic operations
+//! - **Gas System**: Ethereum-compatible gas pricing and limits
+//!
+//! ## Configuration
+//!
+//! - Ethereum pallet configuration
+//! - Precompile integration
+//! - Gas system parameters
+//! - Smart contract execution settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use pallet_ethereum::PostLogContent;
 use crate::{Runtime, RuntimeEvent};
 use crate::precompiles::FrontierPrecompiles;

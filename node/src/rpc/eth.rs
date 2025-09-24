@@ -1,3 +1,24 @@
+//! # FintradeX Ethereum RPC Implementation
+//!
+//! This module implements Ethereum-compatible RPC methods for the FintradeX parachain,
+//! providing full compatibility with Ethereum tooling and DeFi protocols.
+//!
+//! ## Ethereum Compatibility
+//!
+//! - **JSON-RPC API**: Full Ethereum JSON-RPC compatibility
+//! - **Account System**: H160 address support
+//! - **Transaction Format**: Ethereum transaction compatibility
+//! - **Gas System**: Ethereum gas pricing and limits
+//!
+//! ## Trading Features
+//!
+//! - High-performance transaction processing
+//! - Optimized gas costs for DeFi operations
+//! - Cross-chain asset support
+//! - Advanced trading infrastructure
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use std::{collections::BTreeMap, sync::Arc};
 
 use fc_rpc::pending::AuraConsensusDataProvider;

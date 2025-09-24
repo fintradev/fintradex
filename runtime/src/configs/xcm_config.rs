@@ -1,3 +1,24 @@
+//! # FintradeX XCM Configuration
+//!
+//! This module configures the Cross-Consensus Message (XCM) format for the FintradeX parachain,
+//! enabling secure cross-chain communication and asset transfers.
+//!
+//! ## Features
+//!
+//! - **Cross-Chain Communication**: Secure message passing between chains
+//! - **Asset Transfers**: Cross-chain asset movement and management
+//! - **Hyperbridge Integration**: Enhanced interoperability capabilities
+//! - **Security**: Cryptographic guarantees for cross-chain operations
+//!
+//! ## Configuration
+//!
+//! - XCM message format and routing
+//! - Asset transfer mechanisms
+//! - Security and validation settings
+//! - Cross-chain bridge integration
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
 	AccountId, AllPalletsWithSystem, Balances, ParachainInfo, ParachainSystem, PolkadotXcm,
 	Runtime, RuntimeCall, RuntimeEvent, RuntimeOrigin, WeightToFee, XcmpQueue,

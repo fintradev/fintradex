@@ -1,3 +1,24 @@
+//! # FintradeX RPC Methods
+//!
+//! This module provides a collection of node-specific RPC methods for the FintradeX parachain,
+//! extending Substrate's core RPC layer with trading-specific capabilities.
+//!
+//! ## Available RPC Methods
+//!
+//! - **Trading APIs**: Order management and execution
+//! - **Asset Management**: Cross-chain asset operations
+//! - **Account Management**: Balance and transaction queries
+//! - **Chain Information**: Block and transaction data
+//!
+//! ## Features
+//!
+//! - Ethereum-compatible RPC endpoints
+//! - High-performance trading operations
+//! - Cross-chain asset support
+//! - Comprehensive API coverage
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 //! A collection of node-specific RPC methods.
 //! Substrate provides the `sc-rpc` crate, which defines the core RPC layer
 //! used by Substrate nodes. This file extends those RPC definitions with

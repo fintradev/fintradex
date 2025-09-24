@@ -1,3 +1,24 @@
+//! # FintradeX Democracy Configuration
+//!
+//! This module configures the democratic governance system for the FintradeX parachain,
+//! enabling community-driven decision making and protocol evolution.
+//!
+//! ## Features
+//!
+//! - **Democratic Voting**: Community voting on protocol proposals
+//! - **Proposal System**: Decentralized proposal creation and management
+//! - **Referendum Process**: Transparent voting and execution mechanisms
+//! - **Governance Integration**: Seamless integration with treasury and other systems
+//!
+//! ## Configuration
+//!
+//! - Voting parameters and thresholds
+//! - Proposal creation requirements
+//! - Referendum execution settings
+//! - Governance integration parameters
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
 	constants::{currency::*, time::*},
 	Balance, ChildBounties, Runtime, RuntimeEvent,AccountId,

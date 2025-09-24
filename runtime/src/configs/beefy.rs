@@ -1,3 +1,24 @@
+//! # FintradeX BEEFY Configuration
+//!
+//! This module configures the BEEFY (Bridge Efficiency Enabling Finality Yielder) protocol
+//! for the FintradeX parachain, enabling efficient finality proofs for cross-chain operations.
+//!
+//! ## Features
+//!
+//! - **Efficient Finality**: Optimized finality proofs for cross-chain bridges
+//! - **Cross-Chain Support**: Enhanced interoperability with other blockchains
+//! - **Security**: Cryptographic guarantees for finality verification
+//! - **Performance**: High-performance finality mechanisms
+//!
+//! ## Configuration
+//!
+//! - BEEFY authority configuration
+//! - Finality proof parameters
+//! - Cross-chain bridge integration
+//! - Security and validation settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{Runtime,MaxAuthorities,MmrLeaf,Offences,Historical,constants::time::*,UncheckedExtrinsic,RuntimeCall};
 use frame_support::{parameter_types,traits::{ConstU32, KeyOwnerProofSystem}};
 use sp_consensus_beefy::ecdsa_crypto::AuthorityId as BeefyId;

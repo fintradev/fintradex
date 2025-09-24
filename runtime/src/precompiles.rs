@@ -1,3 +1,24 @@
+//! # FintradeX EVM Precompiles
+//!
+//! This module defines the Ethereum Virtual Machine (EVM) precompiles available on the FintradeX parachain.
+//! Precompiles provide efficient implementations of common cryptographic operations.
+//!
+//! ## Available Precompiles
+//!
+//! - **ECRecover**: Elliptic curve signature recovery
+//! - **Sha256**: SHA-256 hash function
+//! - **Ripemd160**: RIPEMD-160 hash function
+//! - **Identity**: Identity function (data passthrough)
+//! - **Modexp**: Modular exponentiation
+//! - **Sha3FIPS256**: SHA-3 FIPS 202 hash function
+//!
+//! ## Gas Costs
+//!
+//! Precompiles are optimized for trading operations and provide competitive gas costs
+//! compared to Ethereum mainnet.
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use core::marker::PhantomData;
 use pallet_evm::{
 	IsPrecompileResult, Precompile, PrecompileHandle, PrecompileResult, PrecompileSet,

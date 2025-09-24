@@ -1,3 +1,24 @@
+//! # FintradeX Collective Configuration
+//!
+//! This module configures the collective governance system for the FintradeX parachain,
+//! enabling council-based decision making and protocol management.
+//!
+//! ## Features
+//!
+//! - **Council Governance**: Elected council for protocol decisions
+//! - **Proposal System**: Council proposal creation and voting
+//! - **Executive Authority**: Council execution of approved proposals
+//! - **Technical Committee**: Technical expertise for protocol decisions
+//!
+//! ## Configuration
+//!
+//! - Council composition and election
+//! - Proposal creation and approval
+//! - Voting mechanisms and thresholds
+//! - Executive authority settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
 	constants::time::*, MaxCollectivesProposalWeight, Runtime, RuntimeCall, RuntimeEvent,
 	RuntimeOrigin,

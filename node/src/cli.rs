@@ -1,3 +1,24 @@
+//! # FintradeX CLI Configuration
+//!
+//! This module defines the command-line interface for the FintradeX parachain node,
+//! including subcommands for chain specification, validation, and key management.
+//!
+//! ## Available Commands
+//!
+//! - **BuildSpec**: Build chain specifications
+//! - **ValidateBlocks**: Validate blockchain blocks
+//! - **Key**: Key management operations
+//! - **Sign**: Sign transactions
+//! - **Verify**: Verify signatures
+//! - **Vanity**: Generate vanity addresses
+//! - **InsertKey**: Insert keys into keystore
+//! - **ExportGenesisState**: Export genesis state
+//! - **ExportGenesisWasm**: Export genesis WASM
+//! - **PurgeChain**: Purge blockchain data
+//! - **Revert**: Revert blockchain state
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::eth::EthConfiguration;
 use std::path::PathBuf;
 
