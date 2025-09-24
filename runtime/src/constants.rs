@@ -1,3 +1,23 @@
+//! # FintradeX Runtime Constants
+//!
+//! This module defines the core constants used throughout the FintradeX runtime,
+//! including currency denominations, time parameters, and system configurations.
+//!
+//! ## Currency Constants
+//!
+//! The FintradeX token uses a precision of 15 decimal places, with the following denominations:
+//! - `MILLICENTS`: 1,000,000,000 (base unit)
+//! - `CENTS`: 1,000 * MILLICENTS
+//! - `DOLLARS`: 100 * CENTS
+//!
+//! ## Time Constants
+//!
+//! - Block time: 3 seconds (3000 milliseconds)
+//! - Session duration: 6 hours
+//! - Era duration: 24 hours
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 pub mod currency {
 	pub type Balance = u128;
 	pub const MILLICENTS: Balance = 1_000_000_000;

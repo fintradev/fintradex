@@ -1,3 +1,23 @@
+//! # FintradeX Ethereum Configuration
+//!
+//! This module provides Ethereum-compatible configuration for the FintradeX parachain node,
+//! including RPC endpoints, transaction pool settings, and EVM integration.
+//!
+//! ## Features
+//!
+//! - **Ethereum RPC**: Full Ethereum JSON-RPC API compatibility
+//! - **Transaction Pool**: Optimized for high-frequency trading
+//! - **Gas Configuration**: Competitive gas pricing
+//! - **Account Management**: Seamless Ethereum account integration
+//!
+//! ## Configuration
+//!
+//! - RPC endpoints: HTTP and WebSocket support
+//! - Transaction pool: High-capacity pool for trading operations
+//! - Gas limits: Optimized for DeFi protocols
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use std::{
 	collections::BTreeMap,
 	path::PathBuf,

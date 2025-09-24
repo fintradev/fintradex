@@ -1,3 +1,24 @@
+//! # FintradeX Scheduler Configuration
+//!
+//! This module configures the scheduler system for the FintradeX parachain,
+//! enabling delayed execution of transactions and automated operations.
+//!
+//! ## Features
+//!
+//! - **Scheduled Execution**: Delayed transaction execution
+//! - **Automated Operations**: Recurring and automated tasks
+//! - **Governance Integration**: Scheduled governance operations
+//! - **Trading Automation**: Automated trading and DeFi operations
+//!
+//! ## Configuration
+//!
+//! - Scheduling parameters and limits
+//! - Execution timing and constraints
+//! - Weight management for scheduled tasks
+//! - Integration with other pallets
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
 	AccountId, OriginCaller, Perbill, Preimage, Runtime, RuntimeBlockWeights, RuntimeCall,
 	RuntimeEvent, RuntimeOrigin, Weight,

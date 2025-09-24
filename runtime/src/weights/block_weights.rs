@@ -1,3 +1,24 @@
+//! # FintradeX Block Weights
+//!
+//! This module defines the block weight limits and execution time constraints
+//! for the FintradeX parachain, optimized for high-performance trading operations.
+//!
+//! ## Block Configuration
+//!
+//! - **Max Block Weight**: Optimized for trading transactions
+//! - **Execution Time**: 3-second block time for fast finality
+//! - **Transaction Limits**: High-capacity transaction processing
+//! - **Resource Allocation**: Balanced for trading and DeFi operations
+//!
+//! ## Performance Features
+//!
+//! - Sub-second transaction processing
+//! - High-throughput order matching
+//! - Efficient cross-chain operations
+//! - Competitive gas costs
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 // This file is part of Substrate.
 
 // Copyright (C) Parity Technologies (UK) Ltd.

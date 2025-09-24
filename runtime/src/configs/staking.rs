@@ -1,3 +1,24 @@
+//! # FintradeX Staking Configuration
+//!
+//! This module configures the staking system for the FintradeX parachain,
+//! providing network security through validator participation and rewards.
+//!
+//! ## Features
+//!
+//! - **Validator Staking**: Secure network through validator participation
+//! - **Nomination Pools**: Community staking through nomination pools
+//! - **Reward Distribution**: Fair and transparent reward mechanisms
+//! - **Slashing Protection**: Security measures against malicious behavior
+//!
+//! ## Configuration
+//!
+//! - Staking parameters and limits
+//! - Reward calculation algorithms
+//! - Slashing conditions and penalties
+//! - Nomination pool settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
     AccountId,Balances,Balance,BlockNumber,Timestamp,ElectionProviderMultiPhase, 
     Runtime, RuntimeEvent,RuntimeFreezeReason,RuntimeHoldReason,Treasury,NominationPools,VoterList,

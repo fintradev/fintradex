@@ -1,3 +1,24 @@
+//! # FintradeX Base Fee Configuration
+//!
+//! This module configures the base fee mechanism for the FintradeX parachain,
+//! providing dynamic fee adjustment based on network congestion and demand.
+//!
+//! ## Features
+//!
+//! - **Dynamic Fee Adjustment**: Automatic fee scaling based on network usage
+//! - **EVM Compatibility**: Ethereum-compatible base fee mechanism
+//! - **Trading Optimization**: Optimized for high-frequency trading operations
+//! - **Gas Price Management**: Competitive gas pricing for DeFi protocols
+//!
+//! ## Configuration
+//!
+//! - Base fee parameters and limits
+//! - Fee adjustment algorithms
+//! - Gas price calculations
+//! - Network congestion handling
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use sp_core::U256;
 use crate::{Runtime, RuntimeEvent};
 use sp_runtime::Permill;

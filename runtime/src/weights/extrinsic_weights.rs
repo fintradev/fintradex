@@ -1,3 +1,24 @@
+//! # FintradeX Extrinsic Weights
+//!
+//! This module defines the weight calculations for individual transactions (extrinsics)
+//! on the FintradeX parachain, providing cost estimates for all operations.
+//!
+//! ## Weight Categories
+//!
+//! - **Trading Operations**: Order placement, matching, and execution
+//! - **Asset Management**: Cross-chain transfers and conversions
+//! - **Governance**: Voting and proposal operations
+//! - **EVM Operations**: Smart contract execution costs
+//!
+//! ## Cost Optimization
+//!
+//! - Competitive transaction fees
+//! - Efficient resource utilization
+//! - Optimized for DeFi protocols
+//! - Scalable transaction processing
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 // This file is part of Substrate.
 
 // Copyright (C) Parity Technologies (UK) Ltd.

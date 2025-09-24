@@ -1,3 +1,30 @@
+//! # FintradeX Runtime
+//!
+//! The FintradeX parachain runtime provides a high-performance, cross-chain decentralized trading platform
+//! built on Polkadot. This runtime integrates advanced features including:
+//!
+//! - **EVM Compatibility**: Full Ethereum Virtual Machine support for seamless DeFi integration
+//! - **Hyperbridge Integration**: Crypto-economic coprocessor for secure cross-chain interoperability
+//! - **RISC0 & Boundless Off-Chain Processing**: High-performance orderbook matching with zero-knowledge proofs
+//! - **Advanced Trading Infrastructure**: Multi-asset trading with institutional-grade performance
+//!
+//! ## Architecture
+//!
+//! The runtime is built using Substrate and includes:
+//! - Cross-chain asset management and trading
+//! - EVM-compatible smart contract execution
+//! - Governance and staking mechanisms
+//! - Market data and analytics capabilities
+//!
+//! ## Key Features
+//!
+//! - **Cross-Chain Trading**: Unified trading experience across multiple blockchains
+//! - **EVM Integration**: Native support for ERC-20 tokens and Ethereum DeFi protocols
+//! - **Off-Chain Orderbook**: High-performance order matching with cryptographic verification
+//! - **Security**: Enterprise-level security protocols and risk management
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 #![cfg_attr(not(feature = "std"), no_std)]
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "1024"]

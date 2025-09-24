@@ -1,3 +1,24 @@
+//! # FintradeX Asset Conversion Configuration
+//!
+//! This module configures the asset conversion functionality for the FintradeX parachain,
+//! enabling seamless conversion between different assets and currencies.
+//!
+//! ## Features
+//!
+//! - **Multi-Asset Support**: Conversion between various asset types
+//! - **Liquidity Pools**: Automated market making for conversions
+//! - **Cross-Chain Assets**: Support for assets from different chains
+//! - **Trading Integration**: Seamless integration with trading operations
+//!
+//! ## Configuration
+//!
+//! - Asset conversion pallet configuration
+//! - Liquidity pool management
+//! - Fee structure for conversions
+//! - Cross-chain asset support
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::configs::assets::AssetConversionOrigin;
 use crate::{
 	constants::currency::*, AccountId, Assets, Balance, Balances, PoolAssets, Runtime, RuntimeEvent,

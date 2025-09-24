@@ -1,3 +1,24 @@
+//! # FintradeX ParityDB Weights
+//!
+//! This module defines the weight calculations for ParityDB storage operations
+//! on the FintradeX parachain, providing cost estimates for database operations.
+//!
+//! ## Storage Operations
+//!
+//! - **Read Operations**: Database read costs and limits
+//! - **Write Operations**: Database write costs and limits
+//! - **Transaction Costs**: Storage transaction fees
+//! - **Performance Metrics**: Database operation timing
+//!
+//! ## Optimization Features
+//!
+//! - Efficient storage utilization
+//! - Competitive database costs
+//! - Optimized for trading operations
+//! - Scalable storage architecture
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 // This file is part of Substrate.
 
 // Copyright (C) Parity Technologies (UK) Ltd.

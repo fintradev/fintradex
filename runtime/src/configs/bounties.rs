@@ -1,3 +1,24 @@
+//! # FintradeX Bounties Configuration
+//!
+//! This module configures the bounties system for the FintradeX parachain,
+//! enabling community-driven development funding and ecosystem growth.
+//!
+//! ## Features
+//!
+//! - **Community Funding**: Decentralized funding for development initiatives
+//! - **Bounty Management**: Automated bounty creation and management
+//! - **Curator System**: Community-curated bounty evaluation
+//! - **Treasury Integration**: Seamless integration with treasury operations
+//!
+//! ## Configuration
+//!
+//! - Bounty creation and management parameters
+//! - Curator deposit requirements
+//! - Minimum bounty values
+//! - Treasury integration settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::{
 	constants::{currency::*, time::*},
 	Balance, ChildBounties, Runtime, RuntimeEvent,Treasury

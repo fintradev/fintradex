@@ -1,3 +1,23 @@
+//! # FintradeX Service Implementation
+//!
+//! This module provides the service and service factory implementation for the FintradeX parachain node.
+//! It includes specialized wrappers over Substrate service with additional features for:
+//!
+//! - **Collator Service**: Parachain consensus and block production
+//! - **EVM Integration**: Ethereum-compatible transaction processing
+//! - **Cross-Chain Support**: Hyperbridge integration for interoperability
+//! - **High-Performance Trading**: Optimized for trading operations
+//!
+//! ## Architecture
+//!
+//! The service handles:
+//! - Block import and validation
+//! - Transaction pool management
+//! - RPC and WebSocket API endpoints
+//! - Cross-chain message processing
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
 // std

@@ -1,4 +1,25 @@
 
+//! # FintradeX Runtime Benchmarks
+//!
+//! This module contains runtime benchmarks for the FintradeX parachain, providing
+//! performance measurements and weight calculations for all pallets and operations.
+//!
+//! ## Benchmark Coverage
+//!
+//! - **Trading Operations**: Order placement, matching, and execution
+//! - **Asset Management**: Cross-chain asset transfers and conversions
+//! - **Governance**: Democratic voting and proposal execution
+//! - **EVM Operations**: Smart contract execution and gas calculations
+//!
+//! ## Performance Metrics
+//!
+//! - Execution time measurements
+//! - Memory usage analysis
+//! - Gas cost calculations
+//! - Weight optimization recommendations
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 polkadot_sdk::frame_benchmarking::define_benchmarks!(
 	[frame_system, SystemBench::<Runtime>]
 	[pallet_balances, Balances]

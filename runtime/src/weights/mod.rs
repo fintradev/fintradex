@@ -1,3 +1,23 @@
+//! # FintradeX Runtime Weights
+//!
+//! This module defines the weight calculations for the FintradeX parachain runtime,
+//! providing performance metrics and resource allocation for all operations.
+//!
+//! ## Weight Categories
+//!
+//! - **Block Weights**: Per-block resource limits and execution time
+//! - **Extrinsic Weights**: Individual transaction costs and limits
+//! - **Database Weights**: Storage operation costs (RocksDB/ParityDB)
+//!
+//! ## Performance Optimization
+//!
+//! - Optimized for high-frequency trading operations
+//! - Competitive gas costs for DeFi protocols
+//! - Efficient cross-chain operations
+//! - Scalable transaction processing
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 // This file is part of Substrate.
 
 // Copyright (C) Parity Technologies (UK) Ltd.

@@ -1,3 +1,24 @@
+//! # FintradeX Treasury Configuration
+//!
+//! This module configures the treasury system for the FintradeX parachain,
+//! managing community funds and development resources.
+//!
+//! ## Features
+//!
+//! - **Community Treasury**: Decentralized fund management
+//! - **Proposal System**: Community-driven funding proposals
+//! - **Spend Management**: Transparent spending mechanisms
+//! - **Asset Support**: Multi-asset treasury operations
+//!
+//! ## Configuration
+//!
+//! - Treasury parameters and limits
+//! - Proposal creation and approval
+//! - Spending mechanisms and controls
+//! - Asset management settings
+//!
+//! For more information, visit [https://fintradex.io/](https://fintradex.io/)
+
 use crate::configs::collective::CouncilCollective;
 use crate::{
 	constants::{currency::*, time::*},
