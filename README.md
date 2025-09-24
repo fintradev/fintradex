@@ -64,17 +64,16 @@ graph LR
             T1[Spot Trading]
             T2[Order Placement]
             T3[Portfolio Management]
-            T4[Yield Farming]
-            T5[EVM Asset Trading]
+            T4[EVM Asset Trading]
         end
     end
     
     %% RISC0 & Boundless Off-Chain Layer
     subgraph RISC[RISC0 & Boundless Off-Chain Layer]
-        R0[Orderbook Matching Engine]
         R1[Zero-Knowledge Proofs]
         R2[Orderbook State Verification]
         R3[Decoupled Execution Engine]
+        R0[Orderbook Matching Engine]
     end
     
     %% Clients
