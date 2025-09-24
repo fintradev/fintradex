@@ -267,12 +267,13 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 🌐 Links
 
-- **Website**: [https://fintradex.io/](https://fintradex.io/)
-- **Testnet Explorer**: [https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer)
-- **Hyperbridge Documentation**: [https://docs.hyperbridge.network/](https://docs.hyperbridge.network/)
-- **Discord**: [https://discord.gg/fintradex](https://discord.gg/fintradex)
-- **Twitter**: [https://twitter.com/fintradex](https://twitter.com/fintradex)
-- **Telegram**: [https://t.me/fintradex](https://t.me/fintradex)
+- **White Paper**: [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf) - Comprehensive economic model and tokenomics
+- **Website**: [https://fintradex.io/](https://fintradex.io/){:target="_blank"}
+- **Testnet Explorer**: [https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer){:target="_blank"}
+- **Hyperbridge Documentation**: [https://docs.hyperbridge.network/](https://docs.hyperbridge.network/){:target="_blank"}
+- **Discord**: [https://discord.gg/fintradex](https://discord.gg/fintradex){:target="_blank"}
+- **Twitter**: [https://twitter.com/fintradex](https://twitter.com/fintradex){:target="_blank"}
+- **Telegram**: [https://t.me/fintradex](https://t.me/fintradex){:target="_blank"}
 
 ## 🙏 Acknowledgments
 
