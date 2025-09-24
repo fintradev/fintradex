@@ -201,13 +201,6 @@ FintradeX leverages [RISC0](https://risczero.com/) zero-knowledge proofs and [Bo
 - **On-Chain Verification**: Orderbook state and matching results verified on-chain with minimal computational overhead
 - **Transparent Execution**: All orderbook operations are auditable and verifiable
 
-### 🌐 Boundless Network Architecture
-- **Decoupled Execution Model**: Eliminates the "global re-execution" constraint of traditional blockchains
-- **Collective Capacity Utilization**: Harnesses the total computational capacity of all network nodes
-- **Succinct Reusable Proofs**: Execution proofs that any blockchain can verify without re-execution
-- **Decentralized Compute Market**: Leverages a decentralized market for complex computations
-- **Self-Reinforcing Scaling**: Each new prover adds capacity while each application amplifies benefits
-
 ### 📊 Advanced Orderbook Analytics
 - **Real-Time Orderbook Analysis**: Instant analysis of orderbook depth and liquidity
 - **Market Microstructure**: Sophisticated algorithms for order flow analysis
