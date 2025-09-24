@@ -15,6 +15,11 @@ impl frame_system::offchain::CreateInherent<pallet_beefy::Call<Runtime>> for Run
 	) -> UncheckedExtrinsic {
 		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
 	}
+	fn create_bare(
+		call: pallet_beefy::Call<Runtime>
+	) -> UncheckedExtrinsic {
+		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
+	}
 }
 // Add CreateTransactionBase implementation for pallet_beefy::Call<Runtime>
 impl frame_system::offchain::CreateTransactionBase<pallet_beefy::Call<Runtime>> for Runtime {

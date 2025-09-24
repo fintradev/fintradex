@@ -23,7 +23,7 @@
 //
 // For more information, please refer to <http://unlicense.org>
 use crate::{Staking};
-mod xcm_config;
+pub mod xcm_config;
 mod asset_conversion;
 mod asset_rate;
 mod assets;
@@ -59,6 +59,7 @@ mod voting;
 mod whitelist;
 mod democracy;
 mod broker;
+mod ismp;
 
 use polkadot_sdk::{staging_parachain_info as parachain_info, staging_xcm as xcm, *};
 #[cfg(not(feature = "runtime-benchmarks"))]
@@ -237,6 +238,7 @@ parameter_types! {
 }
 
 impl cumulus_pallet_parachain_system::Config for Runtime {
+	type RelayParentOffset = ConstU32<0>;
 	type WeightInfo = ();
 	type RuntimeEvent = RuntimeEvent;
 	type OnSystemEvent = ();
@@ -318,6 +320,7 @@ impl pallet_session::Config for Runtime {
 	type DisablingStrategy = ();
 }
 impl pallet_session::historical::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
 }

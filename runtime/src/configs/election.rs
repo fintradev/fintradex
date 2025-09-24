@@ -8,7 +8,7 @@ use frame_support::{
 	dispatch::DispatchClass,
 	parameter_types,
 	pallet_prelude::Get,
-	weights::{constants::BlockExecutionWeight, Weight},traits::{ConstU32}
+	weights::{constants::BlockExecutionWeight, Weight},traits::{ConstU32,ConstBool}
 };
 use sp_inherents::InherentData;
 use crate::configs::membership::EnsureRootOrHalfCouncil;
@@ -86,6 +86,11 @@ impl frame_system::offchain::CreateInherent<pallet_election_provider_multi_phase
 	) -> UncheckedExtrinsic {
 		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
 	}
+	fn create_bare(
+		call: pallet_election_provider_multi_phase::Call<Runtime>
+	) -> UncheckedExtrinsic {
+		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
+	}
 }
 /// Maximum number of iterations for balancing that will be executed in the embedded OCW
 /// miner of election provider multi phase.
@@ -114,6 +119,7 @@ impl Get<Option<BalancingConfig>> for OffchainRandomBalancing {
 
 pub struct OnChainSeqPhragmen;
 impl onchain::Config for OnChainSeqPhragmen {
+	type Sort = ConstBool<true>;
 	type System = Runtime;
 	type Solver = SequentialPhragmen<
 		AccountId,
@@ -121,7 +127,9 @@ impl onchain::Config for OnChainSeqPhragmen {
 	>;
 	type DataProvider = <Runtime as pallet_election_provider_multi_phase::Config>::DataProvider;
 	type WeightInfo = frame_election_provider_support::weights::SubstrateWeight<Runtime>;
-	type MaxWinners = <Runtime as pallet_election_provider_multi_phase::Config>::MaxWinners;
+	//type MaxWinners = <Runtime as pallet_election_provider_multi_phase::Config>::MaxWinners;
+	type MaxBackersPerWinner = MaxElectingVotersSolution;
+	type MaxWinnersPerPage = MaxActiveValidators;
 	type Bounds = ElectionBoundsOnChain;
 }
 impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
@@ -132,7 +140,7 @@ impl pallet_election_provider_multi_phase::MinerConfig for Runtime {
 	type MaxVotesPerVoter =
 	<<Self as pallet_election_provider_multi_phase::Config>::DataProvider as ElectionDataProvider>::MaxVotesPerVoter;
 	type MaxWinners = MaxActiveValidators;
-
+	type MaxBackersPerWinner = MaxElectingVotersSolution;
 	// The unsigned submissions have to respect the weight of the submit_unsigned call, thus their
 	// weight estimate function is wired to this call's weight.
 	fn solution_weight(v: u32, t: u32, a: u32, d: u32) -> Weight {
@@ -175,6 +183,7 @@ impl pallet_election_provider_multi_phase::Config for Runtime {
 	type ElectionBounds = ElectionBoundsMultiPhase;
 	type BenchmarkingConfig = ElectionProviderBenchmarkConfig;
 	type WeightInfo = pallet_election_provider_multi_phase::weights::SubstrateWeight<Self>;
+	type MaxBackersPerWinner = MaxElectingVotersSolution;
 }
 
 parameter_types! {

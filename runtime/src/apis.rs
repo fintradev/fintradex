@@ -8,6 +8,7 @@ use frame_support::{
 	weights::Weight,
 	traits::OnFinalize
 };
+use ethereum::AuthorizationList;
 use codec::{Decode, Encode};
 pub use sp_runtime::{Perbill, Permill,traits::{Dispatchable,UniqueSaturatedInto},AccountId32};
 use pallet_evm::{
@@ -24,15 +25,34 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
+use assets_common::{
+	foreign_creators::ForeignCreators,
+	local_and_foreign_assets::{LocalFromLeft, TargetFromLeft},
+	matching::{FromNetwork, FromSiblingParachain},
+};
+use crate::{
+	constants::currency::*,  Assets, Balances, PoolAssets, RuntimeEvent,OriginCaller,IsmpParachain,
+	staging_xcm::prelude::{XcmVersion,VersionedLocation,VersionedXcm,VersionedAssetId,
+		VersionedAssets,AssetId},common::xcm_config_common,configs::{xcm_config::{XcmRouter,XcmConfig,FintraLocation}}
+};
 use sp_version::RuntimeVersion;
-
+use xcm_runtime_apis::{
+	dry_run::{CallDryRunEffects, Error as XcmDryRunApiError, XcmDryRunEffects},
+	fees::Error as XcmPaymentApiError,
+};
+use cumulus_pallet_parachain_system::RelayChainState;
+use ismp::{host::StateMachine,consensus::{StateMachineId,StateMachineHeight,ConsensusClientId}};
+use polkadot_sdk::sp_weights::WeightToFee;
 // Local module imports
 use super::{
 	AccountId, Balance, Block, ConsensusHook, Executive, InherentDataExt, Nonce, ParachainSystem,
 	Runtime, RuntimeCall, RuntimeGenesisConfig, SessionKeys, System, TransactionPayment,
-	SLOT_DURATION, VERSION,Ethereum,UncheckedExtrinsic
+	SLOT_DURATION, VERSION,Ethereum,UncheckedExtrinsic,PolkadotXcm
 };
-
+use polkadot_sdk::{
+	staging_xcm as xcm, staging_xcm_builder as xcm_builder, staging_xcm_executor as xcm_executor, *,polkadot_sdk_frame::traits::Disabled
+};
+use sp_std::vec;
 // we move some impls outside so we can easily use them with `docify`.
 impl Runtime {
 	#[docify::export]
@@ -243,6 +263,7 @@ impl_runtime_apis! {
 			nonce: Option<U256>,
 			estimate: bool,
 			access_list: Option<Vec<(H160, Vec<H256>)>>,
+			authorization_list: Option<AuthorizationList>,
 		) -> Result<pallet_evm::CallInfo, sp_runtime::DispatchError> {
 			use pallet_evm::GasWeightMapping as _;
 
@@ -304,6 +325,7 @@ impl_runtime_apis! {
 				max_priority_fee_per_gas,
 				nonce,
 				access_list.unwrap_or_default(),
+				authorization_list.unwrap_or_default(),
 				false,
 				true,
 				weight_limit,
@@ -322,6 +344,7 @@ impl_runtime_apis! {
 			nonce: Option<U256>,
 			estimate: bool,
 			access_list: Option<Vec<(H160, Vec<H256>)>>,
+			authorization_list: Option<AuthorizationList>,
 		) -> Result<pallet_evm::CreateInfo, sp_runtime::DispatchError> {
 			use pallet_evm::GasWeightMapping as _;
 
@@ -382,6 +405,7 @@ impl_runtime_apis! {
 				max_priority_fee_per_gas,
 				nonce,
 				access_list.unwrap_or_default(),
+				authorization_list.unwrap_or_default(),
 				false,
 				true,
 				weight_limit,
@@ -461,7 +485,45 @@ impl_runtime_apis! {
 			ParachainSystem::collect_collation_info(header)
 		}
 	}
+	impl xcm_runtime_apis::dry_run::DryRunApi<Block, RuntimeCall, RuntimeEvent, OriginCaller> for Runtime {
+		fn dry_run_call(origin: OriginCaller, call: RuntimeCall, result_xcms_version: XcmVersion) -> Result<CallDryRunEffects<RuntimeEvent>, XcmDryRunApiError> {
+			PolkadotXcm::dry_run_call::<Runtime, XcmRouter, OriginCaller, RuntimeCall>(origin, call, result_xcms_version)
+		}
 
+		fn dry_run_xcm(origin_location: VersionedLocation, xcm: VersionedXcm<RuntimeCall>) -> Result<XcmDryRunEffects<RuntimeEvent>, XcmDryRunApiError> {
+			PolkadotXcm::dry_run_xcm::<Runtime,XcmRouter, RuntimeCall, XcmConfig>(origin_location, xcm)
+		}
+	}
+	impl xcm_runtime_apis::fees::XcmPaymentApi<Block> for Runtime {
+		fn query_acceptable_payment_assets(xcm_version: xcm::Version) -> Result<Vec<VersionedAssetId>, XcmPaymentApiError> {
+			let native_asset = FintraLocation::get();
+			// We accept the native asset to pay fees.
+			let acceptable_assets = vec![AssetId(native_asset.clone())];
+			// For now, we only accept the native asset. In the future, we could extend this
+			// to include other assets that are in pools with the native token.
+			PolkadotXcm::query_acceptable_payment_assets(xcm_version, acceptable_assets)
+		}
+
+		fn query_weight_to_asset_fee(weight: Weight, asset: VersionedAssetId) -> Result<u128, XcmPaymentApiError> {
+			use crate::configs::xcm_config::FintraLocation;
+			
+			// Convert weight to fee using the runtime's WeightToFee implementation
+			let fee: Balance = <crate::WeightToFee as WeightToFee>::weight_to_fee(&weight);
+			
+			// For now, we'll return the fee as-is since we're primarily dealing with native asset
+			// In a more sophisticated implementation, you might want to convert between different assets
+			// based on the asset parameter
+			Ok(fee.unique_saturated_into())
+		}
+
+		fn query_xcm_weight(message: VersionedXcm<()>) -> Result<Weight, XcmPaymentApiError> {
+			PolkadotXcm::query_xcm_weight(message)
+		}
+
+		fn query_delivery_fees(destination: VersionedLocation, message: VersionedXcm<()>) -> Result<VersionedAssets, XcmPaymentApiError> {
+			PolkadotXcm::query_delivery_fees(destination, message)
+		}
+	}
 	#[cfg(feature = "try-runtime")]
 	impl frame_try_runtime::TryRuntime<Block> for Runtime {
 		fn on_runtime_upgrade(checks: frame_try_runtime::UpgradeCheckSelect) -> (Weight, Weight) {
@@ -546,6 +608,60 @@ impl_runtime_apis! {
 
 		fn preset_names() -> Vec<sp_genesis_builder::PresetId> {
 			crate::genesis_config_presets::preset_names()
+		}
+	}
+	// Hyperbridge
+	impl pallet_ismp_runtime_api::IsmpRuntimeApi<Block, <Block as BlockT>::Hash> for Runtime {
+		fn host_state_machine() -> StateMachine {
+			<Runtime as pallet_ismp::Config>::HostStateMachine::get()
+		}
+
+		fn challenge_period(state_machine_id: StateMachineId) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::challenge_period(state_machine_id)
+		}
+
+		/// Fetch all ISMP events in the block, should only be called from runtime-api.
+		fn block_events() -> Vec<::ismp::events::Event> {
+			pallet_ismp::Pallet::<Runtime>::block_events()
+		}
+
+		/// Fetch all ISMP events and their extrinsic metadata, should only be called from runtime-api.
+		fn block_events_with_metadata() -> Vec<(::ismp::events::Event, Option<u32>)> {
+			pallet_ismp::Pallet::<Runtime>::block_events_with_metadata()
+		}
+
+		/// Return the scale encoded consensus state
+		fn consensus_state(id: ConsensusClientId) -> Option<Vec<u8>> {
+			pallet_ismp::Pallet::<Runtime>::consensus_states(id)
+		}
+
+		/// Return the timestamp this client was last updated in seconds
+		fn state_machine_update_time(height: StateMachineHeight) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::state_machine_update_time(height)
+		}
+
+		/// Return the latest height of the state machine
+		fn latest_state_machine_height(id: StateMachineId) -> Option<u64> {
+			pallet_ismp::Pallet::<Runtime>::latest_state_machine_height(id)
+		}
+
+		/// Get actual requests
+		fn requests(commitments: Vec<H256>) -> Vec<ismp::router::Request> {
+			pallet_ismp::Pallet::<Runtime>::requests(commitments)
+		}
+
+		/// Get actual requests
+		fn responses(commitments: Vec<H256>) -> Vec<ismp::router::Response> {
+			pallet_ismp::Pallet::<Runtime>::responses(commitments)
+		}
+	}
+	impl ismp_parachain_runtime_api::IsmpParachainApi<Block> for Runtime {
+		fn para_ids() -> Vec<u32> {
+			IsmpParachain::para_ids()
+		}
+
+		fn current_relay_chain_state() -> RelayChainState {
+			IsmpParachain::current_relay_chain_state()
 		}
 	}
 }

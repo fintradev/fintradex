@@ -85,6 +85,7 @@ impl pallet_staking::Config for Runtime {
 	type EventListeners=NominationPools;
 	type OldCurrency=Balances;
 	type RuntimeHoldReason=RuntimeHoldReason;
+	type MaxValidatorSet = ConstU32<100000>;
 	//type Filter=pallet_staking::Filter<Runtime>;
 	type Filter=();
 	//type DisablingStrategy=pallet_staking::UpToLimitDisablingStrategy;

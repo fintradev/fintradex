@@ -10,6 +10,11 @@ impl frame_system::offchain::CreateInherent<pallet_im_online::Call<Runtime>> for
 	) -> UncheckedExtrinsic {
 		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
 	}
+	fn create_bare(
+		call: pallet_im_online::Call<Runtime>
+	) -> UncheckedExtrinsic {
+		UncheckedExtrinsic::new_bare(RuntimeCall::from(call))
+	}
 }
 // Add CreateTransactionBase implementation for pallet_im_online::Call<Runtime>
 impl frame_system::offchain::CreateTransactionBase<pallet_im_online::Call<Runtime>> for Runtime {

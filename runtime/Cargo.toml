@@ -119,6 +119,10 @@ pallet-beefy-mmr = {workspace = true}
 pallet-im-online = {workspace = true}
 pallet-offences = {workspace = true}
 pallet-offences-benchmarking = {workspace = true}
+ismp-parachain = {workspace = true}
+ismp-parachain-runtime-api={workspace = true}
+ismp = {workspace = true}
+ethereum = { workspace = true }
 fp-evm = {workspace = true, features = ["serde"] }
 fp-self-contained = {workspace = true, features = ["serde"] }
 fp-rpc = {workspace = true }
@@ -137,10 +141,19 @@ cumulus-pallet-xcm={workspace = true}
 cumulus-primitives-aura={workspace = true}
 cumulus-primitives-core={workspace = true}
 cumulus-primitives-utility={workspace = true}
+xcm-runtime-apis={workspace = true}
+assets-common={workspace = true}
 pallet-collator-selection={workspace = true}
+pallet-ismp ={workspace = true, features = ["unsigned"]}
+pallet-ismp-runtime-api={workspace = true}
+pallet-hyperbridge={workspace = true}
+pallet-token-gateway = { workspace = true }
+token-gateway-primitives = { workspace = true }
+anyhow = { workspace = true }
 parachains-common={workspace = true}
 staging-parachain-info={workspace = true}
-
+sp-externalities={workspace = true}
+sp-state-machine={workspace = true}
 
 [features]
 default = ["std", "with-rocksdb-weights"]
@@ -151,6 +164,7 @@ std = [
 	"polkadot-sdk/std",
 	"serde_json/std",
 	"codec/std",
+	"sp-externalities/std",
 	"frame-benchmarking?/std",
 	"frame-executive/std",
 	"frame-metadata-hash-extension/std",
@@ -208,10 +222,19 @@ std = [
 	"pallet-offences/std",
 	"pallet-offences-benchmarking/std",
 	"pallet-xcm/std",
+	"ismp-parachain/std",
+	"ismp-parachain-runtime-api/std",
 	"polkadot-parachain-primitives/std",
 	"polkadot-runtime-common/std",
 	"pallet-broker/std",
 	"pallet-democracy/std",
+	"anyhow/std",
+	"pallet-ismp/std",
+	"pallet-ismp-runtime-api/std",
+	"ismp/std",
+	"pallet-hyperbridge/std",
+	"pallet-token-gateway/std",
+	"token-gateway-primitives/std",
 	"staging-xcm/std",
 	"staging-xcm-builder/std",
 	"staging-xcm-executor/std",
@@ -247,6 +270,7 @@ std = [
 	"pallet-evm-precompile-simple/std",
 	"pallet-evm-precompile-modexp/std",
 	"fp-evm/std",
+	"ethereum/std",
 	"fp-self-contained/std",
 	"fp-rpc/std",
 	"pallet-base-fee/std",
@@ -262,6 +286,7 @@ std = [
 	"pallet-base-fee/std",
 	"pallet-dynamic-fee/std",
 	"pallet-evm-chain-id/std",
+	"assets-common/std",
 	"substrate-wasm-builder",
 ]
 
@@ -269,12 +294,14 @@ runtime-benchmarks = [
 	"hex-literal",
 	"polkadot-sdk/runtime-benchmarks",
 	"pallet-contracts/runtime-benchmarks",
+	"ismp-parachain/runtime-benchmarks",
+    "pallet-token-gateway/runtime-benchmarks",
 ]
 
 try-runtime = [
 	"cumulus-pallet-parachain-system/try-runtime",
 	"polkadot-sdk/try-runtime",
-	"pallet-contracts/try-runtime",
+	"pallet-contracts/try-runtime"
 ]
 
 # Enable the metadata hash generation.

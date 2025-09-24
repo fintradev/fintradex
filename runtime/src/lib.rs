@@ -12,6 +12,7 @@ mod benchmarks;
 pub mod configs;
 pub mod constants;
 pub mod precompiles;
+pub mod common;
 mod genesis_config_presets;
 mod weights;
 mod voter_bags;
@@ -212,7 +213,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
 	impl_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
 	authoring_version: 1,
-	spec_version: 1,
+	spec_version: 3,
 	impl_version: 0,
 	apis: apis::RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -572,6 +573,15 @@ mod runtime {
 
 	#[runtime::pallet_index(59)]
 	pub type Parameters = pallet_parameters::Pallet<Runtime>;
+
+	#[runtime::pallet_index(60)]
+	pub type Ismp = pallet_ismp::Pallet<Runtime>;
+	#[runtime::pallet_index(61)]
+	pub type IsmpParachain = ismp_parachain::Pallet<Runtime>;
+	#[runtime::pallet_index(62)]
+	pub type Hyperbridge = pallet_hyperbridge::Pallet<Runtime>;
+	#[runtime::pallet_index(63)]
+	pub type TokenGateway = pallet_token_gateway::Pallet<Runtime>;
 
 }
 

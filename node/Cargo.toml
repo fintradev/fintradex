@@ -47,6 +47,12 @@ fp-account = { workspace = true }
 fp-dynamic-fee = { workspace = true, features = ["default"] }
 fp-evm = { workspace = true, features = ["default"] }
 fp-rpc = { workspace = true, features = ["default"] }
+# HyperBridge
+pallet-ismp-runtime-api = { workspace = true }
+pallet-ismp-rpc = { workspace = true }
+ismp-parachain-inherent = { workspace = true }
+# ismp-parachain-inherent = { workspace = true }
+# pallet-ismp-rpc = { workspace = true }
 
 [features]
 default = ["rocksdb",
