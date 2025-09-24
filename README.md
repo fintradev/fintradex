@@ -49,7 +49,7 @@ graph LR
         
         subgraph RL[Runtime Layer]
             R1[Trading Engine]
-            R2[Order Book Management]
+            R2[On-Chain Orderbook State]
             R3[Governance & Staking]
             R4[EVM Integration]
         end
@@ -62,19 +62,19 @@ graph LR
         
         subgraph SF[Trading Features]
             T1[Spot Trading]
-            T2[Derivatives]
-            T3[Leverage Trading]
+            T2[Order Placement]
+            T3[Portfolio Management]
             T4[Yield Farming]
             T5[EVM Asset Trading]
         end
     end
     
-    %% RISC0 Off-Chain Layer
-    subgraph RISC[RISC0 Off-Chain Layer]
-        R0[Order Matching Engine]
-        R1[Computational Proofs]
-        R2[Risk Calculations]
-        R3[Market Analysis]
+    %% RISC0 & Boundless Off-Chain Layer
+    subgraph RISC[RISC0 & Boundless Off-Chain Layer]
+        R0[Off-Chain Orderbook Matching]
+        R1[Zero-Knowledge Proofs]
+        R2[Orderbook State Verification]
+        R3[Decoupled Execution Engine]
     end
     
     %% Clients
@@ -119,14 +119,12 @@ graph LR
     class SF tradingFeatures
 ```
 
-*FintradeX Architecture - High-Performance Cross-Chain Trading Platform with Hyperbridge Integration and EVM Compatibility*
+*FintradeX Architecture - High-Performance Cross-Chain Trading Platform with Off-Chain Orderbook Matching via RISC0 & Boundless*
 
 </div>
 
 The FintradeX parachain consists of:
 
-- 🧮 **[Runtime](./runtime/README.md)** - The core trading logic and state management with EVM integration
-- 💿 **[Node](./node/README.md)** - High-performance blockchain node for trading operations
 - 🌉 **Hyperbridge Integration** - Crypto-economic coprocessor for secure cross-chain interoperability
 - 📊 **Market Data Engine** - Real-time price feeds and cross-chain market analytics
 - 🛡️ **Security Layer** - Advanced security and risk management systems
@@ -146,8 +144,6 @@ The FintradeX parachain consists of:
 - **Hyperbridge-Powered Interoperability**: Leveraging cryptographic proofs for secure cross-chain communication
 - **Unified Trading Experience**: Trade assets from any connected blockchain with trust-free verification
 - **Seamless Asset Transfers**: Instant cross-chain asset movement with cryptographic guarantees
-- **Interoperable Liquidity**: Share liquidity across the entire blockchain ecosystem
-- **Multi-Chain Order Books**: Unified order books across multiple networks
 - **EVM Chain Integration**: Full compatibility with Ethereum and other EVM-compatible chains
 
 ### 🛡️ Security & Compliance
@@ -187,6 +183,44 @@ FintradeX leverages [Hyperbridge](https://docs.hyperbridge.network/) as a revolu
 - **Improved Scalability**: Efficient proof aggregation reduces verification costs
 - **Universal Connectivity**: Seamless integration with any blockchain network
 - **Developer-Friendly**: Simplified cross-chain development with cryptographic guarantees
+
+## ⚡ RISC0 & Boundless Off-Chain Orderbook Matching
+
+FintradeX leverages [RISC0](https://risczero.com/) zero-knowledge proofs and [Boundless Network](https://docs.boundless.network/) architecture to deliver unprecedented orderbook matching performance through off-chain computation and on-chain verification.
+
+### 🚀 High-Performance Orderbook Matching
+- **Off-Chain Orderbook**: Complete orderbook management and matching performed off-chain
+- **Sub-Second Execution**: Ultra-fast order matching with minimal latency
+- **Scalable Processing**: Handle millions of orders per second without blockchain congestion
+- **Zero-Knowledge Proofs**: Cryptographic guarantees of correct order matching execution
+- **Decoupled Execution**: Complex orderbook calculations performed off-chain for maximum efficiency
+
+### 🔐 Trust-Free Verification
+- **RISC0 Integration**: Leveraging RISC0's zero-knowledge proof system for verifiable orderbook computation
+- **Cryptographic Guarantees**: Mathematical proofs ensure all orderbook matching operations are correct
+- **On-Chain Verification**: Orderbook state and matching results verified on-chain with minimal computational overhead
+- **Transparent Execution**: All orderbook operations are auditable and verifiable
+
+### 🌐 Boundless Network Architecture
+- **Decoupled Execution Model**: Eliminates the "global re-execution" constraint of traditional blockchains
+- **Collective Capacity Utilization**: Harnesses the total computational capacity of all network nodes
+- **Succinct Reusable Proofs**: Execution proofs that any blockchain can verify without re-execution
+- **Decentralized Compute Market**: Leverages a decentralized market for complex computations
+- **Self-Reinforcing Scaling**: Each new prover adds capacity while each application amplifies benefits
+
+### 📊 Advanced Orderbook Analytics
+- **Real-Time Orderbook Analysis**: Instant analysis of orderbook depth and liquidity
+- **Market Microstructure**: Sophisticated algorithms for order flow analysis
+- **Price Discovery**: AI-driven price discovery mechanisms
+- **Liquidity Optimization**: Machine learning models for optimal order placement and execution
+
+### 🎯 Benefits
+- **Institutional-Grade Orderbook Performance**: Meet the demands of high-frequency trading without blockchain limitations
+- **Cost Efficiency**: Reduced gas costs through off-chain orderbook processing and proof aggregation
+- **Unlimited Orderbook Scalability**: Handle growing trading volumes without performance degradation
+- **Security**: Cryptographic proofs ensure trust in orderbook operations without centralization
+- **Abundant Compute**: Access to unlimited computational resources for complex orderbook operations
+- **No Gas Limits**: Complex orderbook calculations no longer constrained by blockchain gas limits
 
 ## 💰 Economic Model
 
