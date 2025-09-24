@@ -2,7 +2,7 @@
 
 ## Quick Setup
 
-### 1. GCP Service Account Setup
+### 1. GCP1 Service Account Setup
 ```bash
 # Create service account
 gcloud iam service-accounts create fintradex-ci \
