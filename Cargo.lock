@@ -4858,8 +4858,11 @@ dependencies = [
  "fp-evm",
  "fp-rpc",
  "futures",
+ "ismp-parachain-inherent",
  "jsonrpsee",
  "log",
+ "pallet-ismp-rpc",
+ "pallet-ismp-runtime-api",
  "parity-scale-codec",
  "polkadot-sdk",
  "sc-cli",
@@ -6983,6 +6986,23 @@ dependencies = [
  "scale-info",
  "serde",
  "substrate-state-machine",
+]
+
+[[package]]
+name = "ismp-parachain-inherent"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b009acea1ad0ff0d6976f95a493abf7969dadae5e8b5ae33a2452d20e96ebca"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "ismp",
+ "ismp-parachain",
+ "ismp-parachain-runtime-api",
+ "log",
+ "pallet-ismp-runtime-api",
+ "parity-scale-codec",
+ "polkadot-sdk",
 ]
 
 [[package]]
@@ -10090,6 +10110,28 @@ dependencies = [
  "scale-info",
  "serde",
  "sp-io",
+]
+
+[[package]]
+name = "pallet-ismp-rpc"
+version = "2506.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f554fd8c35b0dfc503c89c899cbc7b766ba48b6c12ba0441923aec21909f72f"
+dependencies = [
+ "anyhow",
+ "hash-db",
+ "hex",
+ "hex-literal",
+ "ismp",
+ "jsonrpsee",
+ "pallet-ismp",
+ "pallet-ismp-runtime-api",
+ "parity-scale-codec",
+ "polkadot-sdk",
+ "serde",
+ "serde_json",
+ "tower",
+ "trie-db",
 ]
 
 [[package]]

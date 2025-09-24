@@ -580,6 +580,8 @@ mod runtime {
 	pub type IsmpParachain = ismp_parachain::Pallet<Runtime>;
 	#[runtime::pallet_index(62)]
 	pub type Hyperbridge = pallet_hyperbridge::Pallet<Runtime>;
+	#[runtime::pallet_index(63)]
+	pub type TokenGateway = pallet_token_gateway::Pallet<Runtime>;
 
 }
 

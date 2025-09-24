@@ -1,18 +1,21 @@
+#[cfg(not(feature = "runtime-benchmarks"))]
+use frame_system::EnsureSigned;
 use ismp::{
     Error,
 	host::StateMachine,
 	module::{IsmpModule},
 	router::{IsmpRouter, PostRequest, Request, Response,Timeout}
 };
-use frame_support::parameter_types;
-use frame_system::EnsureRoot;
+use frame_support::{parameter_types,traits::EitherOf};
+use frame_system::{EnsureRoot};
 use pallet_ismp::fee_handler::WeightFeeHandler;
 use alloc::vec::Vec;
 use alloc::boxed::Box;
 use crate::{
     AccountId,Balances,Balance,BlockNumber,Timestamp,ElectionProviderMultiPhase, 
     Runtime, RuntimeEvent,RuntimeFreezeReason,RuntimeHoldReason,Treasury,NominationPools,VoterList,
-	Session,IsmpParachain,Ismp,constants::{currency::*},Weight
+	Session,IsmpParachain,Ismp,constants::{currency::*},Weight,TokenGateway,Assets,
+    configs::technical_collective::TechnicalCollective
 };
 
 
@@ -80,13 +83,51 @@ impl pallet_ismp::Config for Runtime {
     //type FeeHandler =WeightFeeHandler<()>;
     type FeeHandler = ();
 }
-
+parameter_types! {
+	
+    // A constant value that represents the native asset
+pub const NativeAssetId: u32 = 0;
+// Set the correct decimals for the native currency
+pub const Decimals: u8 = 12;
+pub TreasuryAccount: AccountId = Treasury::account_id();
+}
+/*pub struct AssetAdmin;
+ 
+impl Get<AccountId> for AssetAdmin {
+	fn get() -> AccountId {
+		Treasury::account_id()
+	}
+}*/
+impl pallet_token_gateway::Config for Runtime {
+	//type RuntimeEvent = RuntimeEvent;
+	type Dispatcher = Ismp;
+	type NativeCurrency = Balances;
+	type AssetAdmin = TreasuryAccount;
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	//type CreateOrigin = EitherOf<EnsureRoot<Self::AccountId>, EitherOf<pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>, GeneralAdmin>>;
+	type CreateOrigin = EnsureSigned<Self::AccountId>;
+    #[cfg(feature = "runtime-benchmarks")]
+	type CreateOrigin = frame_system::EnsureSigned<Self::AccountId>;
+	//type Assets = FungibleCurrencies<Runtime>;
+    type Assets = Assets;
+	type NativeAssetId =NativeAssetId;
+	type Decimals = Decimals;
+	type EvmToSubstrate = ();
+	type WeightInfo = ();
+}
 #[derive(Default)]
 pub struct Router;
 
 impl IsmpRouter for Router {
-	fn module_for_id(&self, _bytes: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
+	/*fn module_for_id(&self, _bytes: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
 		Ok(Box::new(ProxyModule::default()))
+	}*/
+    fn module_for_id(&self, id: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
+		match id.as_slice() {
+			id if TokenGateway::is_token_gateway(&id) => Ok(Box::new(TokenGateway::default())),
+			pallet_hyperbridge::PALLET_HYPERBRIDGE_ID => Ok(Box::new(pallet_hyperbridge::Pallet::<Runtime>::default())),
+			_ => Err(ismp::Error::ModuleNotFound(id))?,
+		}
 	}
 }
 #[derive(Default)]
