@@ -5,8 +5,8 @@
 > **The Future of Decentralized Financial Trading on Polkadot**
 
 [![FintradeX](https://img.shields.io/badge/FintradeX-Financial%20Trading-blue?style=for-the-badge&logo=polkadot)](https://fintradex.io/)
-[![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202503-green?style=for-the-badge)](https://github.com/paritytech/polkadot-sdk)
-[![Rust](https://img.shields.io/badge/Rust-1.75+-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
+[![Polkadot SDK](https://img.shields.io/badge/Polkadot%20SDK-Stable%202506.0.0-green?style=for-the-badge)](https://github.com/paritytech/polkadot-sdk)
+[![Rust](https://img.shields.io/badge/Rust-1.87.0-orange?style=for-the-badge&logo=rust)](https://www.rust-lang.org/)
 
 **A high-performance, cross-chain decentralized trading platform built on Polkadot**
 
@@ -220,18 +220,6 @@ For detailed information about our economic model, tokenomics, and financial pro
 - **Advanced Charts**: Professional-grade trading charts and indicators
 - **Portfolio Management**: Comprehensive portfolio tracking and analytics
 
-### Derivatives Trading
-- **Futures & Options**: Advanced derivative instruments
-- **Leverage Trading**: Flexible margin trading with risk controls
-- **Synthetic Assets**: Trade any asset as synthetic derivatives
-- **Risk Hedging**: Advanced hedging strategies and tools
-
-### DeFi Integration
-- **Yield Farming**: Earn rewards through liquidity provision
-- **Staking Protocols**: Participate in various staking opportunities
-- **Lending & Borrowing**: Access to decentralized lending markets
-- **Insurance Products**: Protect against smart contract risks
-
 ### EVM Compatibility
 - **Smart Contract Support**: Deploy and interact with Ethereum-compatible smart contracts
 - **ERC-20 Token Trading**: Native support for ERC-20 tokens and other EVM standards
@@ -241,8 +229,6 @@ For detailed information about our economic model, tokenomics, and financial pro
 
 ## 📚 Documentation
 
-- [Runtime Documentation](./runtime/README.md) - Core trading logic and state management
-- [Node Documentation](./node/README.md) - High-performance blockchain node
 - [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf) - Comprehensive economic model and tokenomics
 
 ## 🤝 Contributing
