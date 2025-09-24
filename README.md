@@ -71,7 +71,7 @@ graph LR
     
     %% RISC0 & Boundless Off-Chain Layer
     subgraph RISC[RISC0 & Boundless Off-Chain Layer]
-        R0[Off-Chain Orderbook Matching]
+        R0[Orderbook Matching Engine]
         R1[Zero-Knowledge Proofs]
         R2[Orderbook State Verification]
         R3[Decoupled Execution Engine]
