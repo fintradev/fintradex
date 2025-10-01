@@ -40,6 +40,43 @@ The FintradeX parachain consists of:
 - ⚡ **RISC0 Off-Chain Layer** - High-performance order matching and computational proofs
 - 🔗 **EVM Compatibility** - Full Ethereum Virtual Machine compatibility for seamless DeFi integration
 
+### 🔧 Technical Implementation
+
+FintradeX is built on Substrate with 63+ specialized pallets providing comprehensive trading and DeFi functionality:
+
+#### **Core Trading Infrastructure**
+- **Asset Management**: Dual asset pallets (`Assets`, `PoolAssets`) for comprehensive asset handling
+- **Asset Conversion**: Native asset conversion and liquidity pool management
+- **Asset Rate Management**: Dynamic pricing and rate calculations
+- **Token Gateway**: ISMP-powered cross-chain asset transfers and management
+
+#### **Cross-Chain Interoperability**
+- **ISMP Protocol**: Interoperability State Machine Protocol for secure cross-chain communication
+- **Hyperbridge Pallet**: Cryptographic proof-based cross-chain verification
+- **XCM Integration**: Cross-Consensus Message format for Polkadot ecosystem communication
+- **XCMP Queue**: Cross-chain message processing and routing
+
+#### **EVM & Smart Contract Support**
+- **EVM Pallet**: Full Ethereum Virtual Machine compatibility
+- **Ethereum Pallet**: Ethereum transaction processing and compatibility
+- **Contracts Pallet**: WebAssembly smart contract execution
+- **Precompiles**: Optimized cryptographic operations and DeFi primitives
+
+#### **Advanced Governance System**
+- **Democracy**: Direct democratic decision making
+- **Council**: Elected governance body
+- **Technical Committee**: Technical decision making authority
+- **Referenda**: Community voting on proposals
+- **Conviction Voting**: Weighted voting based on stake duration
+- **Treasury**: Community-controlled funding mechanism
+
+#### **Staking & Consensus**
+- **Staking**: Proof-of-stake consensus mechanism
+- **Collator Selection**: Parachain block production
+- **Nomination Pools**: Pooled staking for smaller participants
+- **Fast Unstake**: Quick unstaking mechanism
+- **Session Management**: Validator rotation and key management
+
 ## 🌟 Key Features
 
 ### 🏦 Advanced Trading Infrastructure
@@ -92,6 +129,22 @@ FintradeX leverages [Hyperbridge](https://docs.hyperbridge.network/) as a revolu
 - **Improved Scalability**: Efficient proof aggregation reduces verification costs
 - **Universal Connectivity**: Seamless integration with any blockchain network
 - **Developer-Friendly**: Simplified cross-chain development with cryptographic guarantees
+
+## 🔗 ISMP & Token Gateway Integration
+
+FintradeX implements the Interoperability State Machine Protocol (ISMP) with a sophisticated Token Gateway system for seamless cross-chain asset management.
+
+### 🚀 Token Gateway Features
+- **Cross-Chain Asset Transfers**: Secure asset movement between connected blockchains
+- **ISMP Protocol**: State machine-based interoperability for trust-free cross-chain operations
+- **Asset Administration**: Treasury-controlled asset management with community governance
+- **EVM Integration**: Seamless integration between Substrate and Ethereum ecosystems
+
+### 🔐 Security & Verification
+- **Cryptographic Proofs**: All cross-chain operations verified through cryptographic guarantees
+- **State Machine Validation**: ISMP ensures consistent state across all connected chains
+- **Permissionless Relayers**: Decentralized network of relayers without whitelisting requirements
+- **Fee-Based Incentives**: Economic incentives ensure reliable cross-chain message delivery
 
 ## ⚡ RISC0 & Boundless Off-Chain Orderbook Matching
 
@@ -163,9 +216,32 @@ For detailed information about our economic model, tokenomics, and financial pro
 - **Developer Tools**: Full compatibility with Ethereum development tools and frameworks
 - **Gas Optimization**: Efficient transaction processing with optimized gas usage
 
+## 📊 Technical Specifications
+
+### **Runtime Parameters**
+- **Block Time**: 6 seconds (optimized for trading operations)
+- **Block Gas Limit**: 75,000,000 gas units
+- **Max Block Weight**: 2,000,000,000 weight units
+- **EVM Chain ID**: 0x1 (Ethereum mainnet compatible)
+- **SS58 Prefix**: 42 (Polkadot ecosystem standard)
+
+### **Performance Metrics**
+- **Transaction Throughput**: 1,000+ TPS (theoretical)
+- **Cross-Chain Latency**: Sub-second for Hyperbridge operations
+- **Orderbook Matching**: Off-chain with cryptographic verification
+- **Finality Time**: ~12 seconds (2 block confirmations)
+
+### **Security Features**
+- **Cryptographic Proofs**: RISC0 zero-knowledge verification
+- **Multi-Signature Support**: Advanced multisig operations
+- **Whitelist Management**: Controlled access mechanisms
+- **Offence Handling**: Automated slashing for malicious behavior
+
 ## 📚 Documentation
 
-- [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf) - Comprehensive economic model and tokenomics
+- [Technical Architecture Whitepaper](./docs/Fintradex_Parachain_%20Technical_Architecture_Whitepaper.pdf) - Comprehensive technical documentation
+- [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf) - Economic model and tokenomics
+- [Executive Summary Diagram](./docs/FintraDex_Executive_Summary_Diagram.png) - High-level architecture overview
 
 ## 🤝 Contributing
 
@@ -177,10 +253,13 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## 🌐 Links
 
-- **White Paper**: [White Paper](./docs/Fintradex_Economic_Litepaper_v1.pdf)
+- **Technical Architecture Whitepaper**: [Technical Whitepaper](./docs/Fintradex_Parachain_%20Technical_Architecture_Whitepaper.pdf)
+- **Economic Litepaper**: [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf)
 - **Website**: [https://fintradex.io/](https://fintradex.io/)
 - **Testnet Explorer**: [https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer](https://polkadot.js.org/apps/?rpc=wss%3A%2F%2Ftestnet.fintra.network#/explorer)
 - **Hyperbridge Documentation**: [https://docs.hyperbridge.network/](https://docs.hyperbridge.network/)
+- **RISC0 Documentation**: [https://risczero.com/](https://risczero.com/)
+- **Boundless Network**: [https://docs.boundless.network/](https://docs.boundless.network/)
 - **Discord**: [https://discord.gg/fintradex](https://discord.gg/fintradex)
 - **Twitter**: [https://twitter.com/fintradex](https://twitter.com/fintradex)
 - **Telegram**: [https://t.me/fintradex](https://t.me/fintradex)
