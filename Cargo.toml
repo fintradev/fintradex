@@ -1,6 +1,6 @@
 [workspace.package]
 license = "MIT-0"
-authors = ["FintradeX Team <team@fintradex.com>"]
+authors = ["FintraDex Team <dev@fintradex.io>"]
 homepage = "https://github.com/fintradev/fintradex"
 repository = "https://github.com/fintradev/fintradex.git"
 edition = "2021"
