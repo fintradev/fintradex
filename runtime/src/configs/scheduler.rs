@@ -1,6 +1,6 @@
-//! # FintradeX Scheduler Configuration
+//! # FintraDex Scheduler Configuration
 //!
-//! This module configures the scheduler system for the FintradeX parachain,
+//! This module configures the scheduler system for the FintraDex parachain,
 //! enabling delayed execution of transactions and automated operations.
 //!
 //! ## Features

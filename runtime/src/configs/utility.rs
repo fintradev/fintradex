@@ -1,6 +1,6 @@
-//! # FintradeX Utility Configuration
+//! # FintraDex Utility Configuration
 //!
-//! This module configures the utility pallet for the FintradeX parachain,
+//! This module configures the utility pallet for the FintraDex parachain,
 //! providing batch transaction processing and multi-signature operations.
 //!
 //! ## Features
