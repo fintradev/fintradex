@@ -239,7 +239,7 @@ FintraDex implements the Interoperability State Machine Protocol (ISMP) with a s
 
 ### ✅ Foundation Infrastructure (Current)
 **Q4 2024 - Q1 2025**
-- ✅ Substrate parachain runtime with 38+ pallets
+- ✅ Substrate parachain 
 - ✅ Hyperbridge & ISMP integration for cross-chain interoperability
 - ✅ Token Gateway for secure cross-chain asset transfers
 - ✅ Full EVM compatibility via Frontier
