@@ -110,7 +110,7 @@ fintradex-parachain/
 ├── runtime/                # Parachain runtime implementation
 │   ├── src/
 │   │   ├── lib.rs         # Runtime configuration and pallet integration
-│   │   ├── configs/       # 63+ pallet configurations
+│   │   ├── configs/       
 │   │   │   ├── evm.rs     # EVM pallet configuration
 │   │   │   ├── ethereum.rs # Ethereum compatibility
 │   │   │   ├── ismp.rs    # ISMP cross-chain protocol
@@ -134,7 +134,7 @@ fintradex-parachain/
 ```
 
 **Key Implementation Details:**
-- **Runtime Pallets**: [`runtime/src/configs/`](./runtime/src/configs/) - 38+ configured pallets for governance, assets, staking, and cross-chain
+- **Runtime Pallets**: [`runtime/src/configs/`](./runtime/src/configs/) - configured pallets for governance, assets, staking, and cross-chain
 - **EVM Integration**: [`runtime/src/configs/evm.rs`](./runtime/src/configs/evm.rs) & [`runtime/src/precompiles.rs`](./runtime/src/precompiles.rs)
 - **Cross-Chain (ISMP)**: [`runtime/src/configs/ismp.rs`](./runtime/src/configs/ismp.rs) - Hyperbridge, Token Gateway, ISMP protocol
 - **Governance**: [`runtime/src/configs/democracy.rs`](./runtime/src/configs/democracy.rs), [`runtime/src/configs/collective.rs`](./runtime/src/configs/collective.rs), [`runtime/src/configs/refrenda.rs`](./runtime/src/configs/refrenda.rs)
@@ -237,12 +237,12 @@ FintraDex implements the Interoperability State Machine Protocol (ISMP) with a s
 
 ## 🗺️ Development Roadmap
 
-### ✅ Foundation Infrastructure (Completed)
+### ✅ Foundation Infrastructure (Current)
 **Q4 2024 - Q1 2025**
 - ✅ Substrate parachain runtime with 38+ pallets
 - ✅ Hyperbridge & ISMP integration for cross-chain interoperability
 - ✅ Token Gateway for secure cross-chain asset transfers
-- ✅ Full EVM compatibility with Ethereum RPC support
+- ✅ Full EVM compatibility via Frontier
 - ✅ Advanced governance (Democracy, Council, Referenda, Treasury)
 - ✅ Asset management with liquidity pools and conversions
 - ✅ Staking infrastructure with nomination pools
@@ -465,6 +465,18 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [Parity Technologies](https://www.parity.io/) - The team behind Polkadot and Substrate
 - [Hyperbridge](https://docs.hyperbridge.network/) - Revolutionary crypto-economic coprocessor for secure cross-chain interoperability
 - [Polytope Labs](https://polytope.network/) - The team behind Hyperbridge protocol
+
+---
+
+## ⚖️ Legal Notice
+
+This is open-source software provided "as-is" under the Apache 2.0 license. No warranties are made regarding functionality, security, or fitness for any purpose. This documentation is for informational purposes only and does not constitute financial, investment, or legal advice.
+
+**Token Disclaimer**: Information regarding future token generation events, tokenomics, or economic models represents current plans and is subject to change. No tokens are currently available for purchase or sale.
+
+**Risk Warning**: Participation in blockchain networks and DeFi protocols involves substantial risk. Users should conduct their own research and consult qualified professionals before making any decisions.
+
+For official announcements, visit [fintradex.io](https://fintradex.io)
 
 ---
 
