@@ -102,7 +102,6 @@ polkadot-omni-node --chain ./chain_spec.json --dev
 
 Your parachain node is now running! 🎉
 
-For production deployment on Paseo testnet, see the [Deployment Guide](#parachain-deployment-on-paseo) below.
 
 ## 📁 Project Structure
 
@@ -329,7 +328,6 @@ For detailed tokenomics, distribution, and economic model, see our [Economic Lit
 
 - [Technical Architecture Whitepaper](./docs/Fintradex_Parachain_%20Technical_Architecture_Whitepaper.pdf) - Comprehensive technical documentation
 - [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf) - Economic model and tokenomics
-- [Executive Summary Diagram](./docs/FintraDex_Executive_Summary_Diagram.png) - High-level architecture overview
 
 ## 🚢 Parachain Deployment on Paseo
 
@@ -457,8 +455,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - **Hyperbridge Documentation**: [https://docs.hyperbridge.network/](https://docs.hyperbridge.network/)
 - **RISC0 Documentation**: [https://risczero.com/](https://risczero.com/)
 - **Boundless Network**: [https://docs.boundless.network/](https://docs.boundless.network/)
-- **Discord**: [https://discord.gg/fintradex](https://discord.gg/fintradex)
-- **Twitter**: [https://twitter.com/fintradex](https://twitter.com/fintradex)
+- **X**: [https://x.com/FintraDex](https://x.com/FintraDex)
 - **Telegram**: [https://t.me/fintradex](https://t.me/fintradex)
 
 ## 🙏 Acknowledgments
