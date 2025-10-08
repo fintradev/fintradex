@@ -181,54 +181,6 @@ FintraDex runtime is built on Substrate with comprehensive pallet configurations
 - **Contracts Pallet**: WebAssembly smart contract execution
 - **Precompiles**: Optimized cryptographic operations and DeFi primitives
 
-#### **Advanced Governance System**
-- **Democracy**: Direct democratic decision making
-- **Council**: Elected governance body
-- **Technical Committee**: Technical decision making authority
-- **Referenda**: Community voting on proposals
-- **Conviction Voting**: Weighted voting based on stake duration
-- **Treasury**: Community-controlled funding mechanism
-
-#### **Staking & Consensus**
-- **Staking**: Proof-of-stake consensus mechanism
-- **Collator Selection**: Parachain block production
-- **Nomination Pools**: Pooled staking for smaller participants
-- **Fast Unstake**: Quick unstaking mechanism
-- **Session Management**: Validator rotation and key management
-
-## 🌟 Current Features
-
-### 🔗 Cross-Chain Interoperability
-- **Hyperbridge Integration** ✅ - Cryptographic proof-based cross-chain communication
-- **ISMP Protocol** ✅ - Interoperability State Machine Protocol for trust-free operations
-- **Token Gateway** ✅ - Secure cross-chain asset transfers with cryptographic verification
-- **XCM Support** ✅ - Cross-Consensus Message format for Polkadot ecosystem
-
-### 🔗 EVM Compatibility
-- **Full EVM Support** ✅ - Run Ethereum smart contracts natively
-- **Ethereum RPC** ✅ - Compatible with MetaMask and existing Ethereum tools
-- **ERC-20 Tokens** ✅ - Native support for Ethereum token standards
-- **Precompiled Contracts** ✅ - Optimized cryptographic operations
-
-### 🏛️ Advanced Governance
-- **Democracy Pallet** ✅ - Direct community voting on proposals
-- **Council & Technical Committee** ✅ - Elected bodies for protocol decisions
-- **Referenda** ✅ - On-chain voting with conviction-weighted mechanisms
-- **Treasury** ✅ - Community-controlled funding for development
-- **Bounties & Grants** ✅ - Incentivize ecosystem contributions
-
-### 💰 Asset Management
-- **Multi-Asset Support** ✅ - Manage multiple asset types on-chain
-- **Asset Conversion** ✅ - Native liquidity pools and asset swaps
-- **Asset Rate Management** ✅ - Dynamic pricing and rate calculations
-- **Nomination Pools** ✅ - Pooled staking for network security
-
-### 🔐 Security & Infrastructure
-- **Staking & Collators** ✅ - Proof-of-stake consensus with collator selection
-- **Multi-Signature** ✅ - Advanced multisig operations for secure fund management
-- **Offence Handling** ✅ - Automated slashing for malicious behavior
-- **Session Management** ✅ - Validator rotation and key management
-
 ## 🌉 Hyperbridge Integration
 
 FintraDex leverages [Hyperbridge](https://docs.hyperbridge.network/) as a revolutionary crypto-economic coprocessor for secure cross-chain interoperability. This integration represents a paradigm shift from traditional multi-sig attestation networks to a trust-free, cryptographic proof-based system.
@@ -304,9 +256,7 @@ FintraDex implements the Interoperability State Machine Protocol (ISMP) with a s
 
 **Key Features:**
 - 🔄 **Non-Custodial Trading**: Connect your own wallet - you maintain full custody
-- 🔄 **Central Limit Orderbook (CLOB)**: Fast, efficient matching between buyers & sellers
 - 🔄 **Liquidity Aggregation**: Aggregates liquidity from other DEXs for smooth trading from day one
-- 🔄 **Professional Trading Experience**: CEX-like speed with DEX security
 - 🔄 **Token Generation Event (TGE)**: Late Q4 2025 - Launching Fintra token
 - 🔄 **Community Governance**: Enable token holders to participate in protocol decisions
 
@@ -325,7 +275,6 @@ FintraLite provides an excellent trading experience while we build the foundatio
 - 📋 **Boundless Network Integration**: High-performance order matching with cryptographic guarantees
 - 📋 **On-Chain Settlement**: Trustless settlement on Polkadot's Substrate framework
 - 📋 **ZK-Privacy Layer**: Enhanced privacy for trading while maintaining regulatory compliance
-- 📋 **Scalability**: Handle millions of orders per second with cryptographic verification
 
 **The Evolution:**  
 FintraLite → FintraDex represents our journey from a hybrid off-chain exchange to a fully decentralized, ZK-powered trading platform with the best of both worlds: CEX performance with DEX trustlessness.
@@ -346,13 +295,6 @@ The Fintra token powers the FintraDex ecosystem, enabling network security, gove
 - **Trading Fees**: Fee payment for orderbook trades and advanced features
 - **Liquidity Mining**: Rewards for providing liquidity to trading pairs
 - **Treasury Funding**: Community-controlled development and ecosystem grants
-
-### 📅 Token Generation Event (TGE)
-**Late Q4 2025** - The Fintra token will launch alongside mainnet deployment, enabling:
-- Community governance participation
-- Staking rewards for network security
-- Trading fee discounts for token holders
-- Ecosystem incentives and growth programs
 
 ### 📊 Current Phase (Paseo Testnet)
 - Testing economic models with testnet tokens
