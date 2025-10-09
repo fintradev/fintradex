@@ -1,4 +1,4 @@
-use crate::{
+/*use crate::{
 	Balance, Balances, BalancesCall, Perbill, RandomnessCollectiveFlip, Runtime, RuntimeCall,
 	RuntimeEvent, RuntimeHoldReason, Timestamp,
 };
@@ -91,4 +91,4 @@ impl pallet_contracts::Config for Runtime {
 
 	type UploadOrigin = EnsureSigned<Self::AccountId>;
 	type InstantiateOrigin = EnsureSigned<Self::AccountId>;
-}
+}*/

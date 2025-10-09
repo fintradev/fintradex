@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased 4.0.0]
+_Major upgrade with cross-chain messaging capabilities._
+
+### Added
+- **Hyperbridge Integration**: Integrated Hyperbridge protocol for secure cross-chain messaging and interoperability on Paseo Parachain.
+- ISMP (Interoperable State Machine Protocol) pallet configuration for cross-chain communication.
+- Enhanced cross-chain asset transfer capabilities via Hyperbridge.
+
+### Changed
+- Runtime upgraded to support Hyperbridge messaging infrastructure.
+- Updated parachain architecture to enable trustless cross-chain operations.
+
+---
+
 ## [Unreleased]
 ### Added
 - Repository docs: `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`.

@@ -4877,7 +4877,7 @@ dependencies = [
 
 [[package]]
 name = "fintradex-runtime"
-version = "0.1.0"
+version = "0.4.0"
 dependencies = [
  "anyhow",
  "assets-common",
@@ -4925,7 +4925,6 @@ dependencies = [
  "pallet-child-bounties",
  "pallet-collator-selection",
  "pallet-collective",
- "pallet-contracts",
  "pallet-conviction-voting",
  "pallet-core-fellowship",
  "pallet-democracy",
