@@ -1,8 +1,8 @@
 [package]
 name = "fintradex-runtime"
 description = "FintradeX Runtime - A decentralized financial trading parachain runtime built with Polkadot SDK. Features multi-asset trading, cross-chain interoperability, Ethereum compatibility, and advanced governance systems for the future of DeFi trading."
-version = "0.1.0"
-license = "Unlicense"
+version = "0.4.0"
+license = "MIT-0"
 authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
@@ -47,7 +47,7 @@ pallet-sudo.workspace = true
 pallet-timestamp.workspace = true
 pallet-transaction-payment-rpc-runtime-api.workspace = true
 pallet-transaction-payment.workspace = true
-pallet-contracts.workspace = true
+#pallet-contracts.workspace = true
 pallet-assets.workspace = true
 pallet-vesting.workspace = true
 pallet-bounties.workspace = true
@@ -214,7 +214,7 @@ std = [
 	"pallet-nomination-pools/std",
 	"pallet-nomination-pools-benchmarking/std",
 	"pallet-nomination-pools-runtime-api/std",
-	"pallet-contracts/std",
+	# "pallet-contracts/std",
 	"pallet-insecure-randomness-collective-flip/std",
 	"pallet-beefy/std",
 	"pallet-mmr/std",
@@ -293,7 +293,7 @@ std = [
 runtime-benchmarks = [
 	"hex-literal",
 	"polkadot-sdk/runtime-benchmarks",
-	"pallet-contracts/runtime-benchmarks",
+	# "pallet-contracts/runtime-benchmarks",
 	"ismp-parachain/runtime-benchmarks",
     "pallet-token-gateway/runtime-benchmarks",
 ]
@@ -301,7 +301,7 @@ runtime-benchmarks = [
 try-runtime = [
 	"cumulus-pallet-parachain-system/try-runtime",
 	"polkadot-sdk/try-runtime",
-	"pallet-contracts/try-runtime"
+	# "pallet-contracts/try-runtime"
 ]
 
 # Enable the metadata hash generation.

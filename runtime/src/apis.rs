@@ -30,12 +30,12 @@ use frame_support::{
 	traits::OnFinalize
 };
 use ethereum::AuthorizationList;
-use codec::{Decode, Encode};
+use codec::Encode;
 pub use sp_runtime::{Perbill, Permill,traits::{Dispatchable,UniqueSaturatedInto},AccountId32};
 use pallet_evm::{
 	Account as EVMAccount, EnsureAccountId20, FeeCalculator, IdentityAddressMapping, Runner,EnsureAddressRoot,EnsureAddressNever,HashedAddressMapping
 };
-use pallet_ethereum::{Call::transact, PostLogContent, Transaction as EthereumTransaction};
+use pallet_ethereum::{Call::transact, Transaction as EthereumTransaction};
 use fp_rpc::TransactionStatus;
 use pallet_aura::Authorities;
 use sp_api::impl_runtime_apis;
@@ -46,13 +46,7 @@ use sp_runtime::{
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
-use assets_common::{
-	foreign_creators::ForeignCreators,
-	local_and_foreign_assets::{LocalFromLeft, TargetFromLeft},
-	matching::{FromNetwork, FromSiblingParachain},
-};
-use crate::{
-	constants::currency::*,  Assets, Balances, PoolAssets, RuntimeEvent,OriginCaller,IsmpParachain,
+use crate::{RuntimeEvent,OriginCaller,IsmpParachain,
 	staging_xcm::prelude::{XcmVersion,VersionedLocation,VersionedXcm,VersionedAssetId,
 		VersionedAssets,AssetId},common::xcm_config_common,configs::{xcm_config::{XcmRouter,XcmConfig,FintraLocation}}
 };

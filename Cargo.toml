@@ -87,7 +87,7 @@ sp-externalities = {version = "0.30.0", default-features = false }
 sp-state-machine = {version = "0.46.0", default-features = false }
 
 # Frame pallets
-pallet-contracts = {version="41.0.0", default-features = false}
+# pallet-contracts = {version="41.0.0", default-features = false}
 pallet-transaction-payment = {version = "41.0.0", default-features = false }
 pallet-transaction-payment-rpc = {version = "44.0.0",default-features = false }
 pallet-scheduler={version = "42.0.0",default-features = false}
