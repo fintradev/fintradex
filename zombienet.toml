@@ -1,5 +1,5 @@
 [relaychain]
-default_command = "polkadot"
+default_command = "./target/polkadot"
 chain = "rococo-local"
 
 [[relaychain.nodes]]
@@ -18,4 +18,4 @@ id = 1000
 [parachains.collator]
 name = "charlie"
 ws_port = 9988
-command = "parachain-template-node"
+command = "./target/release/"
