@@ -115,8 +115,7 @@ fintradex-parachain/
 │   │   │   ├── ethereum.rs # Ethereum compatibility
 │   │   │   ├── ismp.rs    # ISMP cross-chain protocol
 │   │   │   ├── xcm_config.rs # XCM configuration
-│   │   │   ├── staking.rs # Staking configuration
-│   │   │   ├── democracy.rs # Governance configuration
+│   │   │   ├── refrenda.rs # OpenGov v2 referenda configuration
 │   │   │   └── ...        # Asset management, Treasury, etc.
 │   │   ├── precompiles.rs # EVM precompiled contracts
 │   │   └── weights/       # Performance benchmarks
@@ -137,7 +136,7 @@ fintradex-parachain/
 - **Runtime Pallets**: [`runtime/src/configs/`](./runtime/src/configs/) - configured pallets for governance, assets, staking, and cross-chain
 - **EVM Integration**: [`runtime/src/configs/evm.rs`](./runtime/src/configs/evm.rs) & [`runtime/src/precompiles.rs`](./runtime/src/precompiles.rs)
 - **Cross-Chain (ISMP)**: [`runtime/src/configs/ismp.rs`](./runtime/src/configs/ismp.rs) - Hyperbridge, Token Gateway, ISMP protocol
-- **Governance**: [`runtime/src/configs/democracy.rs`](./runtime/src/configs/democracy.rs), [`runtime/src/configs/collective.rs`](./runtime/src/configs/collective.rs), [`runtime/src/configs/refrenda.rs`](./runtime/src/configs/refrenda.rs)
+- **Governance**: [`runtime/src/configs/refrenda.rs`](./runtime/src/configs/refrenda.rs), [`runtime/src/configs/ranked.rs`](./runtime/src/configs/ranked.rs), [`runtime/src/configs/fellowship.rs`](./runtime/src/configs/fellowship.rs), [`runtime/src/configs/treasury.rs`](./runtime/src/configs/treasury.rs)
 - **Asset Management**: [`runtime/src/configs/assets.rs`](./runtime/src/configs/assets.rs), [`runtime/src/configs/asset_conversion.rs`](./runtime/src/configs/asset_conversion.rs)
 
 ## 🏗️ Architecture
@@ -154,9 +153,9 @@ The FintraDex parachain currently includes:
 
 - 🌉 **Hyperbridge Integration** ✅ - Crypto-economic coprocessor for secure cross-chain interoperability
 - 🔗 **EVM Compatibility** ✅ - Full Ethereum Virtual Machine compatibility for seamless DeFi integration
-- 🏛️ **Advanced Governance** ✅ - Democracy, councils, referenda, and treasury management
+- 🏛️ **OpenGov v2 Governance** ✅ - Advanced governance with referenda, ranked collective, and fellowship
 - 💰 **Asset Management** ✅ - Multi-asset support with liquidity pools and asset conversion
-- 🔐 **Staking & Security** ✅ - Nomination pools, collator selection, and offence handling
+- 🔐 **Security & Consensus** ✅ - Collator selection, and offence handling
 
 ### 🔧 Technical Implementation
 
@@ -243,9 +242,8 @@ FintraDex implements the Interoperability State Machine Protocol (ISMP) with a s
 - ✅ Hyperbridge & ISMP integration for cross-chain interoperability
 - ✅ Token Gateway for secure cross-chain asset transfers
 - ✅ Full EVM compatibility via Frontier
-- ✅ Advanced governance (Democracy, Council, Referenda, Treasury)
+- ✅ OpenGov v2 governance (Referenda, Ranked Collective, Fellowship, Treasury)
 - ✅ Asset management with liquidity pools and conversions
-- ✅ Staking infrastructure with nomination pools
 - ✅ Paseo testnet deployment (live)
 
 ### 🚀 Phase 1: FintraLite Launch
@@ -297,9 +295,9 @@ The Fintra token powers the FintraDex ecosystem, enabling network security, gove
 
 ### 📊 Current Phase (Paseo Testnet)
 - Testing economic models with testnet tokens
-- Governance mechanisms (Democracy, Council, Treasury)
-- Staking infrastructure with nomination pools
+- OpenGov v2 governance mechanisms (Referenda, Ranked Collective, Treasury)
 - Cross-chain fee structures via ISMP/Hyperbridge
+- Merit-based governance with fellowship rankings
 
 For detailed tokenomics, distribution, and economic model, see our [Economic Litepaper](./docs/Fintradex_Economic_Litepaper_v1.pdf).
 

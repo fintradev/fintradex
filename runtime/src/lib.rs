@@ -63,7 +63,7 @@ use sp_core::{crypto::KeyTypeId, OpaqueMetadata,H160,U256,H256,Get};
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 use codec::{Decode, Encode};
-use pallet_session::historical as pallet_session_historical;
+//use pallet_session::historical as pallet_session_historical;
 use frame_support::{weights::{
 	constants::WEIGHT_REF_TIME_PER_SECOND, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
 	WeightToFeePolynomial
@@ -240,7 +240,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
 	impl_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
 	authoring_version: 1,
-	spec_version: 4,
+	spec_version: 5,
 	impl_version: 0,
 	apis: apis::RUNTIME_API_VERSIONS,
 	transaction_version: 1,
@@ -468,8 +468,8 @@ mod runtime {
 	#[runtime::pallet_index(10)]
 	pub type CoreFellowship = pallet_core_fellowship::Pallet<Runtime>;
 
-	#[runtime::pallet_index(11)]
-	pub type VoterList = pallet_bags_list::Pallet<Runtime, Instance1>;
+	//#[runtime::pallet_index(11)]
+	//pub type VoterList = pallet_bags_list::Pallet<Runtime, Instance1>;
 
 	#[runtime::pallet_index(12)]
 	pub type ChildBounties = pallet_child_bounties::Pallet<Runtime>;
@@ -483,8 +483,8 @@ mod runtime {
 	#[runtime::pallet_index(16)]
 	pub type Sudo = pallet_sudo;
 
-	#[runtime::pallet_index(17)]
-	pub type ImOnline = pallet_im_online::Pallet<Runtime>;
+	//#[runtime::pallet_index(17)]
+	//pub type ImOnline = pallet_im_online::Pallet<Runtime>;
 
 	#[runtime::pallet_index(18)]
 	pub type AssetConversion = pallet_asset_conversion::Pallet<Runtime>;
@@ -502,8 +502,8 @@ mod runtime {
 	#[runtime::pallet_index(23)]
 	pub type RankedCollective = pallet_ranked_collective::Pallet<Runtime>;
 
-	#[runtime::pallet_index(24)]
-	pub type FastUnstake = pallet_fast_unstake::Pallet<Runtime>;
+	//#[runtime::pallet_index(24)]
+	//pub type FastUnstake = pallet_fast_unstake::Pallet<Runtime>;
 
 	#[runtime::pallet_index(25)]
 	pub type Multisig = pallet_multisig::Pallet<Runtime>;
@@ -514,23 +514,23 @@ mod runtime {
 	#[runtime::pallet_index(27)]
 	pub type Broker = pallet_broker::Pallet<Runtime>;
 
-	#[runtime::pallet_index(28)]
-	pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase::Pallet<Runtime>;
+	//#[runtime::pallet_index(28)]
+	//pub type ElectionProviderMultiPhase = pallet_election_provider_multi_phase::Pallet<Runtime>;
 
-	#[runtime::pallet_index(29)]
-	pub type Staking = pallet_staking::Pallet<Runtime>;
+	//#[runtime::pallet_index(29)]
+	//pub type Staking = pallet_staking::Pallet<Runtime>;
 	#[runtime::pallet_index(30)]
 	pub type Session = pallet_session;
-	#[runtime::pallet_index(31)]
-	pub type Democracy = pallet_democracy::Pallet<Runtime>;
-	#[runtime::pallet_index(32)]
-	pub type Council = pallet_collective::Pallet<Runtime, Instance1>;
+	//#[runtime::pallet_index(31)]
+	//pub type Democracy = pallet_democracy::Pallet<Runtime>;
+	//#[runtime::pallet_index(32)]
+	//pub type Council = pallet_collective::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(33)]
-	pub type TechnicalMembership = pallet_membership::Pallet<Runtime, Instance1>;
+	//#[runtime::pallet_index(33)]
+	//pub type TechnicalMembership = pallet_membership::Pallet<Runtime, Instance1>;
 
-	#[runtime::pallet_index(34)]
-	pub type TechnicalCommittee = pallet_collective::Pallet<Runtime, Instance2>;
+	//#[runtime::pallet_index(34)]
+	//pub type TechnicalCommittee = pallet_collective::Pallet<Runtime, Instance2>;
 
 	#[runtime::pallet_index(35)]
 	pub type Preimage = pallet_preimage::Pallet<Runtime>;
@@ -563,8 +563,8 @@ mod runtime {
 	#[runtime::pallet_index(45)]
 	pub type ConvictionVoting = pallet_conviction_voting::Pallet<Runtime>;
 
-	#[runtime::pallet_index(46)]
-	pub type NominationPools = pallet_nomination_pools::Pallet<Runtime>;
+	//#[runtime::pallet_index(46)]
+	//pub type NominationPools = pallet_nomination_pools::Pallet<Runtime>;
 
 	#[runtime::pallet_index(47)]
 	pub type RandomnessCollectiveFlip = pallet_insecure_randomness_collective_flip::Pallet<Runtime>;
@@ -580,20 +580,20 @@ mod runtime {
 	#[runtime::pallet_index(51)]
 	pub type BaseFee = pallet_base_fee::Pallet<Runtime>;
 
-	#[runtime::pallet_index(52)]
-	pub type Beefy = pallet_beefy::Pallet<Runtime>;
+	//#[runtime::pallet_index(52)]
+	//pub type Beefy = pallet_beefy::Pallet<Runtime>;
 
-	#[runtime::pallet_index(53)]
-	pub type Mmr = pallet_mmr::Pallet<Runtime>;
+	//#[runtime::pallet_index(53)]
+	//pub type Mmr = pallet_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(54)]
-	pub type MmrLeaf = pallet_beefy_mmr::Pallet<Runtime>;
+	//#[runtime::pallet_index(54)]
+	//pub type MmrLeaf = pallet_beefy_mmr::Pallet<Runtime>;
 
-	#[runtime::pallet_index(55)]
-	pub type Offences = pallet_offences::Pallet<Runtime>;
+	//#[runtime::pallet_index(55)]
+	//pub type Offences = pallet_offences::Pallet<Runtime>;
 
-	#[runtime::pallet_index(56)]
-	pub type Historical = pallet_session_historical::Pallet<Runtime>;
+	//#[runtime::pallet_index(56)]
+	//pub type Historical = pallet_session_historical::Pallet<Runtime>;
 
 	#[runtime::pallet_index(57)]
 	pub type AssetConversionMigration = pallet_asset_conversion_ops::Pallet<Runtime>;

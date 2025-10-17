@@ -19,7 +19,7 @@
 //!
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 
-use crate::configs::collective::CouncilCollective;
+//use crate::configs::collective::CouncilCollective;
 use crate::{
 	constants::{currency::*, time::*},
 	AccountId, AssetRate, Assets, Balance, Balances, BlockNumber, Bounties, Indices, PalletId,
@@ -27,11 +27,12 @@ use crate::{
 };
 use frame_support::{
 	parameter_types,
-	traits::{tokens::pay::PayAssetFromAccount, EitherOfDiverse},
+	traits::{tokens::pay::PayAssetFromAccount, EitherOfDiverse, ConstU32, ConstU16},
 };
 use frame_system::Pallet as System;
 use frame_system::{EnsureRoot, EnsureWithSuccess};
 use sp_runtime::{Percent, Permill};
+use pallet_ranked_collective::EnsureMember;
 parameter_types! {
 	pub const SpendPeriod: BlockNumber = DAYS;
 	pub const Burn: Permill = Permill::from_percent(50);
@@ -56,9 +57,15 @@ impl pallet_treasury::Config for Runtime {
 		EnsureRoot<AccountId>,
 		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 3, 5>,
 	>;*/
+//	type RejectOrigin = EitherOfDiverse<
+//		EnsureRoot<AccountId>,
+//		pallet_collective::EnsureProportionMoreThan<AccountId, CouncilCollective, 1, 2>,
+//	>;
+//type RejectOrigin = EnsureRoot<AccountId>;
 	type RejectOrigin = EitherOfDiverse<
 		EnsureRoot<AccountId>,
-		pallet_collective::EnsureProportionMoreThan<AccountId, CouncilCollective, 1, 2>,
+		// Allow treasury proposals to be rejected by ranked collective members (rank 5+)
+		EnsureMember<Runtime, (), 5>
 	>;
 	type RuntimeEvent = RuntimeEvent;
 	type SpendPeriod = SpendPeriod;
