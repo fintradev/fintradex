@@ -19,12 +19,10 @@
 //!
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 
-use crate::{
-    Runtime, RuntimeEvent,RuntimeCall,OriginCaller
-};
+use crate::{OriginCaller, Runtime, RuntimeCall, RuntimeEvent};
 impl pallet_utility::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type RuntimeCall = RuntimeCall;
-	type PalletsOrigin = OriginCaller;
-	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
+    type RuntimeEvent = RuntimeEvent;
+    type RuntimeCall = RuntimeCall;
+    type PalletsOrigin = OriginCaller;
+    type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }

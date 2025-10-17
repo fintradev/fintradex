@@ -1,0 +1,201 @@
+{
+  "bootNodes": [],
+  "chainType": "Live",
+  "codeSubstitutes": {},
+  "genesis": {
+    "runtimeGenesis": {
+
+      "patch": {
+        "assets": {
+          "accounts": [],
+          "assets": [],
+          "metadata": [],
+          "nextAssetId": null
+        },
+        "aura": {
+          "authorities": []
+        },
+        "auraExt": {},
+        "balances": {
+          "balances": [
+            [
+              "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+              100000000000000000000000000
+            ],
+            // Public IDO - 100M FINT (20%) - Immediate release at TGE
+            [
+              "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+              50000000000000000000000000
+            ],
+            // Genesis Airdrop - 50M FINT (10%) - Immediate release at TGE
+            [
+              "5DAAnrj7VHTznn2AWBemMuyBwZWs6FUkjymVckp3paQ7jQkp",
+              30000000000000000000000000
+            ],
+            // Liquidity Programs - 30M FINT (6%) - Immediate release at TGE
+            [
+              "5HmRfdgcuVDeHKdHaKU7fgxvhsLimKsN4vrHivvk6nxUi7ag",
+              60000000000000000000000000
+            ],
+            // Airdrop Season 1 - 60M FINT (12%) - Locked until Month 3, distributed via points system
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              60000000000000000000000000
+            ],
+            // Airdrop Season 2 - 60M FINT (12%) - Locked until Month 6, distributed via points system
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              60000000000000000000000000
+            ],
+            // Advisors & Marketing - 25M FINT (5%) - 6 month cliff, 12 month linear vesting
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              25000000000000000000000000
+            ],
+            // Team & Founders - 50M FINT (10%) - 12 month cliff, 36 month linear vesting
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              50000000000000000000000000
+            ],
+            // Development Pool - 50M FINT (10%) - 12 month cliff, 36 month linear vesting
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              50000000000000000000000000
+            ],
+            // Treasury Reserve - 75M FINT (15%) - 12 month cliff, 36 month linear vesting
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              75000000000000000000000000
+            ]
+            // Treasury Reserve - 75M FINT (15%) - 12 month cliff, 36 month linear vesting
+          ],
+          "devAccounts": null
+        },
+        "baseFee": {
+          "baseFeePerGas": "0x7735940",  // 0.12 gwei
+          "elasticity": 1250
+        },
+        "collatorSelection": {
+          "candidacyBond": 1000000000000,
+          "desiredCandidates": 32,
+          "invulnerables": [
+            "5CG5U6xjiTQdSWEZLLUkCu8qdFiri3dvmtqYRihBr6H4vEzb"
+          ]
+        },
+        "ethereum": {},
+        "evm": {
+          "accounts": {}
+        },
+        "evmChainId": {
+          "chainId": 0
+        },
+        "indices": {
+          "indices": []
+        },
+        "ismpParachain": {
+          "parachains": []
+        },
+        "parachainInfo": {
+          "parachainId": 1000
+        },
+        "parachainSystem": {},
+        "polkadotXcm": {
+          "safeXcmVersion": 5
+        },
+        "poolAssets": {
+          "accounts": [],
+          "assets": [],
+          "metadata": [],
+          "nextAssetId": null
+        },
+        "session": {
+          "keys": [
+            [
+              "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+              "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+              {
+                "aura": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+              }
+            ],
+            [
+              "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+              "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+              {
+                "aura": "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
+              }
+            ]
+          ],
+          "nonAuthorityKeys": []
+        },
+        "sudo": {
+          "key": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+        },
+        "system": {},
+        "transactionPayment": {
+          "multiplier": "1000000000000000000"
+          // Fee multiplier for transaction payment (1e18 = 1.0)
+          // This is the initial value for the targeted fee adjustment mechanism
+          // Values > 1.0 increase fees during network congestion, < 1.0 decrease during low usage
+          // Standard starting value that provides neutral fee adjustment at genesis
+        },
+        "treasury": {},
+        "vesting": {
+          "vesting": [
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              2592000,
+              15552000,
+              25000000000000000000000000
+            ],
+            // Advisors & Marketing - 25M FINT - 6 month cliff (2,592,000 blocks), 12 month vesting (15,552,000 blocks total)
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              5184000,
+              15552000,
+              50000000000000000000000000
+            ],
+            // Team & Founders - 50M FINT - 12 month cliff (5,184,000 blocks), 36 month vesting (15,552,000 blocks total)
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              5184000,
+              15552000,
+              50000000000000000000000000
+            ],
+            // Development Pool - 50M FINT - 12 month cliff (5,184,000 blocks), 36 month vesting (15,552,000 blocks total)
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              5184000,
+              15552000,
+              75000000000000000000000000
+            ],
+            // Treasury Reserve - 75M FINT - 12 month cliff (5,184,000 blocks), 36 month vesting (15,552,000 blocks total)
+            [
+              "5HmRfdgcuVDeHKdHaKU7fgxvhsLimKsN4vrHivvk6nxUi7ag",
+              2592000,
+              0,
+              60000000000000000000000000
+            ],
+            // Airdrop Season 1 - 60M FINT - 3 month cliff (2,592,000 blocks), immediate release (0 blocks vesting)
+            [
+              "5C4hrfjw9DjXZTzV3MwzrrAr9P1MJhSrvWGWqi1eSuyUpnhM",
+              5184000,
+              0,
+              60000000000000000000000000
+            ]
+            // Airdrop Season 2 - 60M FINT - 6 month cliff (5,184,000 blocks), immediate release (0 blocks vesting)
+          ]
+        }
+      }
+    }
+  },
+  "id": "FintraDex",
+  "name": "FintraDex",
+  "para_id": 4910,
+  "properties": {
+    "tokenDecimals": 12,
+    "tokenSymbol": "FINT"
+  },
+  "protocolId": "fintradex",
+  "relay_chain": "paseo",
+  "telemetryEndpoints": null
+}
