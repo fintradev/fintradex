@@ -1,0 +1,71 @@
+# Rust build directory
+/target/
+/data/
+target/
+data/
+# Rust generated files
+**/*.rs.bk
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Debug files
+*.pdb
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Testing
+/coverage/
+.nyc_output/
+
+# Production build
+/build/
+/dist/
+
+# Misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Polkadot specific
+/chain-data/
+/keystore/
+/network/
+/chains/
+
+# WASM build directory
+/wasm/target/
+
+# Substrate specific
+/substrate/target/
+/substrate/wasm/target/
+
+# Documentation
+/docs/_build/
+/docs/_static/
+/docs/_templates/
+
+# Temporary files
+*.tmp
+*.temp
+.cargo-ok
