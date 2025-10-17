@@ -12,10 +12,9 @@ use pallet_ismp::fee_handler::WeightFeeHandler;
 use alloc::vec::Vec;
 use alloc::boxed::Box;
 use crate::{
-    AccountId,Balances,Balance,BlockNumber,Timestamp,ElectionProviderMultiPhase, 
-    Runtime, RuntimeEvent,RuntimeFreezeReason,RuntimeHoldReason,Treasury,NominationPools,VoterList,
-	Session,IsmpParachain,Ismp,constants::{currency::*},Weight,TokenGateway,Assets,
-    configs::technical_collective::TechnicalCollective
+    AccountId,Balances,Balance,BlockNumber,Timestamp,
+    Runtime, RuntimeEvent,RuntimeFreezeReason,RuntimeHoldReason,Treasury,
+	Session,IsmpParachain,Ismp,constants::{currency::*},Weight,TokenGateway,Assets
 };
 
 

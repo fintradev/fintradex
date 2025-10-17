@@ -22,42 +22,40 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 //
 // For more information, please refer to <http://unlicense.org>
-use crate::{Staking};
+//use crate::{Staking};
 pub mod xcm_config;
 mod asset_conversion;
 mod asset_rate;
 mod assets;
 mod bag_list;
 mod base_fee;
-mod beefy;
+
 mod bounties;
 mod child_bounties;
-mod collective;
+
 mod contracts;
-mod election;
+
 mod ethereum;
 mod evm;
 mod fellowship;
-mod im_online;
+
 mod indices;
-mod membership;
-mod mmr;
+
 mod multisig;
-mod nomination_pool;
+
 mod parameter;
 mod preimage;
 mod ranked;
 mod refrenda;
 mod salary;
 mod scheduler;
-mod staking;
-mod technical_collective;
+
 mod treasury;
 mod utility;
 mod vesting;
 mod voting;
 mod whitelist;
-mod democracy;
+
 mod broker;
 mod ismp;
 
@@ -177,11 +175,11 @@ impl pallet_authorship::Config for Runtime {
 	type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
 	type EventHandler = (CollatorSelection,);
 }
-impl pallet_offences::Config for Runtime {
+/*impl pallet_offences::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
 	type OnOffenceHandler = Staking;
-}
+}*/
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 impl pallet_evm_chain_id::Config for Runtime {}
 impl cumulus_pallet_weight_reclaim::Config for Runtime {
@@ -319,11 +317,11 @@ impl pallet_session::Config for Runtime {
 	type WeightInfo = ();
 	type DisablingStrategy = ();
 }
-impl pallet_session::historical::Config for Runtime {
+/*impl pallet_session::historical::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type FullIdentification = pallet_staking::Exposure<AccountId, Balance>;
 	type FullIdentificationOf = pallet_staking::ExposureOf<Runtime>;
-}
+}*/
 #[docify::export(aura_config)]
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;
