@@ -4915,28 +4915,20 @@ dependencies = [
  "pallet-aura",
  "pallet-authority-discovery",
  "pallet-authorship",
- "pallet-bags-list",
  "pallet-balances",
  "pallet-base-fee",
- "pallet-beefy",
- "pallet-beefy-mmr",
  "pallet-bounties",
- "pallet-broker",
  "pallet-child-bounties",
  "pallet-collator-selection",
- "pallet-collective",
  "pallet-conviction-voting",
  "pallet-core-fellowship",
- "pallet-democracy",
  "pallet-dynamic-fee",
- "pallet-election-provider-multi-phase",
  "pallet-ethereum",
  "pallet-evm",
  "pallet-evm-chain-id",
  "pallet-evm-precompile-modexp",
  "pallet-evm-precompile-sha3fips",
  "pallet-evm-precompile-simple",
- "pallet-fast-unstake",
  "pallet-grandpa",
  "pallet-hyperbridge",
  "pallet-im-online",
@@ -4945,13 +4937,7 @@ dependencies = [
  "pallet-ismp",
  "pallet-ismp-runtime-api",
  "pallet-membership",
- "pallet-mmr",
  "pallet-multisig",
- "pallet-nomination-pools",
- "pallet-nomination-pools-benchmarking",
- "pallet-nomination-pools-runtime-api",
- "pallet-offences",
- "pallet-offences-benchmarking",
  "pallet-parameters",
  "pallet-preimage",
  "pallet-ranked-collective",
@@ -4961,8 +4947,6 @@ dependencies = [
  "pallet-session",
  "pallet-session-benchmarking",
  "pallet-skip-feeless-payment",
- "pallet-staking",
- "pallet-staking-reward-curve",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-token-gateway",
@@ -10982,18 +10966,6 @@ dependencies = [
  "parity-scale-codec",
  "sp-api",
  "sp-staking",
-]
-
-[[package]]
-name = "pallet-staking-reward-curve"
-version = "12.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db5e6b1d8ee9d3f6894c5abd8c3e17737ed738c9854f87bfd16239741b7f4d5d"
-dependencies = [
- "proc-macro-crate 3.4.0",
- "proc-macro2",
- "quote",
- "syn 2.0.106",
 ]
 
 [[package]]

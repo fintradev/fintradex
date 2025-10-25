@@ -8,31 +8,79 @@ use crate::{
     Balances, Runtime, RuntimeEvent,
 };
 use frame_support::{
-    instances::{Instance1, Instance2},
+    instances::{Instance1, Instance2},error::BadOrigin,
     ord_parameter_types, parameter_types,
-    traits::{AsEnsureOriginWithArg, ConstU128, ConstU32},
+    traits::{ConstU128, ConstU32,EnsureOriginWithArg},PalletId
 };
-use frame_system::{EnsureRoot, EnsureSignedBy};
+use frame_system::{EnsureRoot,pallet_prelude::OriginFor};
 use scale_info::prelude::vec;
 use sp_runtime::traits::AccountIdConversion;
-use sp_runtime::AccountId32;
+// Optional: a deterministic sentinel AccountId to return as Success.
+// (pallet-assets ignores the Success value for create(); admin comes from call args.)
 parameter_types! {
-    pub const AssetDeposit: Balance = 100 * DOLLARS;
-    pub const ApprovalDeposit: Balance = DOLLARS;
-    pub const StringLimit: u32 = 50;
-    pub const MetadataDepositBase: Balance = 10 * DOLLARS;
-    pub const MetadataDepositPerByte: Balance = DOLLARS;
+    pub const RootSentinelPid: PalletId = PalletId(*b"rtsntl__");
 }
+#[inline]
+fn root_sentinel_account() -> AccountId {
+    RootSentinelPid::get().into_account_truncating()
+}
+
+// --- Root-only origin that ignores the AssetId arg and returns an AccountId Success ---
+pub struct EnsureRootWithAdminRuntime;
+
+// Argument = AssetId (u32), Success = AccountId
+impl EnsureOriginWithArg<OriginFor<Runtime>, u32> for EnsureRootWithAdminRuntime {
+    type Success = AccountId;
+
+    // try_origin must return Result<Success, OriginFor<Runtime>>
+    fn try_origin(
+        origin: OriginFor<Runtime>,
+        _asset_id: &u32, // required by trait; not used
+    ) -> Result<Self::Success, OriginFor<Runtime>> {
+        // FRAME 41 EnsureRoot (WithArg form) needs a dummy arg: &()
+        EnsureRoot::<AccountId>::try_origin(origin, &()).map(|_| root_sentinel_account())
+    }
+
+    // ensure_origin must return Result<Success, BadOrigin>
+    fn ensure_origin(
+        origin: OriginFor<Runtime>,
+        _asset_id: &u32,
+    ) -> Result<Self::Success, BadOrigin> {
+        EnsureRoot::<AccountId>::ensure_origin(origin, &()).map(|_| root_sentinel_account())
+    }
+}
+parameter_types! {
+    pub const AssetDeposit: Balance = 10 * DOLLARS;
+    pub const ApprovalDeposit: Balance = 1 * DOLLARS;
+    pub const StringLimit: u32 = 128;
+    pub const MetadataDepositBase: Balance = 1 * DOLLARS;
+    pub const MetadataDepositPerByte: Balance = 1 * CENTS;
+    pub const AssetsAdminPalletId: PalletId = PalletId(*b"ft/admin");
+}
+ord_parameter_types! {
+    pub const AssetsAdmin: AccountId = {
+        // 👇 force the type so the macro stops guessing
+        let acc: AccountId =
+            <PalletId as AccountIdConversion<AccountId>>
+                ::into_account_truncating(&AssetsAdminPalletId::get());
+        acc
+    };
+}
+type RuntimeBalance = <Runtime as pallet_balances::Config>::Balance;
 impl pallet_assets::Config<Instance1> for Runtime {
     type RuntimeEvent = RuntimeEvent;
-    type Balance = <Runtime as pallet_balances::Config>::Balance;
+    type Balance = RuntimeBalance;
     type AssetId = u32;
     type Currency = Balances;
     type AssetIdParameter = codec::Compact<u32>;
     type Holder = ();
-    type CreateOrigin =
-        frame_support::traits::AsEnsureOriginWithArg<frame_system::EnsureSigned<AccountId32>>;
-    type ForceOrigin = frame_system::EnsureRoot<u64>;
+    //type CreateOrigin = EnsureRoot<AccountId>;
+    //This is for later versions
+    type CreateOrigin =EnsureRootWithAdminRuntime;
+    //type CreateOrigin =
+      // frame_system::EnsureSigned<AccountId>;
+    //type ForceOrigin = frame_system::EnsureRoot<u64>;
+    type ForceOrigin = EnsureRoot<AccountId>; 
     type AssetDeposit = AssetDeposit;
     type AssetAccountDeposit = ConstU128<DOLLARS>;
     type MetadataDepositBase = MetadataDepositBase;
@@ -42,7 +90,7 @@ impl pallet_assets::Config<Instance1> for Runtime {
     type Freezer = ();
     type Extra = ();
     type WeightInfo = pallet_assets::weights::SubstrateWeight<Runtime>;
-    type RemoveItemsLimit = frame_support::traits::ConstU32<1000>;
+    type RemoveItemsLimit = frame_support::traits::ConstU32<10_000>;
     type CallbackHandle = ();
 }
 ord_parameter_types! {
@@ -50,14 +98,16 @@ ord_parameter_types! {
 }
 impl pallet_assets::Config<Instance2> for Runtime {
     type RuntimeEvent = RuntimeEvent;
-    type Balance = u128;
+    //type Balance = u128;
+    type Balance = RuntimeBalance;
     type AssetId = u32;
     type AssetIdParameter = codec::Compact<u32>;
     type Currency = Balances;
-    type CreateOrigin = AsEnsureOriginWithArg<EnsureSignedBy<AssetConversionOrigin, AccountId>>;
+    type CreateOrigin = EnsureRootWithAdminRuntime;
+    //type CreateOrigin = AsEnsureOriginWithArg<EnsureSignedBy<AssetConversionOrigin, AccountId>>;
     type ForceOrigin = EnsureRoot<AccountId>;
     type AssetDeposit = AssetDeposit;
-    type AssetAccountDeposit = ConstU128<DOLLARS>;
+    type AssetAccountDeposit = ConstU128<{DOLLARS/10}>;
     type MetadataDepositBase = MetadataDepositBase;
     type MetadataDepositPerByte = MetadataDepositPerByte;
     type ApprovalDeposit = ApprovalDeposit;
@@ -65,7 +115,7 @@ impl pallet_assets::Config<Instance2> for Runtime {
     type Freezer = ();
     type Extra = ();
     type WeightInfo = pallet_assets::weights::SubstrateWeight<Runtime>;
-    type RemoveItemsLimit = ConstU32<1000>;
+    type RemoveItemsLimit = ConstU32<10_000>;
     type CallbackHandle = ();
     type Holder = ();
     #[cfg(feature = "runtime-benchmarks")]

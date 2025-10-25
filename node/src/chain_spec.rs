@@ -65,7 +65,7 @@ pub fn template_session_keys(keys: AuraId) -> fintradex_runtime::SessionKeys {
 pub fn development_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "Fintra".into());
+    properties.insert("tokenSymbol".into(), "Fint".into());
     properties.insert("tokenDecimals".into(), 12.into());
     properties.insert("ss58Format".into(), 42.into());
 
@@ -223,20 +223,6 @@ fn testnet_genesis(
                 .cloned()
                 .map(|k| (k, 1 << 60))
                 .collect(),
-        },
-        council: fintradex_runtime::CouncilConfig {
-            phantom: PhantomData,
-            members: endowed_accounts
-                .iter()
-                .enumerate()
-                .filter_map(|(idx, acc)| {
-                    if idx % 2 == 0 {
-                        Some(acc.clone())
-                    } else {
-                        None
-                    }
-                })
-                .collect::<Vec<_>>(),
         },
         parachain_info: fintradex_runtime::ParachainInfoConfig {
             parachain_id: id,
