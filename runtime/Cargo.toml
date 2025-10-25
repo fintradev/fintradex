@@ -28,7 +28,7 @@ polkadot-sdk = { workspace = true, features = ["cumulus-pallet-aura-ext", "cumul
  "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", 
  "pallet-xcm", "parachains-common", "polkadot-parachain-primitives", "polkadot-runtime-common", 
  "runtime", "staging-parachain-info", "staging-xcm", 
- "staging-xcm-builder", "staging-xcm-executor","cumulus-pallet-weight-reclaim","pallet-broker","pallet-democracy"], default-features = false }
+ "staging-xcm-builder", "staging-xcm-executor","cumulus-pallet-weight-reclaim"], default-features = false }
 cumulus-pallet-parachain-system.workspace = true
 
 frame-benchmarking = { optional = true, workspace = true }
@@ -62,7 +62,6 @@ pallet-preimage.workspace = true
 pallet-parameters.workspace = true
 pallet-skip-feeless-payment.workspace = true
 pallet-whitelist.workspace = true
-pallet-collective.workspace = true
 pallet-conviction-voting.workspace = true
 pallet-scheduler.workspace = true
 pallet-referenda.workspace = true
@@ -71,21 +70,11 @@ pallet-treasury.workspace = true
 pallet-salary.workspace = true
 pallet-ranked-collective.workspace = true
 pallet-core-fellowship.workspace = true
-pallet-election-provider-multi-phase.workspace = true
-pallet-bags-list.workspace = true
 pallet-session.workspace = true
 pallet-session-benchmarking.workspace = true
-pallet-fast-unstake.workspace = true
 pallet-membership.workspace = true
-pallet-staking.workspace = true
-pallet-nomination-pools.workspace = true
-pallet-nomination-pools-benchmarking.workspace = true
-pallet-nomination-pools-runtime-api.workspace = true
-pallet-staking-reward-curve.workspace = true
 pallet-authority-discovery.workspace = true
 pallet-insecure-randomness-collective-flip.workspace = true
-pallet-broker.workspace = true
-pallet-democracy.workspace = true
 scale-info = { features = ["derive", "serde"], workspace = true }
 serde_json = { workspace = true, default-features = false, features = ["alloc"] }
 sp-api.workspace = true
@@ -113,12 +102,7 @@ pallet-evm-precompile-simple = {workspace = true }
 pallet-evm-precompile-modexp = {workspace = true }
 pallet-evm-precompile-sha3fips = {workspace = true }
 pallet-dynamic-fee = {workspace = true }
-pallet-beefy = {workspace = true}
-pallet-mmr = {workspace = true}
-pallet-beefy-mmr = {workspace = true}
 pallet-im-online = {workspace = true}
-pallet-offences = {workspace = true}
-pallet-offences-benchmarking = {workspace = true}
 ismp-parachain = {workspace = true}
 ismp-parachain-runtime-api={workspace = true}
 ismp = {workspace = true}
@@ -195,39 +179,24 @@ std = [
 	"pallet-preimage/std",
 	"pallet-skip-feeless-payment/std",
 	"pallet-whitelist/std",
-	"pallet-collective/std",
 	"pallet-conviction-voting/std",
 	"pallet-scheduler/std",
 	"pallet-referenda/std",
 	"pallet-asset-rate/std",
 	"pallet-treasury/std",
 	"pallet-salary/std",
-	"pallet-bags-list/std",
 	"pallet-ranked-collective/std",
 	"pallet-core-fellowship/std",
-	"pallet-election-provider-multi-phase/std",
 	"pallet-session/std",
 	"pallet-session-benchmarking/std",
-	"pallet-fast-unstake/std",
 	"pallet-membership/std",
-	"pallet-staking/std",
-	"pallet-nomination-pools/std",
-	"pallet-nomination-pools-benchmarking/std",
-	"pallet-nomination-pools-runtime-api/std",
 	# "pallet-contracts/std",
 	"pallet-insecure-randomness-collective-flip/std",
-	"pallet-beefy/std",
-	"pallet-mmr/std",
-	"pallet-beefy-mmr/std",
-	"pallet-offences/std",
-	"pallet-offences-benchmarking/std",
 	"pallet-xcm/std",
 	"ismp-parachain/std",
 	"ismp-parachain-runtime-api/std",
 	"polkadot-parachain-primitives/std",
 	"polkadot-runtime-common/std",
-	"pallet-broker/std",
-	"pallet-democracy/std",
 	"anyhow/std",
 	"pallet-ismp/std",
 	"pallet-ismp-runtime-api/std",
