@@ -13,6 +13,7 @@ impl EnsureOriginWithArg<RuntimeOrigin, RuntimeParametersKey> for DynamicParamet
                 frame_system::ensure_root(origin.clone()).map_err(|_| origin)?;
                 Ok(())
             }
+            _ => Err(origin),
         }
     }
 

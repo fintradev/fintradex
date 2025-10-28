@@ -10,9 +10,9 @@ use crate::{
 use frame_support::{
     instances::{Instance1, Instance2},error::BadOrigin,
     ord_parameter_types, parameter_types,
-    traits::{ConstU128, ConstU32,EnsureOriginWithArg},PalletId
+    traits::{ConstU128, ConstU32,EnsureOriginWithArg,AsEnsureOriginWithArg},PalletId
 };
-use frame_system::{EnsureRoot,pallet_prelude::OriginFor};
+use frame_system::{EnsureRoot,pallet_prelude::OriginFor,EnsureSignedBy};
 use scale_info::prelude::vec;
 use sp_runtime::traits::AccountIdConversion;
 // Optional: a deterministic sentinel AccountId to return as Success.
@@ -50,11 +50,11 @@ impl EnsureOriginWithArg<OriginFor<Runtime>, u32> for EnsureRootWithAdminRuntime
     }
 }
 parameter_types! {
-    pub const AssetDeposit: Balance = 10 * DOLLARS;
-    pub const ApprovalDeposit: Balance = 1 * DOLLARS;
+    pub const AssetDeposit: Balance = 10 * FINTS;
+    pub const ApprovalDeposit: Balance = 1 * FINTS;
     pub const StringLimit: u32 = 128;
-    pub const MetadataDepositBase: Balance = 1 * DOLLARS;
-    pub const MetadataDepositPerByte: Balance = 1 * CENTS;
+    pub const MetadataDepositBase: Balance = 1 * FINTS;
+    pub const MetadataDepositPerByte: Balance = 1 * CENTI_FINTS;
     pub const AssetsAdminPalletId: PalletId = PalletId(*b"ft/admin");
 }
 ord_parameter_types! {
@@ -65,6 +65,7 @@ ord_parameter_types! {
                 ::into_account_truncating(&AssetsAdminPalletId::get());
         acc
     };
+    
 }
 type RuntimeBalance = <Runtime as pallet_balances::Config>::Balance;
 impl pallet_assets::Config<Instance1> for Runtime {
@@ -82,7 +83,7 @@ impl pallet_assets::Config<Instance1> for Runtime {
     //type ForceOrigin = frame_system::EnsureRoot<u64>;
     type ForceOrigin = EnsureRoot<AccountId>; 
     type AssetDeposit = AssetDeposit;
-    type AssetAccountDeposit = ConstU128<DOLLARS>;
+    type AssetAccountDeposit = ConstU128<FINTS>;
     type MetadataDepositBase = MetadataDepositBase;
     type MetadataDepositPerByte = MetadataDepositPerByte;
     type ApprovalDeposit = ApprovalDeposit;
@@ -95,6 +96,7 @@ impl pallet_assets::Config<Instance1> for Runtime {
 }
 ord_parameter_types! {
     pub const AssetConversionOrigin: AccountId = AccountIdConversion::<AccountId>::into_account_truncating(&AssetConversionPalletId::get());
+
 }
 impl pallet_assets::Config<Instance2> for Runtime {
     type RuntimeEvent = RuntimeEvent;
@@ -103,11 +105,11 @@ impl pallet_assets::Config<Instance2> for Runtime {
     type AssetId = u32;
     type AssetIdParameter = codec::Compact<u32>;
     type Currency = Balances;
-    type CreateOrigin = EnsureRootWithAdminRuntime;
-    //type CreateOrigin = AsEnsureOriginWithArg<EnsureSignedBy<AssetConversionOrigin, AccountId>>;
+    //type CreateOrigin = EnsureRootWithAdminRuntime;
+    type CreateOrigin = AsEnsureOriginWithArg<EnsureSignedBy<AssetConversionOrigin, AccountId>>;
     type ForceOrigin = EnsureRoot<AccountId>;
     type AssetDeposit = AssetDeposit;
-    type AssetAccountDeposit = ConstU128<{DOLLARS/10}>;
+    type AssetAccountDeposit = ConstU128<{FINTS/10}>;
     type MetadataDepositBase = MetadataDepositBase;
     type MetadataDepositPerByte = MetadataDepositPerByte;
     type ApprovalDeposit = ApprovalDeposit;

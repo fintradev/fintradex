@@ -27,7 +27,7 @@ polkadot-sdk = { workspace = true, features = ["cumulus-pallet-aura-ext", "cumul
  "pallet-collator-selection", "pallet-message-queue", "pallet-session", "pallet-sudo", 
  "pallet-timestamp", "pallet-transaction-payment", "pallet-transaction-payment-rpc-runtime-api", 
  "pallet-xcm", "parachains-common", "polkadot-parachain-primitives", "polkadot-runtime-common", 
- "runtime", "staging-parachain-info", "staging-xcm", 
+ "runtime", "staging-parachain-info", "staging-xcm",
  "staging-xcm-builder", "staging-xcm-executor","cumulus-pallet-weight-reclaim"], default-features = false }
 cumulus-pallet-parachain-system.workspace = true
 

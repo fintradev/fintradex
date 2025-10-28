@@ -350,7 +350,24 @@ async fn start_node_impl(
         fee_history_cache_limit,
         execute_gas_limit_multiplier: eth_config.execute_gas_limit_multiplier,
         forced_parent_hashes: None,
-        pending_create_inherent_data_providers: move |_, ()| async move {
+        pending_create_inherent_data_providers: move |parent, ()| {
+            let client = client.clone();
+            let slot_duration = slot_duration;
+            let target_gas_price = target_gas_price;
+            async move {
+                let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
+                let slot_ms = slot_duration.as_millis() as u64;
+                let ts = parent_ts.saturating_add(slot_ms);
+    
+                let timestamp = sp_timestamp::InherentDataProvider::new(ts);
+                let slot = sp_consensus_aura::inherents::InherentDataProvider
+                    ::from_timestamp_and_slot_duration(*timestamp, slot_duration);
+                let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+    
+                Ok((slot, timestamp, dynamic_fee))
+            }
+        },
+        /*pending_create_inherent_data_providers: move |_, ()| async move {
             let current = sp_timestamp::InherentDataProvider::from_system_time();
             let next_slot = current.timestamp().as_millis() + slot_duration.as_millis();
             let timestamp = sp_timestamp::InherentDataProvider::new(next_slot.into());
@@ -360,7 +377,7 @@ async fn start_node_impl(
 			);
             let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
             Ok((slot, timestamp, dynamic_fee))
-        },
+        },*/
     };
 
     let rpc_builder = {
@@ -479,6 +496,7 @@ async fn start_node_impl(
             collator_key.expect("Command line arguments do not allow this. qed"),
             overseer_handle,
             announce_block,
+            eth_config.target_gas_price,
         )?;
     }
 
@@ -489,6 +507,59 @@ async fn start_node_impl(
 
 /// Build the import queue for the parachain runtime.
 fn build_import_queue(
+client: Arc<ParachainClient>,
+block_import: ParachainBlockImport,
+config: &Configuration,
+eth_config: &EthConfiguration,
+telemetry: Option<TelemetryHandle>,
+task_manager: &TaskManager,
+) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error> {
+let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
+let target_gas_price = eth_config.target_gas_price;
+
+// IMPORTANT: use parent state, not system_time.
+let create_inherent_data_providers = move |parent, _| {
+    let client = client.clone();
+    async move {
+        // 1) Read on-chain parent timestamp (ms). 0 only at genesis.
+        let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
+
+        // 2) Next block’s timestamp = parent + 1 slot (deterministic & monotonic)
+        let slot_ms = slot_duration.as_millis() as u64;
+        let ts = parent_ts.saturating_add(slot_ms);
+
+        // 3) Build inherents
+        let timestamp =
+            sp_timestamp::InherentDataProvider::new(ts);
+        let slot =
+            sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+                *timestamp,
+                slot_duration,
+            );
+        let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+        tracing::info!("parent_ts={}, ts={}, slot_ms={}", parent_ts, ts, slot_ms);
+        Ok((slot, timestamp, dynamic_fee))
+    }
+};
+Ok(
+    cumulus_client_consensus_aura::equivocation_import_queue::fully_verifying_import_queue::<
+        sp_consensus_aura::sr25519::AuthorityPair,
+        _,
+        _,
+        _,
+        _,
+    >(
+        client,
+        block_import,
+        create_inherent_data_providers,
+        slot_duration,
+        &task_manager.spawn_essential_handle(),
+        config.prometheus_registry(),
+        telemetry,
+    ),
+)
+}
+/*fn build_import_queue(
     client: Arc<ParachainClient>,
     block_import: ParachainBlockImport,
     config: &Configuration,
@@ -498,7 +569,7 @@ fn build_import_queue(
 ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error> {
     let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
     let target_gas_price = eth_config.target_gas_price;
-    let create_inherent_data_providers = move |_, _| async move {
+    /*let create_inherent_data_providers = move |_, _| async move {
         let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
         let slot =
             sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
@@ -506,6 +577,21 @@ fn build_import_queue(
                 slot_duration,
             );
         let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+        Ok((slot, timestamp, dynamic_fee))
+    };*/
+    let create_inherent_data_providers = move |_, _| async move {
+        // 1) Derive timestamp from wall clock (deterministic once inside block building)
+        let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
+    
+        // 2) Derive Aura slot *from that same timestamp* and the runtime slot duration
+        let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+            *timestamp,
+            slot_duration,
+        );
+    
+        // 3) Optional Frontier dynamic fee
+        let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+    
         Ok((slot, timestamp, dynamic_fee))
     };
     Ok(
@@ -525,8 +611,7 @@ fn build_import_queue(
             telemetry,
         ),
     )
-}
-
+}*/
 fn start_consensus(
     client: Arc<ParachainClient>,
     block_import: ParachainBlockImport,
@@ -542,6 +627,102 @@ fn start_consensus(
     collator_key: CollatorPair,
     overseer_handle: OverseerHandle,
     announce_block: Arc<dyn Fn(Hash, Option<Vec<u8>>) + Send + Sync>,
+    target_gas_price_u64: u64,
+) -> Result<(), sc_service::Error> {
+    use cumulus_client_consensus_aura::collators::basic::{
+        self as basic_aura, Params as BasicAuraParams,
+    };
+
+    let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
+
+    let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
+        task_manager.spawn_handle(),
+        client.clone(),
+        transaction_pool,
+        prometheus_registry,
+        telemetry.clone(),
+    );
+    let proposer = Proposer::new(proposer_factory);
+
+    let collator_service = CollatorService::new(
+        client.clone(),
+        Arc::new(task_manager.spawn_handle()),
+        announce_block,
+        client.clone(),
+    );
+
+    let client_clone = client.clone();
+    let relay_chain_interface_clone = relay_chain_interface.clone();
+
+    let params = BasicAuraParams {
+        create_inherent_data_providers: move |parent, ()| {
+            let client = client_clone.clone();
+            let relay_chain_interface = relay_chain_interface_clone.clone();
+            let slot_duration = slot_duration;
+            let target_gas_price = target_gas_price_u64;
+
+            async move {
+                // 1) Parent on-chain time
+                let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
+                let slot_ms = slot_duration.as_millis() as u64;
+                let ts = parent_ts.saturating_add(slot_ms);
+
+                // 2) Inherents
+                let timestamp = sp_timestamp::InherentDataProvider::new(ts);
+                let slot = sp_consensus_aura::inherents::InherentDataProvider
+                    ::from_timestamp_and_slot_duration(*timestamp, slot_duration);
+                let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+                tracing::info!("parent_ts={}, ts={}, slot_ms={}", parent_ts, ts, slot_ms);
+                // 3) (Optional) ISMP inherent — include it here only if you also include it in the import queue!
+                /*let ismp = ismp_parachain_inherent::ConsensusInherentProvider::create(
+                     parent, client.clone(), relay_chain_interface.clone()
+                 ).await?;*/
+
+                // If you include ISMP above, return (slot, timestamp, dynamic_fee, ismp)
+                Ok((slot, timestamp, dynamic_fee))
+            }
+        },
+        block_import,
+        para_client: client,
+        relay_client: relay_chain_interface,
+        sync_oracle,
+        keystore,
+        collator_key,
+        para_id,
+        overseer_handle,
+        slot_duration,
+        relay_chain_slot_duration,
+        proposer,
+        collator_service,
+        authoring_duration: Duration::from_millis(500),
+    };
+
+    let fut =
+        basic_aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _, _>(
+            params,
+        );
+    task_manager
+        .spawn_essential_handle()
+        .spawn("aura", None, fut);
+
+    Ok(())
+}
+/*fn start_consensus(
+    client: Arc<ParachainClient>,
+    block_import: ParachainBlockImport,
+    prometheus_registry: Option<&Registry>,
+    telemetry: Option<TelemetryHandle>,
+    task_manager: &TaskManager,
+    relay_chain_interface: Arc<dyn RelayChainInterface>,
+    transaction_pool: Arc<sc_transaction_pool::FullPool<Block, ParachainClient>>,
+    sync_oracle: Arc<SyncingService<Block>>,
+    keystore: KeystorePtr,
+    relay_chain_slot_duration: Duration,
+    para_id: ParaId,
+    collator_key: CollatorPair,
+    overseer_handle: OverseerHandle,
+    announce_block: Arc<dyn Fn(Hash, Option<Vec<u8>>) + Send + Sync>,
+    target_gas_price_u64: u64,
 ) -> Result<(), sc_service::Error> {
     use cumulus_client_consensus_aura::collators::basic::{
         self as basic_aura, Params as BasicAuraParams,
@@ -572,7 +753,7 @@ fn start_consensus(
         (client.clone(), relay_chain_interface.clone());
     let params = BasicAuraParams {
         //create_inherent_data_providers: move |_, ()| async move { Ok(()) },
-        create_inherent_data_providers: move |parent, ()| {
+        /*create_inherent_data_providers: move |parent, ()| {
             let client = client_clone.clone();
             let relay_chain_interface = relay_chain_interface_clone.clone();
             async move {
@@ -584,6 +765,33 @@ fn start_consensus(
                 .await?;
 
                 Ok(inherent)
+            }
+        },*/
+        create_inherent_data_providers: move |_, ()| {
+            let relay_chain_interface = relay_chain_interface.clone();
+            let client = client.clone();
+            let target_gas_price = target_gas_price;
+    
+            async move {
+                // 1) Same timestamp source as import path
+                let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
+    
+                // 2) Same slot calc
+                let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+                    *timestamp,
+                    slot_duration,
+                );
+    
+                // 3) Optional Frontier dynamic fee
+                let dynamic_fee = fp_dynamic_fee::InherentDataProvider(target_gas_price);
+    
+                // 4) Your ISMP inherent if you need it (optional)
+                let ismp = ismp_parachain_inherent::ConsensusInherentProvider::create(
+                parent, client, relay_chain_interface
+                ).await?;
+    
+                Ok((slot, timestamp, dynamic_fee, ismp))
+                // If you add ISMP here, you MUST also add it in the import queue tuple above.
             }
         },
         block_import,
@@ -611,7 +819,7 @@ fn start_consensus(
         .spawn("aura", None, fut);
 
     Ok(())
-}
+}*/
 
 /// Start a parachain node.
 pub async fn start_parachain_node(

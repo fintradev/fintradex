@@ -88,7 +88,6 @@ use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_runtime::Perbill;
 use sp_version::RuntimeVersion;
 use xcm::latest::prelude::BodyId;
-
 // Local module imports
 use super::{
     weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight},
@@ -162,13 +161,7 @@ impl frame_system::Config for Runtime {
     type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl pallet_timestamp::Config for Runtime {
-    /// A timestamp: milliseconds since the unix epoch.
-    type Moment = u64;
-    type OnTimestampSet = Aura;
-    type MinimumPeriod = ConstU64<0>;
-    type WeightInfo = ();
-}
+
 
 impl pallet_authorship::Config for Runtime {
     type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
@@ -274,7 +267,7 @@ impl pallet_message_queue::Config for Runtime {
     type IdleMaxServiceWeight = ();
 }
 
-impl cumulus_pallet_aura_ext::Config for Runtime {}
+
 
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
@@ -311,6 +304,14 @@ impl pallet_session::Config for Runtime {
     type WeightInfo = ();
     type DisablingStrategy = ();
 }
+impl pallet_timestamp::Config for Runtime {
+    /// A timestamp: milliseconds since the unix epoch.
+    type Moment = u64;
+    type OnTimestampSet = Aura;
+    //type MinimumPeriod = ConstU64<{SLOT_DURATION/2}>;
+    type MinimumPeriod = ConstU64<0>;
+    type WeightInfo = ();
+}
 #[docify::export(aura_config)]
 impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
@@ -319,7 +320,7 @@ impl pallet_aura::Config for Runtime {
     type AllowMultipleBlocksPerSlot = ConstBool<true>;
     type SlotDuration = ConstU64<SLOT_DURATION>;
 }
-
+impl cumulus_pallet_aura_ext::Config for Runtime {}
 parameter_types! {
     pub const PotId: PalletId = PalletId(*b"PotStake");
     pub const SessionLength: BlockNumber = 6 * HOURS;

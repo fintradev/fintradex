@@ -12,7 +12,7 @@ use sp_runtime::Perbill;
 
 parameter_types! {
     pub const AlarmInterval: BlockNumber = 1;
-    pub const SubmissionDeposit: Balance = 100 * DOLLARS;
+    pub const SubmissionDeposit: Balance = 100 * FINTS;
     pub const UndecidingTimeout: BlockNumber = 28 * DAYS;
 }
 
@@ -35,7 +35,7 @@ impl pallet_referenda::TracksInfo<Balance, BlockNumber> for TracksInfo {
                         name
                     },
                     max_deciding: 1,
-                    decision_deposit: 10 * DOLLARS,
+                    decision_deposit: 10 * FINTS,
                     prepare_period: 4 * DAYS,
                     decision_period: 4 * DAYS,
                     confirm_period: 2 * DAYS,

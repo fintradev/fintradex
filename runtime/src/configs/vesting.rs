@@ -1,10 +1,10 @@
 /*use crate::{constants::currency::*, Balances, Runtime, RuntimeEvent};*/
-use crate::constants::currency::DOLLARS;
+use crate::constants::currency::FINTS;
 use crate::{Balance, Balances, Runtime, RuntimeEvent};
 use frame_support::{parameter_types, traits::WithdrawReasons};
 use sp_runtime::traits::ConvertInto;
 parameter_types! {
-    pub const MinVestedTransfer: Balance = 100 * DOLLARS;
+    pub const MinVestedTransfer: Balance = 100 * FINTS;
     pub UnvestedFundsAllowedWithdrawReasons: WithdrawReasons =
         WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE);
 }

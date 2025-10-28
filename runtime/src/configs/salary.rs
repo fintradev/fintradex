@@ -9,14 +9,14 @@ use frame_support::{
     },
 };
 parameter_types! {
-    pub const Budget: Balance = 10_000 * DOLLARS;
+    pub const Budget: Balance = 10_000 * FINTS;
     pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
 pub struct SalaryForRank;
 impl GetSalary<u16, AccountId, Balance> for SalaryForRank {
     fn get_salary(a: u16, _: &AccountId) -> Balance {
-        Balance::from(a) * 1000 * DOLLARS
+        Balance::from(a) * 1000 * FINTS
     }
 }
 impl pallet_salary::Config for Runtime {

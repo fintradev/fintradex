@@ -232,11 +232,11 @@ pub mod dynamic_params {
     pub mod storage {
         /// Configures the base deposit of storing some data.
         #[codec(index = 0)]
-        pub static BaseDeposit: Balance = DOLLARS;
+        pub static BaseDeposit: Balance = FINTS;
 
         /// Configures the per-byte deposit of storing some data.
         #[codec(index = 1)]
-        pub static ByteDeposit: Balance = CENTS;
+        pub static ByteDeposit: Balance = CENTI_FINTS;
     }
 }
 #[sp_version::runtime_version]

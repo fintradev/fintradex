@@ -27,14 +27,14 @@ use frame_support::parameter_types;
 use sp_runtime::Permill;
 parameter_types! {
     pub const BountyCuratorDeposit: Permill = Permill::from_percent(50);
-    pub const BountyValueMinimum: Balance = 5 * DOLLARS;
-    pub const BountyDepositBase: Balance = DOLLARS;
-    pub const CuratorDepositMultiplier: Permill = Permill::from_percent(50);
-    pub const CuratorDepositMin: Balance = DOLLARS;
-    pub const CuratorDepositMax: Balance = 100 * DOLLARS;
-    pub const BountyDepositPayoutDelay: BlockNumber = DAYS;
+    pub const BountyValueMinimum: Balance = 5 * FINTS;
+    pub const BountyDepositBase: Balance = FINTS;
+    pub const CuratorDepositMultiplier: Permill = Permill::from_percent(20);
+    pub const CuratorDepositMin: Balance = FINTS;
+    pub const CuratorDepositMax: Balance = 50 * FINTS;
+    pub const BountyDepositPayoutDelay: BlockNumber = 7 * DAYS;
     pub const BountyUpdatePeriod: BlockNumber = 14 * DAYS;
-    pub const DataDepositPerByte: Balance = CENTS;
+    pub const DataDepositPerByte: Balance = 10 * MILLI_FINTS;
     pub const MaximumReasonLength: u32 = 300;
 }
 

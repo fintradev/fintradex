@@ -6,7 +6,7 @@ repository = "https://github.com/fintradev/fintradex.git"
 edition = "2021"
 
 [workspace]
-default-members = [ "runtime"]
+default-members = ["runtime"]
 members = [
     "node",
     "runtime",
@@ -28,6 +28,7 @@ serde_json = { version = "1.0.132", default-features = false }
 hex-literal = { version = "0.4.1", default-features = false }
 scale-info = { version = "2.11.1", default-features = false }
 smallvec = { version = "1.11.0", default-features = false }
+yamux = "0.13.5"
 # Polkadot SDK
 polkadot-sdk = { version = "2506.0.0", default-features = false }
 # System Pallets
@@ -279,3 +280,4 @@ cumulus-pallet-xcm={ version = "0.20.0"}
 cumulus-primitives-aura={ version = "0.18.0"}
 cumulus-primitives-core={ version = "0.19.0"}
 cumulus-primitives-utility={ version = "0.21.0"}
+

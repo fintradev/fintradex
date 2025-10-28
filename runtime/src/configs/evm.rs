@@ -21,14 +21,23 @@
 use crate::weights::block_weights::constants::WEIGHT_MILLISECS_PER_BLOCK;
 use crate::{
     precompiles::FrontierPrecompiles, AccountId, Aura, Balances, BaseFee, EVMChainId, Runtime,
-    Timestamp, NORMAL_DISPATCH_RATIO,
+    Timestamp, NORMAL_DISPATCH_RATIO,Treasury,
 };
 use core::marker::PhantomData;
 use fp_evm::weight_per_gas;
-pub use frame_support::{parameter_types, traits::FindAuthor, weights::Weight, StorageValue};
-use pallet_evm::{EnsureAddressNever, EnsureAddressRoot, HashedAddressMapping};
+pub use frame_support::{parameter_types, traits::{FindAuthor,OnUnbalanced}, weights::Weight, StorageValue};
+use pallet_evm::{EnsureAddressNever, HashedAddressMapping};
 use sp_core::{crypto::ByteArray, H160, U256};
 use sp_runtime::{traits::BlakeTwo256, ConsensusEngineId};
+use pallet_balances::NegativeImbalance;
+pub struct DealWithFees;
+
+// Route 100% of collected gas fees to Treasury
+impl OnUnbalanced<NegativeImbalance<Runtime>> for DealWithFees {
+    fn on_unbalanced(amount: NegativeImbalance<Runtime>) {
+        Treasury::on_unbalanced(amount);
+    }
+}
 pub struct FindAuthorTruncated<F>(PhantomData<F>);
 impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
     fn find_author<'a, I>(digests: I) -> Option<H160>
@@ -53,7 +62,6 @@ parameter_types! {
     pub const GasLimitStorageGrowthRatio: u64 = 0;
     pub PrecompilesValue: FrontierPrecompiles<Runtime> = FrontierPrecompiles::<_>::new();
     pub WeightPerGas: Weight = Weight::from_parts(weight_per_gas(BLOCK_GAS_LIMIT, NORMAL_DISPATCH_RATIO, WEIGHT_MILLISECS_PER_BLOCK), 0);
-    pub SuicideQuickClearLimiethereumt: u32 = 0;
     pub SuicideQuickClearLimit: u32 = 0;
 }
 impl pallet_evm::Config for Runtime {
@@ -61,7 +69,8 @@ impl pallet_evm::Config for Runtime {
     type GasWeightMapping = pallet_evm::FixedGasWeightMapping<Self>;
     type WeightPerGas = WeightPerGas;
     type BlockHashMapping = pallet_ethereum::EthereumBlockHashMapping<Self>;
-    type CallOrigin = EnsureAddressRoot<AccountId>;
+    //type CallOrigin = EnsureAddressRoot<AccountId>;
+    type CallOrigin = EnsureAddressNever<AccountId>;
     type WithdrawOrigin = EnsureAddressNever<AccountId>;
     type AddressMapping = HashedAddressMapping<BlakeTwo256>;
     type Currency = Balances;
@@ -70,7 +79,8 @@ impl pallet_evm::Config for Runtime {
     type ChainId = EVMChainId;
     type BlockGasLimit = BlockGasLimit;
     type Runner = pallet_evm::runner::stack::Runner<Self>;
-    type OnChargeTransaction = ();
+    //type OnChargeTransaction = ();
+    type OnChargeTransaction = pallet_evm::EVMCurrencyAdapter<Balances, DealWithFees>;
     type OnCreate = ();
     type FindAuthor = FindAuthorTruncated<Aura>;
     type GasLimitPovSizeRatio = GasLimitPovSizeRatio;
