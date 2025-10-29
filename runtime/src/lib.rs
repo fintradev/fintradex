@@ -561,9 +561,9 @@ cumulus_pallet_parachain_system::register_validate_block! {
 pub struct TransactionConverter<B>(PhantomData<B>);
 
 impl<B> Default for TransactionConverter<B> {
-    fn default() -> Self {
-        Self(PhantomData)
-    }
+	fn default() -> Self {
+		Self(PhantomData)
+	}
 }
 impl sp_core::Get<RuntimeVersion> for Runtime {
     fn get() -> RuntimeVersion {

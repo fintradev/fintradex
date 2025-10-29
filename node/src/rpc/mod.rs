@@ -45,13 +45,13 @@ use sp_consensus_aura::{sr25519::AuthorityId as AuraId, AuraApi};
 use sp_runtime::traits::Block as BlockT;
 use substrate_frame_rpc_system::SystemApiServer;
 mod eth;
-pub use self::eth::{create_eth, overrides_handle, EthDeps};
+pub use self::eth::{create_eth, EthDeps};
 
 /// A type representing all RPC extensions.
 pub type RpcExtension = jsonrpsee::RpcModule<()>;
 
 /// Full client dependencies
-pub struct FullDeps<C, P, A: ChainApi, CT, CIDP> {
+pub struct FullDeps<B: BlockT, C, P, CT, CIDP> {
     /// The client instance to use.
     pub client: Arc<C>,
     /// Transaction pool instance.
@@ -59,7 +59,7 @@ pub struct FullDeps<C, P, A: ChainApi, CT, CIDP> {
     /// Whether to deny unsafe calls
     pub deny_unsafe: DenyUnsafe,
     /// Ethereum-compatibility specific dependencies.
-    pub eth: EthDeps<C, P, A, CT, Block, CIDP>,
+    pub eth: EthDeps<B, C, P, CT, CIDP>,
 }
 pub struct DefaultEthConfig<C, BE>(std::marker::PhantomData<(C, BE)>);
 
@@ -118,9 +118,10 @@ where
         eth,
     } = deps;
 
-    io.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
+    //io.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
+    io.merge(System::new(client.clone(), pool).into_rpc())?;
     io.merge(TransactionPayment::new(client).into_rpc())?;
-    module.merge(IsmpRpcHandler::new(client, backend)?.into_rpc())?;
+    io.merge(IsmpRpcHandler::new(client, backend)?.into_rpc())?;
 
     // Ethereum compatibility RPCs
     let io = create_eth::<Block, C, P, CT, BE, A, CIDP, DefaultEthConfig<C, BE>>(

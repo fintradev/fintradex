@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use sp_core::{sr25519, Pair, Public, H160, U256};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 use std::{collections::BTreeMap, marker::PhantomData, str::FromStr};
-
+use polkadot_sdk::{staging_xcm as xcm, *};
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =
     sc_service::GenericChainSpec<fintradex_runtime::RuntimeGenesisConfig, Extensions>;

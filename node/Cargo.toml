@@ -21,24 +21,56 @@ serde_json = { workspace = true, default-features = true }
 docify = { workspace = true }
 color-print = { workspace = true }
 polkadot-sdk = { workspace = true, features = ["node"] }
+polkadot-primitives = { workspace = true }
 fintradex-runtime.workspace = true
-sc-tracing.workspace = true
-sc-tracing.default-features = true
+
 prometheus-endpoint.workspace = true
 prometheus-endpoint.default-features = true
-sc-cli.default-features = true
-sc-cli.workspace = true
-sc-client-api.default-features = true
-sc-client-api.workspace = true
-sc-service.default-features = true
-sc-service.workspace = true
+# Frame Benchmarking
+frame-benchmarking-cli = { workspace = true, default-features = true }
+frame-benchmarking={ workspace = true, default-features = true}
+frame-system-benchmarking = { optional = true, workspace = true }
+frame-system-rpc-runtime-api = { workspace = true, default-features = true }
+# Substrate Client
+sc-cli = { workspace = true, default-features = true }
+sc-client-api={ workspace = true, default-features = true }
 sc-executor.default-features = true
 sc-executor.workspace = true
+sc-consensus={ workspace = true, default-features = true }
+sc-network={ workspace = true, default-features = true }
+sc-network-sync={ workspace = true, default-features = true }
+sc-service={ workspace = true, default-features = true }
+sc-telemetry={ workspace = true, default-features = true }
+sc-transaction-pool-api={ workspace = true, default-features = true }
+sc-transaction-pool={ workspace = true, default-features = true}
+sc-tracing.workspace = true
+sc-tracing.default-features = true
+sc-rpc={ workspace = true, default-features = true }
+sc-chain-spec = { workspace = true, default-features = true }
+sc-offchain = { workspace = true, default-features = true }
+sc-basic-authorship = { workspace = true, default-features = true }
+sc-consensus-aura={ workspace = true, default-features = true }
+# Substrate Primitive Pallets
+sp-core={ workspace = true, default-features = true }
+sp-keystore={ workspace = true, default-features = true }
+sp-runtime = { workspace = true }
+sp-consensus-aura = { workspace = true, default-features = true }
+sp-blockchain = { workspace = true, default-features = true }
+sp-transaction-pool = { workspace = true, default-features = true }
+sp-timestamp = { workspace = true, default-features = true }
+sp-api = { workspace = true, default-features = true }
+sp-block-builder = { workspace = true, default-features = true }
+sp-inherents = { workspace = true, default-features = true }
+sp-session = { workspace = true, default-features = true }
+sp-offchain.workspace = true
+sp-storage = { workspace = true, default-features = true }
+sp-consensus-grandpa = { workspace = true, default-features = true }
+substrate-frame-rpc-system = { workspace = true,default-features = true }
 # Frontier
 fc-api = { workspace = true }
 fc-cli = { workspace = true }
 fc-consensus = { workspace = true }
-fc-db = { workspace = true }
+fc-db = { workspace = true,features = ["default"] }
 fc-mapping-sync = { workspace = true }
 fc-rpc = { workspace = true, features = ["aura"] }
 fc-rpc-core = { workspace = true }
@@ -51,9 +83,22 @@ fp-rpc = { workspace = true, features = ["default"] }
 pallet-ismp-runtime-api = { workspace = true }
 pallet-ismp-rpc = { workspace = true }
 ismp-parachain-inherent = { workspace = true }
+# Cumulus Client Consensus Proposer
+cumulus-client-consensus-proposer={ workspace = true,default-features = true }
+cumulus-client-cli={ workspace = true,default-features = true }
+cumulus-client-collator={ workspace = true,default-features = true }
+cumulus-client-consensus-common={ workspace = true,default-features = true }
+cumulus-client-service = { workspace = true,default-features = true }
+cumulus-primitives-core = { workspace = true,default-features = true }
+cumulus-relay-chain-interface = { workspace = true,default-features = true }
+cumulus-client-consensus-aura = { workspace = true,default-features = true }
+# General Pallets
+pallet-transaction-payment-rpc = { workspace = true,default-features = true }
+pallet-transaction-payment-rpc-runtime-api = { workspace = true,default-features = true }
 # ismp-parachain-inherent = { workspace = true }
 # pallet-ismp-rpc = { workspace = true }
-
+[build-dependencies]
+polkadot-sdk = { workspace = true, features = ["substrate-build-script-utils"] }
 [features]
 default = ["rocksdb",
 	"txpool",

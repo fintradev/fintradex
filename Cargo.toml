@@ -6,7 +6,7 @@ repository = "https://github.com/fintradev/fintradex.git"
 edition = "2021"
 
 [workspace]
-default-members = ["runtime"]
+default-members = ["node", "runtime"]
 members = [
     "node",
     "runtime",
@@ -31,6 +31,7 @@ smallvec = { version = "1.11.0", default-features = false }
 yamux = "0.13.5"
 # Polkadot SDK
 polkadot-sdk = { version = "2506.0.0", default-features = false }
+polkadot-primitives = { version = "19.0.0", default-features = false }
 # System Pallets
 frame-benchmarking-cli = { version = "49.1.0", default-features = false }
 frame = { version = "0.8.1", default-features = false, package = "polkadot-sdk-frame" }
@@ -55,7 +56,7 @@ sc-network = {version = "0.51.1", default-features = false }
 sc-offchain = {version = "46.0.0",default-features = false }
 sc-service = {version = "0.52.0", default-features = false }
 sc-telemetry = {version = "29.0.0", default-features = false }
-sc-transaction-pool = {version = "40.1.0", default-features = false }
+sc-transaction-pool = {version = "40.1.0"}
 sc-transaction-pool-api = {version = "40.0.0", default-features = false }
 sc-network-common = {version = "0.49.0"}
 sc-network-sync = {version = "0.50.0"}
@@ -63,8 +64,11 @@ sc-rpc = {version = "46.0.0"}
 sc-tracing = { version="40.0.0", default-features = false }
 sc-chain-spec = {version = "44.0.0"}
 sc-consensus-manual-seal = {version = "0.52.0"}
+sc-block-builder = {version = "0.45.0"}
+sc-network-types={version = "0.17.0"}
 #Substrate Primitive Pallets
 sp-consensus-grandpa = { version = "24.0.0", default-features = false }
+sp-consensus={version = "0.43.0", default-features = false }
 sp-offchain = { version = "37.0.0", default-features = false }
 sp-session = { version = "39.0.0", default-features = false }
 sp-storage = { version = "22.0.0", default-features = false }
@@ -86,6 +90,10 @@ sp-staking = {version = "39.0.0", default-features = false }
 sp-std = {version = "14.0.0", default-features = false }
 sp-externalities = {version = "0.30.0", default-features = false }
 sp-state-machine = {version = "0.46.0", default-features = false }
+sp-trie={version = "40.0.0", default-features = false }
+sp-database={version = "10.0.0", default-features = false }
+sp-arithmetic={version = "27.0.0", default-features = false }
+sp-keystore={version = "0.43.0", default-features = false }
 
 # Frame pallets
 # pallet-contracts = {version="41.0.0", default-features = false}
@@ -163,6 +171,13 @@ cumulus-pallet-xcm={ version = "0.20.0", default-features = false}
 cumulus-primitives-aura={ version = "0.18.0", default-features = false}
 cumulus-primitives-core={ version = "0.19.0", default-features = false}
 cumulus-primitives-utility={ version = "0.21.0", default-features = false}
+cumulus-client-cli={ version = "0.24.0", default-features = false}
+cumulus-client-collator={ version = "0.24.0", default-features = false}
+cumulus-client-consensus-common={ version = "0.24.0", default-features = false}
+cumulus-client-consensus-proposer={ version = "0.20.0", default-features = false}
+cumulus-client-service={ version = "0.25.1", default-features = false}
+cumulus-relay-chain-interface={ version = "0.24.0", default-features = false}
+cumulus-client-consensus-aura={ version = "0.24.0", default-features = false}
 # EVM Pallets
 ethereum = { version = "0.18.2", default-features = false }
 ethereum-types = { version = "0.15", default-features = false }
@@ -191,6 +206,7 @@ pallet-base-fee = { git = "https://github.com/paritytech/frontier", branch = "st
 
 [patch."https://github.com/paritytech/polkadot-sdk"]
 polkadot-sdk = { version = "2506.0.0"}
+polkadot-primitives = { version = "19.0.0"}
 frame-benchmarking = {version = "41.0.1"}
 frame-executive = {version = "41.0.1"}
 frame-support = {version = "41.0.0"}
@@ -202,7 +218,7 @@ pallet-referenda = {version = "41.0.0"}
 pallet-asset-rate = {version = "20.0.0"}
 pallet-treasury = {version = "40.0.0"}
 pallet-salary = {version = "26.0.0"}
-pallet-ranked-collective = {version = "41.0.0"}
+pallet-ranked-collective = {version = "=41.0.0"}
 pallet-core-fellowship = {version = "25.0.1"}
 pallet-insecure-randomness-collective-flip = {version = "29.0.0"}
 polkadot-parachain-primitives={ version = "17.0.0"}
@@ -246,11 +262,17 @@ sc-consensus-aura = {version = "0.51.0"}
 sc-consensus-grandpa = {version = "0.36.0"}
 sc-executor = {version = "0.43.0"}
 sc-network = {version = "0.51.1"}
+sc-network-common = {version = "0.49.0"}
+sc-network-sync = {version = "0.50.0"}
 sc-offchain = {version = "46.0.0"}
 sc-service = {version = "0.52.0"}
+sp-blockchain={version = "40.0.0"}
 sc-telemetry = {version = "29.0.0"}
 sc-transaction-pool = {version = "40.1.0"}
 sc-transaction-pool-api = {version = "40.0.0"}
+sc-basic-authorship = {version = "0.50.0"}
+sc-block-builder = {version = "0.45.0"}
+sc-network-types={version = "0.17.0"}
 sp-core = {version = "37.0.0"}
 sp-runtime = {version = "42.0.0"}
 sp-inherents = {version = "37.0.0"}
@@ -258,6 +280,7 @@ sp-api = {version = "37.0.0"}
 sp-block-builder = {version = "37.0.0"}
 sp-consensus-aura = {version = "0.43.0"}
 sp-consensus-grandpa = {version = "24.0.0"}
+sp-consensus={version = "0.43.0"}
 sp-genesis-builder = {version = "0.18.0"}
 sp-keyring = {version = "42.0.0"}
 sp-timestamp = {version = "37.0.0"}
@@ -266,6 +289,10 @@ sp-std = {version = "14.0.0"}
 sp-externalities = {version = "0.30.0"}
 sp-state-machine = {version = "0.46.0"}
 sp-version = {version = "40.0.0"}
+sp-storage = { version = "22.0.0"}
+sp-trie={version = "40.0.0"}
+sp-database={version = "10.0.0"}
+sp-arithmetic={version = "27.0.0"}
 #XCM Pallets
 pallet-xcm={version = "20.1.3"}
 staging-xcm={ version = "17.0.0"}
@@ -280,4 +307,10 @@ cumulus-pallet-xcm={ version = "0.20.0"}
 cumulus-primitives-aura={ version = "0.18.0"}
 cumulus-primitives-core={ version = "0.19.0"}
 cumulus-primitives-utility={ version = "0.21.0"}
-
+cumulus-client-cli={ version = "=0.24.0"}
+cumulus-client-collator={ version = "=0.24.0"}
+cumulus-client-consensus-proposer={ version = "0.20.0"}
+cumulus-client-service={ version = "0.25.1"}
+cumulus-client-consensus-common={ version = "0.24.0"}
+cumulus-relay-chain-interface={ version = "0.24.0"}
+cumulus-client-consensus-aura={ version = "0.24.0"}

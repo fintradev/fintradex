@@ -22,7 +22,6 @@
 use std::{net::SocketAddr, sync::Arc};
 
 use codec::Encode;
-use cumulus_client_cli::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
 use fc_db::kv::frontier_database_dir;
 use fintradex_runtime::Block;
@@ -127,7 +126,7 @@ impl SubstrateCli for RelayChainCli {
     }
 
     fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
-        polkadot_cli::Cli::from_iter([RelayChainCli::executable_name()].iter()).load_spec(id)
+        polkadot_sdk::polkadot_cli::Cli::from_iter([RelayChainCli::executable_name()].iter()).load_spec(id)
     }
 }
 
@@ -202,7 +201,7 @@ pub fn run() -> Result<()> {
                         };
                         cmd.base.run(frontier_database_config)?;
                     }
-                    crate::eth::BackendType::Sql => {
+                    /*crate::eth::BackendType::Sql => {
                         let db_path = db_config_dir.join("sql");
                         match std::fs::remove_dir_all(&db_path) {
                             Ok(_) => {
@@ -219,7 +218,7 @@ pub fn run() -> Result<()> {
                                 .into())
                             }
                         };
-                    }
+                    }*/
                 };
 
                 let polkadot_cli = RelayChainCli::new(
@@ -347,6 +346,51 @@ pub fn run() -> Result<()> {
             })
         }
         None => {
+			let runner = cli.create_runner(&cli.run.normalize())?;
+			let collator_options = cli.run.collator_options();
+            
+            
+			runner.run_node_until_exit(|config| async move {
+				let hwbench = (!cli.no_hardware_benchmarks)
+					.then(|| {
+						config.database.path().map(|database_path| {
+							let _ = std::fs::create_dir_all(database_path);
+							polkadot_sdk::sc_sysinfo::gather_hwbench(
+								Some(database_path),
+								&SUBSTRATE_REFERENCE_HARDWARE,
+							)
+						})
+					})
+					.flatten();
+
+				let polkadot_cli = RelayChainCli::new(
+					&config,
+					[RelayChainCli::executable_name()].iter().chain(cli.relay_chain_args.iter()),
+				);
+                let para_id = chain_spec::Extensions::try_get(&config.chain_spec)
+                .map(|e| e.para_id)
+                .ok_or("Could not find parachain ID in chain-spec.")?;
+				let tokio_handle = config.tokio_handle.clone();
+				let polkadot_config =
+					SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
+						.map_err(|err| format!("Relay chain argument error: {err}"))?;
+
+				info!("Is collating: {}", if config.role.is_authority() { "yes" } else { "no" });
+
+				crate::service::start_parachain_node(
+					config,
+					polkadot_config,
+                    eth_cfg,
+					collator_options,
+                    para_id,
+					hwbench,
+				)
+				.await
+				.map(|r| r.0)
+				.map_err(Into::into)
+			})
+		}
+        /*None => {
             let runner = cli.create_runner(&cli.run.normalize())?;
             let collator_options = cli.run.collator_options();
 
@@ -354,7 +398,7 @@ pub fn run() -> Result<()> {
                 let hwbench = (!cli.no_hardware_benchmarks)
                     .then_some(config.database.path().map(|database_path| {
                         let _ = std::fs::create_dir_all(database_path);
-                        sc_sysinfo::gather_hwbench(Some(database_path))
+                        polkadot_sdk::sc_sysinfo::gather_hwbench(Some(database_path),&SUBSTRATE_REFERENCE_HARDWARE)
                     }))
                     .flatten();
 
@@ -410,7 +454,7 @@ pub fn run() -> Result<()> {
                 .map(|r| r.0)
                 .map_err(Into::into)
             })
-        }
+        }*/
     }
 }
 
@@ -452,7 +496,7 @@ impl CliConfiguration<Self> for RelayChainCli {
             .or_else(|| self.base_path.clone().map(Into::into)))
     }
 
-    fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<SocketAddr>> {
+    fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<Vec<SocketAddr>>> {
         self.base.base.rpc_addr(default_listen_port)
     }
 
@@ -471,7 +515,6 @@ impl CliConfiguration<Self> for RelayChainCli {
         _support_url: &String,
         _impl_version: &String,
         _logger_hook: F,
-        _config: &sc_service::Configuration,
     ) -> Result<()>
     where
         F: FnOnce(&mut sc_cli::LoggerBuilder, &sc_service::Configuration),

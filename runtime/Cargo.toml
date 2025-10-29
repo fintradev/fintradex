@@ -32,6 +32,7 @@ polkadot-sdk = { workspace = true, features = ["cumulus-pallet-aura-ext", "cumul
 cumulus-pallet-parachain-system.workspace = true
 
 frame-benchmarking = { optional = true, workspace = true }
+
 frame-executive.workspace = true
 frame-metadata-hash-extension.workspace = true
 frame-support = { features = ["experimental"], workspace = true }
@@ -245,16 +246,7 @@ std = [
 	"pallet-base-fee/std",
 	"pallet-dynamic-fee/std",
 	"pallet-evm-chain-id/std",
-	"pallet-evm/std",
 	"pallet-ethereum/std",
-	"pallet-evm-precompile-simple/std",
-	"pallet-evm-precompile-modexp/std",
-	"fp-evm/std",
-	"fp-self-contained/std",
-	"fp-rpc/std",
-	"pallet-base-fee/std",
-	"pallet-dynamic-fee/std",
-	"pallet-evm-chain-id/std",
 	"assets-common/std",
 	"substrate-wasm-builder",
 ]

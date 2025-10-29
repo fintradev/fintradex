@@ -26,6 +26,7 @@ mod cli;
 mod command;
 mod eth;
 mod rpc;
+mod client;
 
 fn main() -> sc_cli::Result<()> {
     command::run()
