@@ -3,19 +3,12 @@ use fintradex_runtime::{AccountId, AuraId, Signature, EXISTENTIAL_DEPOSIT};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public, H160, U256};
+use sp_core::{sr25519, Pair, Public, H160};
 use sp_runtime::traits::{IdentifyAccount, Verify};
-use std::{collections::BTreeMap, marker::PhantomData, str::FromStr};
+use std::{collections::BTreeMap, str::FromStr};
 use polkadot_sdk::{staging_xcm as xcm, *};
-use fintradex_runtime::{WASM_BINARY, Balance,BlockNumber,constants::currency::*};
-use serde_json::Map;
-//use fintradex_runtime::Balance;
-const UNITS: u128 = 1_000_000_000_000;
-const INITIAL_BALANCE: u128 = 10_000;
-const INITIAL_TOKEN_BALANCE: Balance = 1_000 * UNITS as Balance;
+use fintradex_runtime::{WASM_BINARY,BlockNumber};
 const PARA_ID: u32 = 5023;
-const TOKEN_DECIMALS: u8 = 12;
-const TOKEN_SYMBOL: &str = "FINT";
 const PROTOCOL_ID: &str = "fint";
 /// Specialized `ChainSpec` for the normal parachain runtime.
 pub type ChainSpec =
@@ -78,7 +71,6 @@ pub fn development_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
     //let wasm_binary = WASM_BINARY.ok_or("Development wasm binary not available".to_string());
 let wasm_binary = WASM_BINARY.expect("WASM not available");
-	let mut properties = Map::new();
 	let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "Fint".into());
     properties.insert("tokenDecimals".into(), 12.into());
@@ -133,67 +125,11 @@ let wasm_binary = WASM_BINARY.expect("WASM not available");
 	.build();
 
 	chain_spec
-    // Give your base currency a unit name and decimal places
-    /*let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "Fint".into());
-    properties.insert("tokenDecimals".into(), 12.into());
-    properties.insert("ss58Format".into(), 42.into());
-
-    ChainSpec::from_genesis(
-        // Name
-        "Development",
-        // ID
-        "dev",
-        ChainType::Development,
-        move || {
-            testnet_genesis(
-                // initial collators.
-                vec![
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_collator_keys_from_seed("Alice"),
-                    ),
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        get_collator_keys_from_seed("Bob"),
-                    ),
-                ],
-                vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
-                ],
-                // Give Alice root privileges
-                Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
-                1000.into(),
-            )
-        },
-        Vec::new(),
-        None,
-        None,
-        None,
-        None,
-        Extensions {
-            relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-            para_id: 1000,
-        },
-    )*/
 }
 
 pub fn local_testnet_config() -> ChainSpec {
     // Give your base currency a unit name and decimal places
-    //let wasm_binary = WASM_BINARY.ok_or("Development wasm binary not available".to_string());
     let wasm_binary = WASM_BINARY.expect("WASM not available");
-	let mut properties = Map::new();
 	let mut properties = sc_chain_spec::Properties::new();
     properties.insert("tokenSymbol".into(), "Fint".into());
     properties.insert("tokenDecimals".into(), 12.into());
@@ -248,66 +184,6 @@ pub fn local_testnet_config() -> ChainSpec {
 	.build();
 
 	chain_spec
-    /*let mut properties = sc_chain_spec::Properties::new();
-    properties.insert("tokenSymbol".into(), "Fintra".into());
-    properties.insert("tokenDecimals".into(), 12.into());
-    properties.insert("ss58Format".into(), 42.into());
-
-    ChainSpec::from_genesis(
-        // Name
-        "Local Testnet",
-        // ID
-        "local_testnet",
-        ChainType::Local,
-        move || {
-            testnet_genesis(
-                // initial collators.
-                vec![
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Alice"),
-                        get_collator_keys_from_seed("Alice"),
-                    ),
-                    (
-                        get_account_id_from_seed::<sr25519::Public>("Bob"),
-                        get_collator_keys_from_seed("Bob"),
-                    ),
-                ],
-                vec![
-                    get_account_id_from_seed::<sr25519::Public>("Alice"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
-                    get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-                    get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
-                ],
-                // Give Alice root privileges
-                Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
-                1000.into(),
-            )
-        },
-        // Bootnodes
-        Vec::new(),
-        // Telemetry
-        None,
-        // Protocol ID
-        Some("template-local"),
-        // Fork ID
-        None,
-        // Properties
-        Some(properties),
-        // Extensions
-        Extensions {
-            relay_chain: "rococo-local".into(), // You MUST set this to the correct network!
-            para_id: 1000,
-            evm_since: 1,
-        },
-    )*/
 }
 
 fn testnet_genesis(
@@ -316,9 +192,6 @@ fn testnet_genesis(
     root_key: Option<AccountId>,
     id: ParaId,
 ) -> serde_json::Value  {
-    let alice = get_from_seed::<sr25519::Public>("Alice");
-    let bob = get_from_seed::<sr25519::Public>("Bob");
-
     // Explicit AccountId conversions to avoid inference inside json! macro
     let alice_acc: AccountId = get_account_id_from_seed::<sr25519::Public>("Alice");
     let bob_acc: AccountId = get_account_id_from_seed::<sr25519::Public>("Bob");

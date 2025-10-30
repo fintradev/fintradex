@@ -36,8 +36,7 @@ use sc_client_api::{
     client::BlockchainEvents,
     UsageProvider,
 };
-pub use sc_rpc::{DenyUnsafe, SubscriptionTaskExecutor};
-use sc_transaction_pool::ChainApi;
+pub use sc_rpc::SubscriptionTaskExecutor;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::{CallApiAt, ProvideRuntimeApi};
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
@@ -58,8 +57,6 @@ pub struct FullDeps<B: BlockT, C, P, CT, CIDP, BE> {
     pub backend: Arc<BE>,
     /// Transaction pool instance.
     pub pool: Arc<P>,
-    /// Whether to deny unsafe calls
-    //pub deny_unsafe: DenyUnsafe,
     /// Ethereum-compatibility specific dependencies.
     pub eth: EthDeps<B, C, P, CT, CIDP>,
 }
@@ -118,11 +115,8 @@ where
         client,
         backend,
         pool,
-        //deny_unsafe,
         eth,
     } = deps;
-    //let abc=IsmpRpcHandler::new(client.clone(), backend.clone())?;
-    //io.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
     module.merge(System::new(client.clone(), pool).into_rpc())?;
     module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
     module.merge(IsmpRpcHandler::new(client, backend.clone())?.into_rpc())?;

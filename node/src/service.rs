@@ -20,8 +20,7 @@
 
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
-// std
-use std::{path::Path, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
 use cumulus_client_cli::CollatorOptions;
 // Local Runtime Types
@@ -44,7 +43,6 @@ use cumulus_relay_chain_interface::{OverseerHandle, RelayChainInterface};
 
 // Substrate Imports
 use frame_benchmarking_cli::SUBSTRATE_REFERENCE_HARDWARE;
-use futures::FutureExt;
 use sc_client_api::Backend;
 use sc_consensus::ImportQueue;
 use sc_executor::{
@@ -58,16 +56,12 @@ use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerH
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_core::U256;
 use sp_keystore::KeystorePtr;
-use sp_api::ProvideRuntimeApi;
 pub use fc_rpc::StorageOverrideHandler;
 pub use fc_storage::StorageOverride;
-//use crate::eth::FrontierBackend;
 use polkadot_sdk::substrate_prometheus_endpoint::Registry;
-//use substrate_prometheus_endpoint::Registry;
 
 // Frontier
-use crate::eth::{
-    db_config_dir, new_frontier_partial, spawn_frontier_tasks, BackendType, EthConfiguration,
+use crate::eth::{new_frontier_partial, spawn_frontier_tasks, EthConfiguration,
     FrontierBackend, FrontierBlockImport as TFrontierBlockImport, FrontierPartialComponents,
 };
 
@@ -89,14 +83,6 @@ impl sc_executor::NativeExecutionDispatch for ParachainNativeExecutor {
 type ParachainExecutor = NativeElseWasmExecutor<ParachainNativeExecutor>;
 
 type ParachainClient = TFullClient<Block, RuntimeApi, ParachainExecutor>;
-/*type ParachainClient = TFullClient<
-	Block,
-	RuntimeApi,
-	WasmExecutor<(
-		cumulus_client_service::ParachainHostFunctions,
-		frame_benchmarking::benchmarking::HostFunctions,
-	)>,
->;*/
 
 type ParachainBackend = TFullBackend<Block>;
 
@@ -119,7 +105,6 @@ pub fn new_partial(
         (),
         sc_consensus::DefaultImportQueue<Block>,
         Arc<sc_transaction_pool::TransactionPoolHandle<Block, ParachainClient>>,
-        //sc_transaction_pool::FullPool<Block, ParachainClient>,
         (
             ParachainBlockImport,
             Option<Telemetry>,
@@ -173,14 +158,6 @@ pub fn new_partial(
             .spawn("telemetry", None, worker.run());
         telemetry
     });
-
-    /*let transaction_pool = sc_transaction_pool::BasicPool::new_full(
-        config.transaction_pool.clone(),
-        config.role.is_authority().into(),
-        config.prometheus_registry(),
-        task_manager.spawn_essential_handle(),
-        client.clone(),
-    );*/
     let transaction_pool = Arc::new(Arc::from(sc_transaction_pool::Builder::new(
 			task_manager.spawn_essential_handle(),
 			client.clone(),
@@ -189,41 +166,12 @@ pub fn new_partial(
 		.with_options(config.transaction_pool.clone())
 		.with_prometheus(config.prometheus_registry())
 		.build()));
-
-    //let overrides = crate::rpc::overrides_handle(client.clone());
     let overrides = Arc::new(StorageOverrideHandler::new(client.clone()));
-    /*let frontier_backend = match eth_config.frontier_backend_type {
-        BackendType::KeyValue => FrontierBackend::KeyValue(fc_db::kv::Backend::open(
-            Arc::clone(&client),
-            &config.database,
-            &db_config_dir(config),
-        )?),*/
         let frontier_backend = Arc::new(FrontierBackend::open(
             Arc::clone(&client),
             &config.database,
             &eth::db_config_dir(config),
         )?);
-        /*BackendType::Sql => {
-            let db_path = db_config_dir(config).join("sql");
-            std::fs::create_dir_all(&db_path).expect("failed creating sql db directory");
-            let backend = futures::executor::block_on(fc_db::sql::Backend::new(
-                fc_db::sql::BackendConfig::Sqlite(fc_db::sql::SqliteBackendConfig {
-                    path: Path::new("sqlite:///")
-                        .join(db_path)
-                        .join("frontier.db3")
-                        .to_str()
-                        .unwrap(),
-                    create_if_missing: true,
-                    thread_count: eth_config.frontier_sql_backend_thread_count,
-                    cache_size: eth_config.frontier_sql_backend_cache_size,
-                }),
-                eth_config.frontier_sql_backend_pool_size,
-                std::num::NonZeroU32::new(eth_config.frontier_sql_backend_num_ops_timeout),
-                overrides.clone(),
-            ))
-            .unwrap_or_else(|err| panic!("failed creating sql backend: {:?}", err));
-            FrontierBackend::Sql(backend)
-        }*/
     //};
 
     let frontier_block_import = FrontierBlockImport::new(client.clone(), client.clone());
@@ -278,7 +226,7 @@ async fn start_node_impl(
         import_queue,
         keystore_container,
         transaction_pool,
-        other: (block_import, mut telemetry, telemetry_worker_handle, frontier_backend, overrides),
+        other: (block_import, mut telemetry, telemetry_worker_handle, frontier_backend, _overrides),
         ..
     } = new_partial(&parachain_config, &eth_config)?;
     let transaction_pool=Arc::clone(&*transaction_pool);
@@ -309,8 +257,6 @@ let overrides = Arc::new(StorageOverrideHandler::new(client.clone()));
             maybe_registry.cloned(),
         );
 let transaction_pool=transaction_pool.clone();
-   //let param=transaction_pool.clone();
-    //let (network, system_rpc_tx, tx_handler_controller, start_network, sync_service) =
     let (network, system_rpc_tx, tx_handler_controller, sync_service) =
         build_network(BuildNetworkParams {
             parachain_config: &parachain_config,
@@ -366,20 +312,15 @@ let transaction_pool=transaction_pool.clone();
     // for ethereum-compatibility rpc.
     parachain_config.rpc.id_provider = Some(Box::new(fc_rpc::EthereumSubIdProvider));
 
-    let eth_rpc_params = crate::rpc::EthDeps {
+    let _eth_rpc_params = crate::rpc::EthDeps {
         client: client.clone(),
         pool: transaction_pool.clone(),
         graph: transaction_pool.clone(),
-        //graph: transaction_pool.pool().clone(),
         converter: Some(TransactionConverter::<Block>::default()),
         is_authority: parachain_config.role.is_authority(),
         enable_dev_signer: eth_config.enable_dev_signer,
         network: network.clone(),
         sync: sync_service.clone(),
-        //frontier_backend: match &*frontier_backend.clone() {
-            //fc_db::kv::Backend::KeyValue(b) => b.clone(),
-            //fc_db::Backend::Sqlite(b) => Arc::new(b),
-        //},
         frontier_backend: frontier_backend.clone(),
         storage_override: overrides.clone(),
         block_data_cache: Arc::new(fc_rpc::EthBlockDataCacheTask::new(
@@ -415,17 +356,6 @@ let transaction_pool=transaction_pool.clone();
                 Ok::<(sc_consensus_aura::InherentDataProvider, sp_timestamp::InherentDataProvider, fp_dynamic_fee::InherentDataProvider), sc_service::Error>((slot, timestamp, dynamic_fee))
             }
         },
-        /*pending_create_inherent_data_providers: move |_, ()| async move {
-            let current = sp_timestamp::InherentDataProvider::from_system_time();
-            let next_slot = current.timestamp().as_millis() + slot_duration.as_millis();
-            let timestamp = sp_timestamp::InherentDataProvider::new(next_slot.into());
-            let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-				*timestamp,
-				slot_duration,
-			);
-            let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-            Ok((slot, timestamp, dynamic_fee))
-        },*/
     };
 
     let rpc_builder = {
@@ -508,18 +438,6 @@ let transaction_pool=transaction_pool.clone();
     };
 
     sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        /*config: parachain_config,
-        client: client.clone(),
-        backend: backend.clone(),
-        task_manager: &mut task_manager,
-        keystore: keystore_container.keystore(),
-        transaction_pool: transaction_pool.clone(),
-        rpc_builder,
-        network: network.clone(),
-        system_rpc_tx,
-        tx_handler_controller,
-        sync_service: sync_service.clone(),
-        telemetry: telemetry.as_mut(),*/
         rpc_builder,
 		client: client.clone(),
 		transaction_pool: transaction_pool.clone(),
@@ -632,37 +550,10 @@ fn build_import_queue(
 client: Arc<ParachainClient>,
 block_import: ParachainBlockImport,
 config: &Configuration,
-eth_config: &EthConfiguration,
+_eth_config: &EthConfiguration,
 telemetry: Option<TelemetryHandle>,
 task_manager: &TaskManager,
 ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error> {
-/*let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
-let target_gas_price = eth_config.target_gas_price;
-
-// IMPORTANT: use parent state, not system_time.
-let create_inherent_data_providers = move |parent, _| {
-    let client = client.clone();
-    async move {
-        // 1) Read on-chain parent timestamp (ms). 0 only at genesis.
-        let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
-
-        // 2) Next block’s timestamp = parent + 1 slot (deterministic & monotonic)
-        let slot_ms = slot_duration.as_millis() as u64;
-        let ts = parent_ts.saturating_add(slot_ms);
-
-        // 3) Build inherents
-        let timestamp =
-            sp_timestamp::InherentDataProvider::new(ts);
-        let slot =
-            sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-                *timestamp,
-                slot_duration,
-            );
-        let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-        //tracing::info!("parent_ts={}, ts={}, slot_ms={}", parent_ts, ts, slot_ms);
-        Ok((slot, timestamp, dynamic_fee))
-    }
-};*/
 Ok(
     cumulus_client_consensus_aura::equivocation_import_queue::fully_verifying_import_queue::<
         sp_consensus_aura::sr25519::AuthorityPair,
@@ -683,59 +574,6 @@ Ok(
     ),
 )
 }
-/*fn build_import_queue(
-    client: Arc<ParachainClient>,
-    block_import: ParachainBlockImport,
-    config: &Configuration,
-    eth_config: &EthConfiguration,
-    telemetry: Option<TelemetryHandle>,
-    task_manager: &TaskManager,
-) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error> {
-    let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
-    let target_gas_price = eth_config.target_gas_price;
-    /*let create_inherent_data_providers = move |_, _| async move {
-        let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
-        let slot =
-            sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-                *timestamp,
-                slot_duration,
-            );
-        let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-        Ok((slot, timestamp, dynamic_fee))
-    };*/
-    let create_inherent_data_providers = move |_, _| async move {
-        // 1) Derive timestamp from wall clock (deterministic once inside block building)
-        let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
-    
-        // 2) Derive Aura slot *from that same timestamp* and the runtime slot duration
-        let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-            *timestamp,
-            slot_duration,
-        );
-    
-        // 3) Optional Frontier dynamic fee
-        let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-    
-        Ok((slot, timestamp, dynamic_fee))
-    };
-    Ok(
-        cumulus_client_consensus_aura::equivocation_import_queue::fully_verifying_import_queue::<
-            sp_consensus_aura::sr25519::AuthorityPair,
-            _,
-            _,
-            _,
-            _,
-        >(
-            client,
-            block_import,
-            create_inherent_data_providers,
-            slot_duration,
-            &task_manager.spawn_essential_handle(),
-            config.prometheus_registry(),
-            telemetry,
-        ),
-    )
-}*/
 fn start_consensus(
     client: Arc<ParachainClient>,
     block_import: ParachainBlockImport,
@@ -744,8 +582,7 @@ fn start_consensus(
     task_manager: &TaskManager,
     relay_chain_interface: Arc<dyn RelayChainInterface>,
     transaction_pool: Arc<sc_transaction_pool::TransactionPoolHandle<Block, ParachainClient>>,
-    //transaction_pool: Arc<sc_transaction_pool::FullPool<Block, ParachainClient>>,
-    sync_oracle: Arc<SyncingService<Block>>,
+    _sync_oracle: Arc<SyncingService<Block>>,
     keystore: KeystorePtr,
     relay_chain_slot_duration: Duration,
     para_id: ParaId,
@@ -775,10 +612,6 @@ fn start_consensus(
         announce_block,
         client.clone(),
     );
-
-    let client_clone = client.clone();
-    let relay_chain_interface_clone = relay_chain_interface.clone();
-
     let params = BasicAuraParams {
         create_inherent_data_providers: move |_, ()| {
             let slot_duration = slot_duration;
@@ -796,12 +629,10 @@ fn start_consensus(
         block_import,
         para_client: client,
         relay_client: relay_chain_interface,
-        //sync_oracle,
         keystore,
         collator_key,
         para_id,
         overseer_handle,
-        //slot_duration,
         relay_chain_slot_duration,
         proposer,
         collator_service,
@@ -819,119 +650,6 @@ fn start_consensus(
 
     Ok(())
 }
-/*fn start_consensus(
-    client: Arc<ParachainClient>,
-    block_import: ParachainBlockImport,
-    prometheus_registry: Option<&Registry>,
-    telemetry: Option<TelemetryHandle>,
-    task_manager: &TaskManager,
-    relay_chain_interface: Arc<dyn RelayChainInterface>,
-    transaction_pool: Arc<sc_transaction_pool::FullPool<Block, ParachainClient>>,
-    sync_oracle: Arc<SyncingService<Block>>,
-    keystore: KeystorePtr,
-    relay_chain_slot_duration: Duration,
-    para_id: ParaId,
-    collator_key: CollatorPair,
-    overseer_handle: OverseerHandle,
-    announce_block: Arc<dyn Fn(Hash, Option<Vec<u8>>) + Send + Sync>,
-    target_gas_price_u64: u64,
-) -> Result<(), sc_service::Error> {
-    use cumulus_client_consensus_aura::collators::basic::{
-        self as basic_aura, Params as BasicAuraParams,
-    };
-
-    // NOTE: because we use Aura here explicitly, we can use `CollatorSybilResistance::Resistant`
-    // when starting the network.
-
-    let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
-
-    let proposer_factory = sc_basic_authorship::ProposerFactory::with_proof_recording(
-        task_manager.spawn_handle(),
-        client.clone(),
-        transaction_pool,
-        prometheus_registry,
-        telemetry.clone(),
-    );
-
-    let proposer = Proposer::new(proposer_factory);
-
-    let collator_service = CollatorService::new(
-        client.clone(),
-        Arc::new(task_manager.spawn_handle()),
-        announce_block,
-        client.clone(),
-    );
-    let (client_clone, relay_chain_interface_clone) =
-        (client.clone(), relay_chain_interface.clone());
-    let params = BasicAuraParams {
-        //create_inherent_data_providers: move |_, ()| async move { Ok(()) },
-        /*create_inherent_data_providers: move |parent, ()| {
-            let client = client_clone.clone();
-            let relay_chain_interface = relay_chain_interface_clone.clone();
-            async move {
-                let inherent = ismp_parachain_inherent::ConsensusInherentProvider::create(
-                    parent,
-                    client,
-                    relay_chain_interface,
-                )
-                .await?;
-
-                Ok(inherent)
-            }
-        },*/
-        create_inherent_data_providers: move |_, ()| {
-            let relay_chain_interface = relay_chain_interface.clone();
-            let client = client.clone();
-            let target_gas_price = target_gas_price;
-    
-            async move {
-                // 1) Same timestamp source as import path
-                let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
-    
-                // 2) Same slot calc
-                let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
-                    *timestamp,
-                    slot_duration,
-                );
-    
-                // 3) Optional Frontier dynamic fee
-                let dynamic_fee = fp_dynamic_fee::InherentDataProvider(target_gas_price);
-    
-                // 4) Your ISMP inherent if you need it (optional)
-                let ismp = ismp_parachain_inherent::ConsensusInherentProvider::create(
-                parent, client, relay_chain_interface
-                ).await?;
-    
-                Ok((slot, timestamp, dynamic_fee, ismp))
-                // If you add ISMP here, you MUST also add it in the import queue tuple above.
-            }
-        },
-        block_import,
-        para_client: client,
-        relay_client: relay_chain_interface,
-        sync_oracle,
-        keystore,
-        collator_key,
-        para_id,
-        overseer_handle,
-        slot_duration,
-        relay_chain_slot_duration,
-        proposer,
-        collator_service,
-        // Very limited proposal time.
-        authoring_duration: Duration::from_millis(500),
-    };
-
-    let fut =
-        basic_aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _, _>(
-            params,
-        );
-    task_manager
-        .spawn_essential_handle()
-        .spawn("aura", None, fut);
-
-    Ok(())
-}*/
 
 /// Start a parachain node.
 pub async fn start_parachain_node(

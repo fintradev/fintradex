@@ -19,9 +19,7 @@
 //!
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 
-use std::{net::SocketAddr, sync::Arc};
 use sc_cli::RpcEndpoint;
-use codec::Encode;
 use cumulus_primitives_core::ParaId;
 use fc_db::kv::frontier_database_dir;
 use fintradex_runtime::Block;
@@ -33,10 +31,8 @@ use sc_cli::{
 };
 use sc_service::{
     config::{BasePath, PrometheusConfig},
-    DatabaseSource, PartialComponents,
+    DatabaseSource,
 };
-use sp_core::hexdisplay::HexDisplay;
-use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
 use cumulus_client_service::storage_proof_size::HostFunctions as ReclaimHostFunctions;
 #[cfg(feature = "try-runtime")]
 use crate::service::ParachainNativeExecutor;
@@ -201,24 +197,7 @@ pub fn run() -> Result<()> {
                         };
                         cmd.base.run(frontier_database_config)?;
                     }
-                    /*crate::eth::BackendType::Sql => {
-                        let db_path = db_config_dir.join("sql");
-                        match std::fs::remove_dir_all(&db_path) {
-                            Ok(_) => {
-                                println!("{:?} removed.", &db_path);
-                            }
-                            Err(ref err) if err.kind() == std::io::ErrorKind::NotFound => {
-                                eprintln!("{:?} did not exist.", &db_path);
-                            }
-                            Err(err) => {
-                                return Err(format!(
-                                    "Cannot purge `{:?}` database: {:?}",
-                                    db_path, err,
-                                )
-                                .into())
-                            }
-                        };
-                    }*/
+                  
                 };
 
                 let polkadot_cli = RelayChainCli::new(
@@ -238,15 +217,6 @@ pub fn run() -> Result<()> {
                 cmd.run(config, polkadot_config)
             })
         }
-        /*Some(Subcommand::ExportGenesisState(cmd)) => {
-            let runner = cli.create_runner(cmd)?;
-            runner.sync_run(|config| {
-                let partials = new_partial(&config, &eth_cfg)?;
-                let spec = cli.load_spec(&cmd.shared_params.chain.clone().unwrap_or_default())?;
-                //cmd.run::<fintradex_runtime::opaque::Block>(&*spec, &*partials.client)
-                cmd.run::<fintradex_runtime::opaque::Block>(&*partials.client)
-            })
-        }*/
         Some(Subcommand::ExportGenesisState(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
 			runner.sync_run(|config| {
@@ -338,19 +308,7 @@ pub fn run() -> Result<()> {
         Some(Subcommand::TryRuntime) => Err("Try-runtime was not enabled when building the node. \
 			You can enable it with `--features try-runtime`."
             .into()),
-        Some(Subcommand::FrontierDb(cmd)) => {Err("FrontierDb is not supported".into())}
-        /*Some(Subcommand::FrontierDb(cmd)) => {
-            let runner = cli.create_runner(cmd)?;
-			runner.sync_run(|mut config| {
-				let (client, _, _, _, frontier_backend) =
-					service::new_chain_ops(&mut config, &cli.eth)?;
-				let frontier_backend = match frontier_backend {
-					fc_db::Backend::KeyValue(kv) => kv,
-					_ => panic!("Only fc_db::Backend::KeyValue supported"),
-				};
-				cmd.run(client, frontier_backend)
-			})
-        }*/
+        Some(Subcommand::FrontierDb(_cmd)) => {Err("FrontierDb is not supported".into())}
         None => {
 			let runner = cli.create_runner(&cli.run.normalize())?;
 			let collator_options = cli.run.collator_options();
@@ -397,71 +355,6 @@ pub fn run() -> Result<()> {
 				.map_err(Into::into)
 			})
 		}
-        /*None => {
-            let runner = cli.create_runner(&cli.run.normalize())?;
-            let collator_options = cli.run.collator_options();
-
-            runner.run_node_until_exit(|config| async move {
-                let hwbench = (!cli.no_hardware_benchmarks)
-                    .then_some(config.database.path().map(|database_path| {
-                        let _ = std::fs::create_dir_all(database_path);
-                        polkadot_sdk::sc_sysinfo::gather_hwbench(Some(database_path),&SUBSTRATE_REFERENCE_HARDWARE)
-                    }))
-                    .flatten();
-
-                let para_id = chain_spec::Extensions::try_get(&*config.chain_spec)
-                    .map(|e| e.para_id)
-                    .ok_or("Could not find parachain ID in chain-spec.")?;
-
-                let polkadot_cli = RelayChainCli::new(
-                    &config,
-                    [RelayChainCli::executable_name()]
-                        .iter()
-                        .chain(cli.relay_chain_args.iter()),
-                );
-
-                let id = ParaId::from(para_id);
-
-                let parachain_account =
-                    AccountIdConversion::<polkadot_primitives::AccountId>::into_account_truncating(
-                        &id,
-                    );
-
-                let block: fintradex_runtime::opaque::Block =
-                    generate_genesis_block(&*config.chain_spec, sp_runtime::StateVersion::V1)
-                        .map_err(|e| format!("{:?}", e))?;
-                let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
-
-                let tokio_handle = config.tokio_handle.clone();
-                let polkadot_config =
-                    SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
-                        .map_err(|err| format!("Relay chain argument error: {}", err))?;
-
-                info!("Parachain id: {:?}", id);
-                info!("Parachain Account: {}", parachain_account);
-                info!("Parachain genesis state: {}", genesis_state);
-                info!(
-                    "Is collating: {}",
-                    if config.role.is_authority() {
-                        "yes"
-                    } else {
-                        "no"
-                    }
-                );
-
-                crate::service::start_parachain_node(
-                    config,
-                    polkadot_config,
-                    eth_cfg,
-                    collator_options,
-                    id,
-                    hwbench,
-                )
-                .await
-                .map(|r| r.0)
-                .map_err(Into::into)
-            })
-        }*/
     }
 }
 

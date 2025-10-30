@@ -8,10 +8,8 @@ use std::{
 use futures::{future, prelude::*};
 // Substrate
 use sc_client_api::{BlockchainEvents,AuxStore,UsageProvider,StorageProvider};
-use sc_executor::HostFunctions;
 use sc_network_sync::SyncingService;
 use sc_service::{error::Error as ServiceError, Configuration, TaskManager};
-use sp_api::ConstructRuntimeApi;
 use sp_core::H256;
 use sp_runtime::traits::Block as BlockT;
 use sp_api::{CallApiAt,ProvideRuntimeApi};
@@ -22,7 +20,7 @@ use fc_rpc::EthTask;
 pub use fc_rpc_core::types::{FeeHistoryCache, FeeHistoryCacheLimit, FilterPool};
 pub use fc_storage::StorageOverride;
 
-use crate::client::{FullBackend, FullClient};
+use crate::client::FullBackend;
 
 /// Frontier DB backend type.
 pub type FrontierBackend<B, C> = fc_db::kv::Backend<B, C>;
@@ -37,8 +35,7 @@ pub enum BackendType {
 	/// Either RocksDb or ParityDb as per inherited from the global backend settings.
 	#[default]
 	KeyValue,
-	/*/// Sql database with custom log indexing.
-	Sql,*/
+
 }
 
 /// The ethereum-compatibility configuration used to run a node.
