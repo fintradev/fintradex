@@ -7,13 +7,15 @@ use std::{
 
 use futures::{future, prelude::*};
 // Substrate
-use sc_client_api::BlockchainEvents;
+use sc_client_api::{BlockchainEvents,AuxStore,UsageProvider,StorageProvider};
 use sc_executor::HostFunctions;
 use sc_network_sync::SyncingService;
 use sc_service::{error::Error as ServiceError, Configuration, TaskManager};
 use sp_api::ConstructRuntimeApi;
 use sp_core::H256;
 use sp_runtime::traits::Block as BlockT;
+use sp_api::{CallApiAt,ProvideRuntimeApi};
+use sp_blockchain::{HeaderBackend,HeaderMetadata,Error as BlockChainError};
 // Frontier
 pub use fc_consensus::FrontierBlockImport;
 use fc_rpc::EthTask;
@@ -125,27 +127,35 @@ where
 {
 }
 
-pub async fn spawn_frontier_tasks<B, RA, HF>(
-	task_manager: &TaskManager,
-	client: Arc<FullClient<B, RA, HF>>,
-	backend: Arc<FullBackend<B>>,
-	frontier_backend: Arc<FrontierBackend<B, FullClient<B, RA, HF>>>,
-	filter_pool: Option<FilterPool>,
-	storage_override: Arc<dyn StorageOverride<B>>,
-	fee_history_cache: FeeHistoryCache,
-	fee_history_cache_limit: FeeHistoryCacheLimit,
-	sync: Arc<SyncingService<B>>,
-	pubsub_notification_sinks: Arc<
-		fc_mapping_sync::EthereumBlockNotificationSinks<
-			fc_mapping_sync::EthereumBlockNotification<B>,
-		>,
-	>,
+pub async fn spawn_frontier_tasks<B, C>(
+    task_manager: &TaskManager,
+    client: Arc<C>,
+    backend: Arc<FullBackend<B>>,
+    frontier_backend: Arc<FrontierBackend<B, C>>,
+    filter_pool: Option<FilterPool>,
+    storage_override: Arc<dyn StorageOverride<B>>,
+    fee_history_cache: FeeHistoryCache,
+    fee_history_cache_limit: FeeHistoryCacheLimit,
+    sync: Arc<SyncingService<B>>,
+    pubsub_notification_sinks: Arc<
+        fc_mapping_sync::EthereumBlockNotificationSinks<
+            fc_mapping_sync::EthereumBlockNotification<B>,
+        >,
+    >,
 ) where
-	B: BlockT<Hash = H256>,
-	RA: ConstructRuntimeApi<B, FullClient<B, RA, HF>>,
-	RA: Send + Sync + 'static,
-	RA::RuntimeApi: EthCompatRuntimeApiCollection<B>,
-	HF: HostFunctions + 'static,
+    B: BlockT<Hash = H256>,
+    C: CallApiAt<B>
+        + ProvideRuntimeApi<B>
+        + HeaderBackend<B>
+        + HeaderMetadata<B, Error = BlockChainError>
+        + BlockchainEvents<B>
+        + AuxStore
+        + UsageProvider<B>
+        + StorageProvider<B, FullBackend<B>>
+        + Send
+        + Sync
+        + 'static,
+    C::Api: EthCompatRuntimeApiCollection<B>,
 {
 	// Spawn main mapping sync worker background task.
 

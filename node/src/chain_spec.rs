@@ -10,7 +10,7 @@ use polkadot_sdk::{staging_xcm as xcm, *};
 use fintradex_runtime::{WASM_BINARY, Balance,BlockNumber,constants::currency::*};
 use serde_json::Map;
 //use fintradex_runtime::Balance;
-const UNITS: u32 = 1_000_000_000_000;
+const UNITS: u128 = 1_000_000_000_000;
 const INITIAL_BALANCE: u128 = 10_000;
 const INITIAL_TOKEN_BALANCE: Balance = 1_000 * UNITS as Balance;
 const PARA_ID: u32 = 5023;

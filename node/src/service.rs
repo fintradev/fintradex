@@ -51,6 +51,7 @@ use sc_executor::{
     HeapAllocStrategy, NativeElseWasmExecutor, WasmExecutor, DEFAULT_HEAP_ALLOC_STRATEGY,
 };
 use sc_network::NetworkBlock;
+use sc_network::{config::FullNetworkConfiguration as NetCfg, service::NetworkWorker};
 use sc_network_sync::SyncingService;
 use sc_service::{Configuration, PartialComponents, TFullBackend, TFullClient, TaskManager};
 use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerHandle};
@@ -302,7 +303,11 @@ let overrides = Arc::new(StorageOverrideHandler::new(client.clone()));
     let maybe_registry = parachain_config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let import_queue_service = import_queue.service();
-    let net_config = sc_network::config::FullNetworkConfiguration::new(&parachain_config.network,maybe_registry.cloned());
+    let net_config: NetCfg<Block, Hash, NetworkWorker<Block, Hash>> =
+        sc_network::config::FullNetworkConfiguration::new(
+            &parachain_config.network,
+            maybe_registry.cloned(),
+        );
 let transaction_pool=transaction_pool.clone();
    //let param=transaction_pool.clone();
     //let (network, system_rpc_tx, tx_handler_controller, start_network, sync_service) =
@@ -317,7 +322,7 @@ let transaction_pool=transaction_pool.clone();
             relay_chain_interface: relay_chain_interface.clone(),
             import_queue,
             sybil_resistance_level: CollatorSybilResistance::Resistant,
-            metrics: sc_network::NetworkBackend::<Block, Hash>::register_notification_metrics(
+            metrics: <NetworkWorker<Block, Hash> as sc_network::NetworkBackend<Block, Hash>>::register_notification_metrics(
 				parachain_config.prometheus_config.as_ref().map(|config| &config.registry),
 			),
         })
@@ -389,7 +394,7 @@ let transaction_pool=transaction_pool.clone();
         fee_history_cache_limit,
         execute_gas_limit_multiplier: eth_config.execute_gas_limit_multiplier,
         forced_parent_hashes: None,
-        pending_create_inherent_data_providers: move |_, ()| {
+        pending_create_inherent_data_providers: move |_: Hash, ()| {
             let slot_duration = slot_duration;
             let target_gas_price = target_gas_price;
             async move {
@@ -403,7 +408,7 @@ let transaction_pool=transaction_pool.clone();
                 );
                 let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
 
-                Ok((slot, timestamp, dynamic_fee))
+                Ok::<(sc_consensus_aura::InherentDataProvider, sp_timestamp::InherentDataProvider, fp_dynamic_fee::InherentDataProvider), sc_service::Error>((slot, timestamp, dynamic_fee))
             }
         },
         /*pending_create_inherent_data_providers: move |_, ()| async move {
@@ -420,17 +425,67 @@ let transaction_pool=transaction_pool.clone();
     };
 
     let rpc_builder = {
-        let client = client.clone();
-        let transaction_pool = transaction_pool.clone();
+        let client_for_rpc = client.clone();
+        let backend_for_rpc = backend.clone();
+        let pool_for_rpc = transaction_pool.clone();
+        let network_for_rpc = network.clone();
+        let sync_for_rpc = sync_service.clone();
+        let frontier_backend_for_rpc = frontier_backend.clone();
+        let overrides_for_rpc = overrides.clone();
+        let fee_history_cache_for_rpc = fee_history_cache.clone();
+        let prometheus_registry_for_rpc = prometheus_registry.clone();
+        let filter_pool_for_rpc = filter_pool.clone();
         let pubsub_notification_sinks = pubsub_notification_sinks.clone();
+        let spawn_handle = task_manager.spawn_handle();
 
         Box::new(move |subscription_task_executor| {
             let deps = crate::rpc::FullDeps {
-                client: client.clone(),
-                backend: backend.clone(),
-                pool: transaction_pool.clone(),
+                client: client_for_rpc.clone(),
+                backend: backend_for_rpc.clone(),
+                pool: pool_for_rpc.clone(),
                 //deny_unsafe,
-                eth: eth_rpc_params,
+                eth: crate::rpc::EthDeps {
+                    client: client_for_rpc.clone(),
+                    pool: pool_for_rpc.clone(),
+                    graph: pool_for_rpc.clone(),
+                    converter: Some(TransactionConverter::<Block>::default()),
+                    is_authority: parachain_config.role.is_authority(),
+                    enable_dev_signer: eth_config.enable_dev_signer,
+                    network: network_for_rpc.clone(),
+                    sync: sync_for_rpc.clone(),
+                    frontier_backend: frontier_backend_for_rpc.clone(),
+                    storage_override: overrides_for_rpc.clone(),
+                    block_data_cache: Arc::new(fc_rpc::EthBlockDataCacheTask::new(
+                        spawn_handle.clone(),
+                        overrides_for_rpc.clone(),
+                        eth_config.eth_log_block_cache,
+                        eth_config.eth_statuses_cache,
+                        prometheus_registry_for_rpc.clone(),
+                    )),
+                    filter_pool: filter_pool_for_rpc.clone(),
+                    max_past_logs: eth_config.max_past_logs,
+                    fee_history_cache: fee_history_cache_for_rpc.clone(),
+                    fee_history_cache_limit,
+                    execute_gas_limit_multiplier: eth_config.execute_gas_limit_multiplier,
+                    forced_parent_hashes: None,
+                    pending_create_inherent_data_providers: move |_, ()| {
+                        let slot_duration = slot_duration;
+                        let target_gas_price = target_gas_price;
+                        async move {
+                            let current = sp_timestamp::InherentDataProvider::from_system_time();
+                            let next_millis: u64 = (current.timestamp().as_millis() + slot_duration.as_millis()) as u64;
+
+                            let timestamp = sp_timestamp::InherentDataProvider::new(next_millis.into());
+                            let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+                                *timestamp,
+                                slot_duration,
+                            );
+                            let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
+
+                            Ok((slot, timestamp, dynamic_fee))
+                        }
+                    },
+                },
             };
 
             crate::rpc::create_full(
@@ -472,14 +527,14 @@ let transaction_pool=transaction_pool.clone();
     spawn_frontier_tasks(
         &task_manager,
         client.clone(),
-        backend,
-        frontier_backend,
-        filter_pool,
-        overrides,
-        fee_history_cache,
+        backend.clone(),
+        frontier_backend.clone(),
+        filter_pool.clone(),
+        overrides.clone(),
+        fee_history_cache.clone(),
         fee_history_cache_limit,
         sync_service.clone(),
-        pubsub_notification_sinks,
+        pubsub_notification_sinks.clone(),
     )
     .await;
 

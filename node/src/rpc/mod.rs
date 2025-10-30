@@ -43,6 +43,7 @@ use sp_api::{CallApiAt, ProvideRuntimeApi};
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_consensus_aura::{sr25519::AuthorityId as AuraId, AuraApi};
 use sp_runtime::traits::Block as BlockT;
+use sp_core::H256;
 use substrate_frame_rpc_system::SystemApiServer;
 mod eth;
 pub use self::eth::{create_eth, EthDeps};
@@ -105,7 +106,7 @@ where
     C::Api: AuraApi<Block, AuraId>,
     C::Api: pallet_ismp_runtime_api::IsmpRuntimeApi<Block, sp_core::H256>,
     BE: Backend<Block> + 'static,
-    P: TransactionPool<Block = Block> + 'static,
+    P: TransactionPool<Block = Block, Hash = H256> + 'static,
     CIDP: sp_inherents::CreateInherentDataProviders<Block, ()> + Send + 'static,
     CT: fp_rpc::ConvertTransaction<<Block as BlockT>::Extrinsic> + Send + Sync + 'static,
 {
