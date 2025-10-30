@@ -51,13 +51,14 @@ pub use self::eth::{create_eth, EthDeps};
 pub type RpcExtension = jsonrpsee::RpcModule<()>;
 
 /// Full client dependencies
-pub struct FullDeps<B: BlockT, C, P, CT, CIDP> {
+pub struct FullDeps<B: BlockT, C, P, CT, CIDP, BE> {
     /// The client instance to use.
     pub client: Arc<C>,
+    pub backend: Arc<BE>,
     /// Transaction pool instance.
     pub pool: Arc<P>,
     /// Whether to deny unsafe calls
-    pub deny_unsafe: DenyUnsafe,
+    //pub deny_unsafe: DenyUnsafe,
     /// Ethereum-compatibility specific dependencies.
     pub eth: EthDeps<B, C, P, CT, CIDP>,
 }
@@ -74,8 +75,8 @@ where
 }
 
 /// Instantiate all Full RPC extensions.
-pub fn create_full<C, P, BE, A, CT, CIDP>(
-    deps: FullDeps<C, P, A, CT, CIDP>,
+pub fn create_full<C, P, BE, CT, CIDP>(
+    deps: FullDeps<Block, C, P, CT, CIDP, BE>,
     subscription_task_executor: SubscriptionTaskExecutor,
     pubsub_notification_sinks: Arc<
         fc_mapping_sync::EthereumBlockNotificationSinks<
@@ -89,6 +90,8 @@ where
         + StorageProvider<Block, BE>
         + BlockchainEvents<Block>
         + HeaderBackend<Block>
+        + sc_client_api::BlockBackend<Block>
+        + sc_client_api::ProofProvider<Block>
         + AuxStore
         + UsageProvider<Block>
         + HeaderMetadata<Block, Error = BlockChainError>
@@ -103,29 +106,29 @@ where
     C::Api: pallet_ismp_runtime_api::IsmpRuntimeApi<Block, sp_core::H256>,
     BE: Backend<Block> + 'static,
     P: TransactionPool<Block = Block> + 'static,
-    A: ChainApi<Block = Block> + 'static,
     CIDP: sp_inherents::CreateInherentDataProviders<Block, ()> + Send + 'static,
     CT: fp_rpc::ConvertTransaction<<Block as BlockT>::Extrinsic> + Send + Sync + 'static,
 {
     use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};
     use substrate_frame_rpc_system::System;
 
-    let mut io = RpcExtension::new(());
+    let mut module = RpcExtension::new(());
     let FullDeps {
         client,
+        backend,
         pool,
-        deny_unsafe,
+        //deny_unsafe,
         eth,
     } = deps;
-
+    //let abc=IsmpRpcHandler::new(client.clone(), backend.clone())?;
     //io.merge(System::new(client.clone(), pool, deny_unsafe).into_rpc())?;
-    io.merge(System::new(client.clone(), pool).into_rpc())?;
-    io.merge(TransactionPayment::new(client).into_rpc())?;
-    io.merge(IsmpRpcHandler::new(client, backend)?.into_rpc())?;
+    module.merge(System::new(client.clone(), pool).into_rpc())?;
+    module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
+    module.merge(IsmpRpcHandler::new(client, backend.clone())?.into_rpc())?;
 
     // Ethereum compatibility RPCs
-    let io = create_eth::<Block, C, P, CT, BE, A, CIDP, DefaultEthConfig<C, BE>>(
-        io,
+    let io = create_eth::<Block, C, BE, P, CT, CIDP, DefaultEthConfig<C, BE>>(
+        module,
         eth,
         subscription_task_executor,
         pubsub_notification_sinks,

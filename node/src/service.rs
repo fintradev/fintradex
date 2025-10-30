@@ -29,6 +29,8 @@ use fintradex_runtime::{
     opaque::{Block, Hash},
     apis::RuntimeApi, TransactionConverter,
 };
+
+pub(crate) use crate::eth;
 // Cumulus Imports
 use cumulus_client_collator::service::CollatorService;
 use cumulus_client_consensus_common::ParachainBlockImport as TParachainBlockImport;
@@ -55,7 +57,9 @@ use sc_telemetry::{Telemetry, TelemetryHandle, TelemetryWorker, TelemetryWorkerH
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_core::U256;
 use sp_keystore::KeystorePtr;
+use sp_api::ProvideRuntimeApi;
 pub use fc_rpc::StorageOverrideHandler;
+pub use fc_storage::StorageOverride;
 //use crate::eth::FrontierBackend;
 use polkadot_sdk::substrate_prometheus_endpoint::Registry;
 //use substrate_prometheus_endpoint::Registry;
@@ -84,6 +88,14 @@ impl sc_executor::NativeExecutionDispatch for ParachainNativeExecutor {
 type ParachainExecutor = NativeElseWasmExecutor<ParachainNativeExecutor>;
 
 type ParachainClient = TFullClient<Block, RuntimeApi, ParachainExecutor>;
+/*type ParachainClient = TFullClient<
+	Block,
+	RuntimeApi,
+	WasmExecutor<(
+		cumulus_client_service::ParachainHostFunctions,
+		frame_benchmarking::benchmarking::HostFunctions,
+	)>,
+>;*/
 
 type ParachainBackend = TFullBackend<Block>;
 
@@ -111,7 +123,8 @@ pub fn new_partial(
             ParachainBlockImport,
             Option<Telemetry>,
             Option<TelemetryWorkerHandle>,
-            Arc<FrontierBackend<Block, ParachainClient>>
+            Arc<FrontierBackend<Block, ParachainClient>>,
+            Arc<dyn StorageOverride<Block>>,
         ),
     >,
     sc_service::Error,
@@ -167,25 +180,28 @@ pub fn new_partial(
         task_manager.spawn_essential_handle(),
         client.clone(),
     );*/
-    let transaction_pool = Arc::from(
-		sc_transaction_pool::Builder::new(
+    let transaction_pool = Arc::new(Arc::from(sc_transaction_pool::Builder::new(
 			task_manager.spawn_essential_handle(),
 			client.clone(),
 			config.role.is_authority().into(),
 		)
 		.with_options(config.transaction_pool.clone())
 		.with_prometheus(config.prometheus_registry())
-		.build(),
-	);
+		.build()));
 
     //let overrides = crate::rpc::overrides_handle(client.clone());
     let overrides = Arc::new(StorageOverrideHandler::new(client.clone()));
-    let frontier_backend = match eth_config.frontier_backend_type {
+    /*let frontier_backend = match eth_config.frontier_backend_type {
         BackendType::KeyValue => FrontierBackend::KeyValue(fc_db::kv::Backend::open(
             Arc::clone(&client),
             &config.database,
             &db_config_dir(config),
-        )?),
+        )?),*/
+        let frontier_backend = Arc::new(FrontierBackend::open(
+            Arc::clone(&client),
+            &config.database,
+            &eth::db_config_dir(config),
+        )?);
         /*BackendType::Sql => {
             let db_path = db_config_dir(config).join("sql");
             std::fs::create_dir_all(&db_path).expect("failed creating sql db directory");
@@ -207,7 +223,7 @@ pub fn new_partial(
             .unwrap_or_else(|err| panic!("failed creating sql backend: {:?}", err));
             FrontierBackend::Sql(backend)
         }*/
-    };
+    //};
 
     let frontier_block_import = FrontierBlockImport::new(client.clone(), client.clone());
 
@@ -261,10 +277,10 @@ async fn start_node_impl(
         import_queue,
         keystore_container,
         transaction_pool,
-        other: (block_import, mut telemetry, telemetry_worker_handle, frontier_backend),
+        other: (block_import, mut telemetry, telemetry_worker_handle, frontier_backend, overrides),
         ..
     } = new_partial(&parachain_config, &eth_config)?;
-let params=new_partial(&parachain_config, &eth_config)?;
+    let transaction_pool=Arc::clone(&*transaction_pool);
     let FrontierPartialComponents {
         filter_pool,
         fee_history_cache,
@@ -287,44 +303,48 @@ let overrides = Arc::new(StorageOverrideHandler::new(client.clone()));
     let prometheus_registry = parachain_config.prometheus_registry().cloned();
     let import_queue_service = import_queue.service();
     let net_config = sc_network::config::FullNetworkConfiguration::new(&parachain_config.network,maybe_registry.cloned());
-let transaction_pool=params.transaction_pool.clone().into();
-    let (network, system_rpc_tx, tx_handler_controller, start_network, sync_service) =
+let transaction_pool=transaction_pool.clone();
+   //let param=transaction_pool.clone();
+    //let (network, system_rpc_tx, tx_handler_controller, start_network, sync_service) =
+    let (network, system_rpc_tx, tx_handler_controller, sync_service) =
         build_network(BuildNetworkParams {
             parachain_config: &parachain_config,
             client: client.clone(),
-            transaction_pool: transaction_pool,
+            transaction_pool: transaction_pool.clone(),
             para_id,
             net_config,
             spawn_handle: task_manager.spawn_handle(),
             relay_chain_interface: relay_chain_interface.clone(),
             import_queue,
             sybil_resistance_level: CollatorSybilResistance::Resistant,
-            metrics:sc_network::NetworkWorker::<Block, Hash>::register_notification_metrics(
+            metrics: sc_network::NetworkBackend::<Block, Hash>::register_notification_metrics(
 				parachain_config.prometheus_config.as_ref().map(|config| &config.registry),
-			), // because of Aura
+			),
         })
         .await?;
 
     if parachain_config.offchain_worker.enabled {
-        task_manager.spawn_handle().spawn(
-            "offchain-workers-runner",
-            "offchain-worker",
-            sc_offchain::OffchainWorkers::new(sc_offchain::OffchainWorkerOptions {
-                runtime_api_provider: client.clone(),
-                is_validator: parachain_config.role.is_authority(),
-                keystore: Some(keystore_container.keystore()),
-                offchain_db: backend.offchain_storage(),
-                transaction_pool: Some(OffchainTransactionPoolFactory::new(
-                    transaction_pool.clone(),
-                )),
-                network_provider: network.clone(),
-                enable_http_requests: true,
-                custom_extensions: |_| vec![],
-            })
-            .run(client.clone(), task_manager.spawn_handle())
-            .boxed(),
-        );
-    }
+		use futures::FutureExt;
+
+		let offchain_workers =
+			sc_offchain::OffchainWorkers::new(sc_offchain::OffchainWorkerOptions {
+				runtime_api_provider: client.clone(),
+				keystore: Some(keystore_container.keystore()),
+				offchain_db: backend.offchain_storage(),
+				transaction_pool: Some(OffchainTransactionPoolFactory::new(
+					transaction_pool.clone(),
+				)),
+				network_provider: Arc::new(network.clone()),
+				is_validator: parachain_config.role.is_authority(),
+				enable_http_requests: false,
+				custom_extensions: move |_| vec![],
+			})?;
+		task_manager.spawn_handle().spawn(
+			"offchain-workers-runner",
+			"offchain-work",
+			offchain_workers.run(client.clone(), task_manager.spawn_handle()).boxed(),
+		);
+	}
 
     // Sinks for pubsub notifications.
     // Everytime a new subscription is created, a new mpsc channel is added to the sink pool.
@@ -338,21 +358,23 @@ let transaction_pool=params.transaction_pool.clone().into();
     let target_gas_price = eth_config.target_gas_price;
 
     // for ethereum-compatibility rpc.
-    parachain_config.rpc_id_provider = Some(Box::new(fc_rpc::EthereumSubIdProvider));
+    parachain_config.rpc.id_provider = Some(Box::new(fc_rpc::EthereumSubIdProvider));
 
     let eth_rpc_params = crate::rpc::EthDeps {
         client: client.clone(),
         pool: transaction_pool.clone(),
-        graph: transaction_pool.pool().clone(),
+        graph: transaction_pool.clone(),
+        //graph: transaction_pool.pool().clone(),
         converter: Some(TransactionConverter::<Block>::default()),
         is_authority: parachain_config.role.is_authority(),
         enable_dev_signer: eth_config.enable_dev_signer,
         network: network.clone(),
         sync: sync_service.clone(),
-        frontier_backend: match frontier_backend.clone() {
-            fc_db::Backend::KeyValue(b) => Arc::new(b),
-            //fc_db::Backend::Sql(b) => Arc::new(b),
-        },
+        //frontier_backend: match &*frontier_backend.clone() {
+            //fc_db::kv::Backend::KeyValue(b) => b.clone(),
+            //fc_db::Backend::Sqlite(b) => Arc::new(b),
+        //},
+        frontier_backend: frontier_backend.clone(),
         storage_override: overrides.clone(),
         block_data_cache: Arc::new(fc_rpc::EthBlockDataCacheTask::new(
             task_manager.spawn_handle(),
@@ -367,20 +389,20 @@ let transaction_pool=params.transaction_pool.clone().into();
         fee_history_cache_limit,
         execute_gas_limit_multiplier: eth_config.execute_gas_limit_multiplier,
         forced_parent_hashes: None,
-        pending_create_inherent_data_providers: move |parent, ()| {
-            let client = client.clone();
+        pending_create_inherent_data_providers: move |_, ()| {
             let slot_duration = slot_duration;
             let target_gas_price = target_gas_price;
             async move {
-                let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
-                let slot_ms = slot_duration.as_millis() as u64;
-                let ts = parent_ts.saturating_add(slot_ms);
-    
-                let timestamp = sp_timestamp::InherentDataProvider::new(ts);
-                let slot = sp_consensus_aura::inherents::InherentDataProvider
-                    ::from_timestamp_and_slot_duration(*timestamp, slot_duration);
+                let current = sp_timestamp::InherentDataProvider::from_system_time();
+                let next_millis: u64 = (current.timestamp().as_millis() + slot_duration.as_millis()) as u64;
+
+                let timestamp = sp_timestamp::InherentDataProvider::new(next_millis.into());
+                let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+                    *timestamp,
+                    slot_duration,
+                );
                 let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-    
+
                 Ok((slot, timestamp, dynamic_fee))
             }
         },
@@ -402,12 +424,13 @@ let transaction_pool=params.transaction_pool.clone().into();
         let transaction_pool = transaction_pool.clone();
         let pubsub_notification_sinks = pubsub_notification_sinks.clone();
 
-        Box::new(move |deny_unsafe, subscription_task_executor| {
+        Box::new(move |subscription_task_executor| {
             let deps = crate::rpc::FullDeps {
                 client: client.clone(),
+                backend: backend.clone(),
                 pool: transaction_pool.clone(),
-                deny_unsafe,
-                eth: eth_rpc_params.clone(),
+                //deny_unsafe,
+                eth: eth_rpc_params,
             };
 
             crate::rpc::create_full(
@@ -419,8 +442,8 @@ let transaction_pool=params.transaction_pool.clone().into();
         })
     };
 
-    let _rpc_handlers = sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        config: parachain_config,
+    sc_service::spawn_tasks(sc_service::SpawnTasksParams {
+        /*config: parachain_config,
         client: client.clone(),
         backend: backend.clone(),
         task_manager: &mut task_manager,
@@ -431,7 +454,19 @@ let transaction_pool=params.transaction_pool.clone().into();
         system_rpc_tx,
         tx_handler_controller,
         sync_service: sync_service.clone(),
-        telemetry: telemetry.as_mut(),
+        telemetry: telemetry.as_mut(),*/
+        rpc_builder,
+		client: client.clone(),
+		transaction_pool: transaction_pool.clone(),
+		task_manager: &mut task_manager,
+		config: parachain_config,
+		keystore: keystore_container.keystore(),
+		backend: backend.clone(),
+		network: network.clone(),
+		sync_service: sync_service.clone(),
+		system_rpc_tx,
+		tx_handler_controller,
+		telemetry: telemetry.as_mut(),
     })?;
 
     spawn_frontier_tasks(
@@ -453,11 +488,15 @@ let transaction_pool=params.transaction_pool.clone().into();
         // Here you can check whether the hardware meets your chains' requirements. Putting a link
         // in there and swapping out the requirements for your own are probably a good idea. The
         // requirements for a para-chain are dictated by its relay-chain.
-        if !SUBSTRATE_REFERENCE_HARDWARE.check_hardware(&hwbench,false) && validator {
-            log::warn!(
-                "⚠️  The hardware does not meet the minimal requirements for role 'Authority'."
-            );
-        }
+        match SUBSTRATE_REFERENCE_HARDWARE.check_hardware(&hwbench, false) {
+			Err(err) if validator => {
+				log::warn!(
+				"⚠️  The hardware does not meet the minimal requirements {} for role 'Authority'.",
+				err
+			);
+			},
+			_ => {},
+		}
 
         if let Some(ref mut telemetry) = telemetry {
             let telemetry_handle = telemetry.handle();
@@ -518,7 +557,7 @@ let transaction_pool=params.transaction_pool.clone().into();
         )?;
     }
 
-    start_network.start_network();
+    //start_network.start_network();
 
     Ok((task_manager, client))
 }
@@ -532,7 +571,7 @@ eth_config: &EthConfiguration,
 telemetry: Option<TelemetryHandle>,
 task_manager: &TaskManager,
 ) -> Result<sc_consensus::DefaultImportQueue<Block>, sc_service::Error> {
-let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
+/*let slot_duration = cumulus_client_consensus_aura::slot_duration(&*client)?;
 let target_gas_price = eth_config.target_gas_price;
 
 // IMPORTANT: use parent state, not system_time.
@@ -558,7 +597,7 @@ let create_inherent_data_providers = move |parent, _| {
         //tracing::info!("parent_ts={}, ts={}, slot_ms={}", parent_ts, ts, slot_ms);
         Ok((slot, timestamp, dynamic_fee))
     }
-};
+};*/
 Ok(
     cumulus_client_consensus_aura::equivocation_import_queue::fully_verifying_import_queue::<
         sp_consensus_aura::sr25519::AuthorityPair,
@@ -569,8 +608,10 @@ Ok(
     >(
         client,
         block_import,
-        //create_inherent_data_providers,
-        slot_duration,
+        move |_, _| async move {
+            let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
+            Ok(timestamp)
+        },
         &task_manager.spawn_essential_handle(),
         config.prometheus_registry(),
         telemetry,
@@ -674,7 +715,7 @@ fn start_consensus(
     let relay_chain_interface_clone = relay_chain_interface.clone();
 
     let params = BasicAuraParams {
-        create_inherent_data_providers: move |parent, ()| {
+        /*create_inherent_data_providers: move |parent, ()| {
             let client = client_clone.clone();
             let relay_chain_interface = relay_chain_interface_clone.clone();
             let slot_duration = slot_duration;
@@ -700,7 +741,8 @@ fn start_consensus(
                 // If you include ISMP above, return (slot, timestamp, dynamic_fee, ismp)
                 Ok((slot, timestamp, dynamic_fee, ismp))
             }
-        },
+        }*/
+        create_inherent_data_providers: move |_, ()| async move { Ok(()) },
         block_import,
         para_client: client,
         relay_client: relay_chain_interface,
@@ -718,7 +760,7 @@ fn start_consensus(
     };
 
     let fut =
-        basic_aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _, _>(
+        basic_aura::run::<Block, sp_consensus_aura::sr25519::AuthorityPair, _, _, _, _, _, _>(
             params,
         );
     task_manager

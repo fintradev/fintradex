@@ -17,13 +17,12 @@
 //! - Era duration: 24 hours
 //!
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
-
 pub mod currency {
     pub type Balance = u128;
     pub const MILLI_FINTS: Balance = 1_000_000_000;
     pub const CENTI_FINTS: Balance = 1_000 * MILLI_FINTS; // assume this is worth about a cent.
     pub const FINTS: Balance = 100 * CENTI_FINTS;
-
+pub type Price = sp_runtime::FixedU128;
     pub const fn deposit(items: u32, bytes: u32) -> Balance {
         //items as Balance * 15 * CENTI_FINTS + (bytes as Balance) * 6 * CENTI_FINTS
         items as Balance * 2 * CENTI_FINTS + (bytes as Balance) * (10 * MILLI_FINTS)

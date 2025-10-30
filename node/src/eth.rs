@@ -18,12 +18,12 @@ use sp_runtime::traits::Block as BlockT;
 pub use fc_consensus::FrontierBlockImport;
 use fc_rpc::EthTask;
 pub use fc_rpc_core::types::{FeeHistoryCache, FeeHistoryCacheLimit, FilterPool};
-pub use fc_storage::{StorageOverride, StorageOverrideHandler};
+pub use fc_storage::StorageOverride;
 
 use crate::client::{FullBackend, FullClient};
 
 /// Frontier DB backend type.
-pub type FrontierBackend<B, C> = fc_db::Backend<B, C>;
+pub type FrontierBackend<B, C> = fc_db::kv::Backend<B, C>;
 
 pub fn db_config_dir(config: &Configuration) -> PathBuf {
 	config.base_path.config_dir(config.chain_spec.id())
@@ -148,8 +148,7 @@ pub async fn spawn_frontier_tasks<B, RA, HF>(
 	HF: HostFunctions + 'static,
 {
 	// Spawn main mapping sync worker background task.
-	match &*frontier_backend {
-		fc_db::Backend::KeyValue(b) => {
+
 			task_manager.spawn_essential_handle().spawn(
 				"frontier-mapping-sync-worker",
 				Some("frontier"),
@@ -159,7 +158,7 @@ pub async fn spawn_frontier_tasks<B, RA, HF>(
 					client.clone(),
 					backend,
 					storage_override.clone(),
-					b.clone(),
+					frontier_backend.clone(),
 					3,
 					0u32.into(),
 					fc_mapping_sync::SyncStrategy::Normal,
@@ -168,27 +167,7 @@ pub async fn spawn_frontier_tasks<B, RA, HF>(
 				)
 				.for_each(|()| future::ready(())),
 			);
-		}
-		/*fc_db::Backend::Sql(b) => {
-			task_manager.spawn_essential_handle().spawn_blocking(
-				"frontier-mapping-sync-worker",
-				Some("frontier"),
-				fc_mapping_sync::sql::SyncWorker::run(
-					client.clone(),
-					backend,
-					b.clone(),
-					client.import_notification_stream(),
-					fc_mapping_sync::sql::SyncWorkerConfig {
-						read_notification_timeout: Duration::from_secs(30),
-						check_indexed_blocks_interval: Duration::from_secs(60),
-					},
-					fc_mapping_sync::SyncStrategy::Parachain,
-					sync,
-					pubsub_notification_sinks,
-				),
-			);
-		}*/
-	}
+		
 
 	// Spawn Frontier EthFilterApi maintenance task.
 	if let Some(filter_pool) = filter_pool {

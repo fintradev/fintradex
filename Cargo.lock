@@ -4691,7 +4691,7 @@ dependencies = [
  "parity-db",
  "parity-scale-codec",
  "parking_lot 0.12.5",
- "sc-client-db 0.47.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
+ "sc-client-db",
  "smallvec",
  "sp-blockchain",
  "sp-core",
@@ -5354,7 +5354,7 @@ dependencies = [
  "sc-chain-spec 44.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sc-cli",
  "sc-client-api",
- "sc-client-db 0.47.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-client-db",
  "sc-executor",
  "sc-executor-common",
  "sc-executor-wasmtime",
@@ -12633,7 +12633,7 @@ dependencies = [
  "sc-chain-spec 44.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sc-cli",
  "sc-client-api",
- "sc-client-db 0.47.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-client-db",
  "sc-consensus",
  "sc-consensus-manual-seal",
  "sc-executor",
@@ -13142,7 +13142,7 @@ dependencies = [
  "sc-chain-spec 44.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sc-cli",
  "sc-client-api",
- "sc-client-db 0.47.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-client-db",
  "sc-consensus",
  "sc-consensus-aura",
  "sc-consensus-babe",
@@ -13178,7 +13178,7 @@ dependencies = [
  "sc-rpc-spec-v2",
  "sc-runtime-utilities",
  "sc-service",
- "sc-state-db 0.39.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-state-db",
  "sc-statement-store",
  "sc-storage-monitor",
  "sc-sync-state-rpc",
@@ -15154,7 +15154,7 @@ dependencies = [
  "regex",
  "rpassword",
  "sc-client-api",
- "sc-client-db 0.47.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-client-db",
  "sc-keystore",
  "sc-mixnet 0.21.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sc-network",
@@ -15219,7 +15219,7 @@ dependencies = [
  "parity-scale-codec",
  "parking_lot 0.12.5",
  "sc-client-api",
- "sc-state-db 0.39.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-state-db",
  "schnellru",
  "sp-arithmetic",
  "sp-blockchain",
@@ -15229,34 +15229,6 @@ dependencies = [
  "sp-state-machine",
  "sp-trie",
  "substrate-prometheus-endpoint 0.17.7",
- "sysinfo",
-]
-
-[[package]]
-name = "sc-client-db"
-version = "0.47.0"
-source = "git+https://github.com/paritytech/polkadot-sdk?branch=stable2506#3c88ea39bda4cd2bf68b7225394efbeccffbc00a"
-dependencies = [
- "hash-db",
- "kvdb",
- "kvdb-memorydb",
- "kvdb-rocksdb",
- "linked-hash-map",
- "log",
- "parity-db",
- "parity-scale-codec",
- "parking_lot 0.12.5",
- "sc-client-api",
- "sc-state-db 0.39.0 (git+https://github.com/paritytech/polkadot-sdk?branch=stable2506)",
- "schnellru",
- "sp-arithmetic",
- "sp-blockchain",
- "sp-core",
- "sp-database",
- "sp-runtime",
- "sp-state-machine",
- "sp-trie",
- "substrate-prometheus-endpoint 0.17.6",
  "sysinfo",
 ]
 
@@ -16200,7 +16172,7 @@ dependencies = [
  "rand 0.8.5",
  "sc-chain-spec 44.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "sc-client-api",
- "sc-client-db 0.47.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sc-client-db",
  "sc-consensus",
  "sc-executor",
  "sc-informant",
@@ -16251,17 +16223,6 @@ name = "sc-state-db"
 version = "0.39.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b81d0da325c141081336e8d8724f5342f2586bbb574fde81f716f7fab447325a"
-dependencies = [
- "log",
- "parity-scale-codec",
- "parking_lot 0.12.5",
- "sp-core",
-]
-
-[[package]]
-name = "sc-state-db"
-version = "0.39.0"
-source = "git+https://github.com/paritytech/polkadot-sdk?branch=stable2506#3c88ea39bda4cd2bf68b7225394efbeccffbc00a"
 dependencies = [
  "log",
  "parity-scale-codec",

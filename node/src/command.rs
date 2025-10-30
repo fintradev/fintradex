@@ -20,7 +20,7 @@
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 
 use std::{net::SocketAddr, sync::Arc};
-
+use sc_cli::RpcEndpoint;
 use codec::Encode;
 use cumulus_primitives_core::ParaId;
 use fc_db::kv::frontier_database_dir;
@@ -37,14 +37,14 @@ use sc_service::{
 };
 use sp_core::hexdisplay::HexDisplay;
 use sp_runtime::traits::{AccountIdConversion, Block as BlockT};
-
+use cumulus_client_service::storage_proof_size::HostFunctions as ReclaimHostFunctions;
 #[cfg(feature = "try-runtime")]
 use crate::service::ParachainNativeExecutor;
 use crate::{
     chain_spec,
     cli::{Cli, RelayChainCli, Subcommand},
     eth::db_config_dir,
-    service::new_partial,
+    service::{new_partial},
 };
 
 fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
@@ -238,14 +238,23 @@ pub fn run() -> Result<()> {
                 cmd.run(config, polkadot_config)
             })
         }
-        Some(Subcommand::ExportGenesisState(cmd)) => {
+        /*Some(Subcommand::ExportGenesisState(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|config| {
                 let partials = new_partial(&config, &eth_cfg)?;
                 let spec = cli.load_spec(&cmd.shared_params.chain.clone().unwrap_or_default())?;
-                cmd.run::<fintradex_runtime::opaque::Block>(&*spec, &*partials.client)
+                //cmd.run::<fintradex_runtime::opaque::Block>(&*spec, &*partials.client)
+                cmd.run::<fintradex_runtime::opaque::Block>(&*partials.client)
             })
-        }
+        }*/
+        Some(Subcommand::ExportGenesisState(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
+			runner.sync_run(|config| {
+				let partials = new_partial(&config, &eth_cfg)?;
+
+				cmd.run(partials.client)
+			})
+		},
         Some(Subcommand::ExportGenesisWasm(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|_config| {
@@ -255,45 +264,42 @@ pub fn run() -> Result<()> {
         }
         Some(Subcommand::Benchmark(cmd)) => {
             let runner = cli.create_runner(cmd)?;
-            // Switch on the concrete benchmark sub-command-
-            match cmd {
-                BenchmarkCmd::Pallet(cmd) => {
-                    if cfg!(feature = "runtime-benchmarks") {
-                        runner.sync_run(|config| cmd.run::<Block, ()>(config))
-                    } else {
-                        Err("Benchmarking wasn't enabled when building the node. \
+			// Switch on the concrete benchmark sub-command-
+			match cmd {
+				BenchmarkCmd::Pallet(cmd) =>
+					if cfg!(feature = "runtime-benchmarks") {
+						runner.sync_run(|config| cmd.run_with_spec::<sp_runtime::traits::HashingFor<Block>, ReclaimHostFunctions>(Some(config.chain_spec)))
+					} else {
+						Err("Benchmarking wasn't enabled when building the node. \
 					You can enable it with `--features runtime-benchmarks`."
-                            .into())
-                    }
-                }
-                BenchmarkCmd::Block(cmd) => runner.sync_run(|config| {
-                    let partials = new_partial(&config, &eth_cfg)?;
-                    cmd.run(partials.client)
-                }),
-                #[cfg(not(feature = "runtime-benchmarks"))]
-                BenchmarkCmd::Storage(_) => {
-                    return Err(sc_cli::Error::Input(
-                        "Compile with --features=runtime-benchmarks \
+							.into())
+					},
+				BenchmarkCmd::Block(cmd) => runner.sync_run(|config| {
+					let partials = new_partial(&config, &eth_cfg)?;
+					cmd.run(partials.client)
+				}),
+				#[cfg(not(feature = "runtime-benchmarks"))]
+				BenchmarkCmd::Storage(_) => Err(sc_cli::Error::Input(
+					"Compile with --features=runtime-benchmarks \
 						to enable storage benchmarks."
-                            .into(),
-                    )
-                    .into())
-                }
-                #[cfg(feature = "runtime-benchmarks")]
-                BenchmarkCmd::Storage(cmd) => runner.sync_run(|config| {
-                    let partials = new_partial(&config, &eth_cfg)?;
-                    let db = partials.backend.expose_db();
-                    let storage = partials.backend.expose_storage();
-                    cmd.run(config, partials.client.clone(), db, storage)
-                }),
-                BenchmarkCmd::Machine(cmd) => {
-                    runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone()))
-                }
-                // NOTE: this allows the Client to leniently implement
-                // new benchmark commands without requiring a companion MR.
-                #[allow(unreachable_patterns)]
-                _ => Err("Benchmarking sub-command unsupported".into()),
-            }
+						.into(),
+				)),
+				#[cfg(feature = "runtime-benchmarks")]
+				BenchmarkCmd::Storage(cmd) => runner.sync_run(|config| {
+					let partials = new_partial(&config)?;
+					let db = partials.backend.expose_db();
+					let storage = partials.backend.expose_storage();
+					let shared_cache = partials.backend.expose_shared_trie_cache();
+
+					cmd.run(config, partials.client.clone(), db, storage, shared_cache)
+				}),
+				BenchmarkCmd::Machine(cmd) =>
+					runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())),
+				// NOTE: this allows the Client to leniently implement
+				// new benchmark commands without requiring a companion MR.
+				#[allow(unreachable_patterns)]
+				_ => Err("Benchmarking sub-command unsupported".into()),
+			}
         }
         #[cfg(feature = "try-runtime")]
         Some(Subcommand::TryRuntime(cmd)) => {
@@ -332,19 +338,19 @@ pub fn run() -> Result<()> {
         Some(Subcommand::TryRuntime) => Err("Try-runtime was not enabled when building the node. \
 			You can enable it with `--features try-runtime`."
             .into()),
-        Some(Subcommand::FrontierDb(cmd)) => {
+        Some(Subcommand::FrontierDb(cmd)) => {Err("FrontierDb is not supported".into())}
+        /*Some(Subcommand::FrontierDb(cmd)) => {
             let runner = cli.create_runner(cmd)?;
-            runner.sync_run(|config| {
-                let PartialComponents { client, other, .. } =
-                    crate::service::new_partial(&config, &cli.eth)?;
-                let (_, _, _, frontier_backend, _) = other;
-                let frontier_backend = match frontier_backend {
-                    fc_db::Backend::KeyValue(kv) => Arc::new(kv),
-                    _ => panic!("Only fc_db::Backend::KeyValue supported"),
-                };
-                cmd.run(client, frontier_backend)
-            })
-        }
+			runner.sync_run(|mut config| {
+				let (client, _, _, _, frontier_backend) =
+					service::new_chain_ops(&mut config, &cli.eth)?;
+				let frontier_backend = match frontier_backend {
+					fc_db::Backend::KeyValue(kv) => kv,
+					_ => panic!("Only fc_db::Backend::KeyValue supported"),
+				};
+				cmd.run(client, frontier_backend)
+			})
+        }*/
         None => {
 			let runner = cli.create_runner(&cli.run.normalize())?;
 			let collator_options = cli.run.collator_options();
@@ -367,9 +373,10 @@ pub fn run() -> Result<()> {
 					&config,
 					[RelayChainCli::executable_name()].iter().chain(cli.relay_chain_args.iter()),
 				);
-                let para_id = chain_spec::Extensions::try_get(&config.chain_spec)
+                let para_id = chain_spec::Extensions::try_get(config.chain_spec.as_ref())
                 .map(|e| e.para_id)
                 .ok_or("Could not find parachain ID in chain-spec.")?;
+            let para_id_id = ParaId::from(para_id);
 				let tokio_handle = config.tokio_handle.clone();
 				let polkadot_config =
 					SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
@@ -382,7 +389,7 @@ pub fn run() -> Result<()> {
 					polkadot_config,
                     eth_cfg,
 					collator_options,
-                    para_id,
+                    para_id_id,
 					hwbench,
 				)
 				.await
@@ -496,7 +503,7 @@ impl CliConfiguration<Self> for RelayChainCli {
             .or_else(|| self.base_path.clone().map(Into::into)))
     }
 
-    fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<Vec<SocketAddr>>> {
+    fn rpc_addr(&self, default_listen_port: u16) -> Result<Option<Vec<RpcEndpoint>>> {
         self.base.base.rpc_addr(default_listen_port)
     }
 
@@ -517,7 +524,7 @@ impl CliConfiguration<Self> for RelayChainCli {
         _logger_hook: F,
     ) -> Result<()>
     where
-        F: FnOnce(&mut sc_cli::LoggerBuilder, &sc_service::Configuration),
+    F: FnOnce(&mut sc_cli::LoggerBuilder),
     {
         unreachable!("PolkadotCli is never initialized; qed");
     }

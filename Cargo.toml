@@ -66,6 +66,7 @@ sc-chain-spec = {version = "44.0.0"}
 sc-consensus-manual-seal = {version = "0.52.0"}
 sc-block-builder = {version = "0.45.0"}
 sc-network-types={version = "0.17.0"}
+sc-client-db = { version = "0.47.0"}
 #Substrate Primitive Pallets
 sp-consensus-grandpa = { version = "24.0.0", default-features = false }
 sp-consensus={version = "0.43.0", default-features = false }
@@ -154,7 +155,7 @@ substrate-wasm-builder = {version = "27.0.0"}
 ismp = { version = "2506.1.0",default-features = false }
 token-gateway-primitives = { version = "2506.1.0", default-features = false }
 ismp-parachain = { version = "2506.1.0", default-features = false }
-pallet-ismp-rpc = { version = "2506.1.0", default-features = false }
+pallet-ismp-rpc = { version = "2506.1.0"}
 ismp-parachain-runtime-api = { version = "2506.0.0", default-features = false }
 ismp-parachain-inherent = { version = "2506.1.0"}
 #XCM Pallets
@@ -314,3 +315,7 @@ cumulus-client-service={ version = "0.25.1"}
 cumulus-client-consensus-common={ version = "0.24.0"}
 cumulus-relay-chain-interface={ version = "0.24.0"}
 cumulus-client-consensus-aura={ version = "0.24.0"}
+sc-client-db = { version = "0.47.0"}
+
+[patch."https://github.com/paritytech/frontier"]
+sc-client-db = { version = "0.47.0"}
