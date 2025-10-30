@@ -19,9 +19,9 @@
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 pub mod currency {
     pub type Balance = u128;
-    pub const MILLI_FINTS: Balance = 1_000_000_000;
-    pub const CENTI_FINTS: Balance = 1_000 * MILLI_FINTS; // assume this is worth about a cent.
-    pub const FINTS: Balance = 100 * CENTI_FINTS;
+    pub const MILLI_FINTS: Balance = crate::UNIT / 1_000;      // 0.001 FINT  = 1_000_000_000
+    pub const CENTI_FINTS: Balance = crate::UNIT / 100;        // 0.01  FINT  = 10_000_000_000
+    pub const FINTS: Balance = crate::UNIT; 
 pub type Price = sp_runtime::FixedU128;
     pub const fn deposit(items: u32, bytes: u32) -> Balance {
         //items as Balance * 15 * CENTI_FINTS + (bytes as Balance) * 6 * CENTI_FINTS

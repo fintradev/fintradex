@@ -230,13 +230,20 @@ pub mod dynamic_params {
     #[dynamic_pallet_params]
     #[codec(index = 0)]
     pub mod storage {
+        // 1 KB: 0.000246 FINT + 0.1 base ≈ 0.100246 FINT
+
+// 100 KB: 0.0246 FINT + base ≈ 0.1246 FINT
+
+//1 MB: 0.252 FINT + base ≈ 0.352 FINT
+
+//2 MB (runtime code): 0.503 FINT + base ≈ 0.603 FINT
         /// Configures the base deposit of storing some data.
         #[codec(index = 0)]
-        pub static BaseDeposit: Balance = FINTS;
+        pub static BaseDeposit: Balance = 100 * MILLI_FINTS; // 0.1 FINT = 100 * ED
 
         /// Configures the per-byte deposit of storing some data.
         #[codec(index = 1)]
-        pub static ByteDeposit: Balance = CENTI_FINTS;
+        pub static ByteDeposit: Balance = 240_000;           // plancks per byte (~0.25 FINT/MB)
     }
 }
 #[sp_version::runtime_version]

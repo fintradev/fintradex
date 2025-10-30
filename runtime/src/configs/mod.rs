@@ -70,7 +70,7 @@ use frame_support::{
     dispatch::DispatchClass,
     parameter_types,
     traits::{
-        ConstBool, ConstU32, ConstU64, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,
+        ConstBool, ConstU32, ConstU64, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,tokens::imbalance::ResolveTo
     },
     weights::{ConstantMultiplier, Weight},
     PalletId,
@@ -95,7 +95,7 @@ use super::{
     MessageQueue, Nonce, PalletInfo, ParachainSystem, Runtime, RuntimeCall, RuntimeEvent,
     RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, RuntimeTask, Session, SessionKeys,
     System, WeightToFee, XcmpQueue, AVERAGE_ON_INITIALIZE_RATIO, EXISTENTIAL_DEPOSIT, HOURS,
-    MAXIMUM_BLOCK_WEIGHT, MICRO_UNIT, NORMAL_DISPATCH_RATIO, SLOT_DURATION, VERSION,
+    MAXIMUM_BLOCK_WEIGHT, MICRO_UNIT, NORMAL_DISPATCH_RATIO, SLOT_DURATION, VERSION,Treasury,
 };
 use xcm_config::{RelayLocation, XcmOriginToTransactDispatchOrigin};
 
@@ -174,19 +174,20 @@ impl cumulus_pallet_weight_reclaim::Config for Runtime {
 }
 parameter_types! {
     pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
+    pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
 impl pallet_balances::Config for Runtime {
-    type MaxLocks = ConstU32<50>;
+    type MaxLocks = ConstU32<32>;
     /// The type for recording an account's balance.
     type Balance = Balance;
     /// The ubiquitous event type.
     type RuntimeEvent = RuntimeEvent;
-    type DustRemoval = ();
+    type DustRemoval = ResolveTo<TreasuryAccount,Balances>;
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
-    type MaxReserves = ConstU32<50>;
+    type MaxReserves = ConstU32<32>;
     type ReserveIdentifier = [u8; 8];
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
