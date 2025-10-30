@@ -360,6 +360,7 @@ let transaction_pool=transaction_pool.clone();
     > = Default::default();
     let pubsub_notification_sinks = Arc::new(pubsub_notification_sinks);
     let slot_duration = sc_consensus_aura::slot_duration(&*client)?;
+    log::info!("Aura slot duration (ms): {}", slot_duration.as_millis());
     let target_gas_price = eth_config.target_gas_price;
 
     // for ethereum-compatibility rpc.
@@ -399,9 +400,12 @@ let transaction_pool=transaction_pool.clone();
             let target_gas_price = target_gas_price;
             async move {
                 let current = sp_timestamp::InherentDataProvider::from_system_time();
-                let next_millis: u64 = (current.timestamp().as_millis() + slot_duration.as_millis()) as u64;
+                let now_millis: u64 = current.timestamp().as_millis() as u64;
+                let slot_ms: u64 = slot_duration.as_millis() as u64;
+                // Align timestamp to the start of the CURRENT slot (floor), matching Aura's CurrentSlot
+                let aligned_current_slot_ms: u64 = (now_millis / slot_ms) * slot_ms;
 
-                let timestamp = sp_timestamp::InherentDataProvider::new(next_millis.into());
+                let timestamp = sp_timestamp::InherentDataProvider::new(aligned_current_slot_ms.into());
                 let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
                     *timestamp,
                     slot_duration,
@@ -473,9 +477,15 @@ let transaction_pool=transaction_pool.clone();
                         let target_gas_price = target_gas_price;
                         async move {
                             let current = sp_timestamp::InherentDataProvider::from_system_time();
-                            let next_millis: u64 = (current.timestamp().as_millis() + slot_duration.as_millis()) as u64;
-
-                            let timestamp = sp_timestamp::InherentDataProvider::new(next_millis.into());
+                            let now_millis: u64 = current.timestamp().as_millis() as u64;
+                            let slot_ms: u64 = slot_duration.as_millis() as u64;
+                            let computed_slot: u64 = now_millis / slot_ms;
+                            log::info!(
+                                "pending-inherent debug: now_ms={}, slot_ms={}, computed_slot={} (no align)",
+                                now_millis, slot_ms, computed_slot
+                            );
+                            // Use current time directly for pending state; proposer sets the real timestamp
+                            let timestamp = sp_timestamp::InherentDataProvider::new(now_millis.into());
                             let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
                                 *timestamp,
                                 slot_duration,
@@ -770,34 +780,19 @@ fn start_consensus(
     let relay_chain_interface_clone = relay_chain_interface.clone();
 
     let params = BasicAuraParams {
-        /*create_inherent_data_providers: move |parent, ()| {
-            let client = client_clone.clone();
-            let relay_chain_interface = relay_chain_interface_clone.clone();
+        create_inherent_data_providers: move |_, ()| {
             let slot_duration = slot_duration;
             let target_gas_price = target_gas_price_u64;
-
             async move {
-                // 1) Parent on-chain time
-                let parent_ts: u64 = client.runtime_api().timestamp_now(parent).unwrap_or(0);
-                let slot_ms = slot_duration.as_millis() as u64;
-                let ts = parent_ts.saturating_add(slot_ms);
-
-                // 2) Inherents
-                let timestamp = sp_timestamp::InherentDataProvider::new(ts);
-                let slot = sp_consensus_aura::inherents::InherentDataProvider
-                    ::from_timestamp_and_slot_duration(*timestamp, slot_duration);
+                let timestamp = sp_timestamp::InherentDataProvider::from_system_time();
+                let slot = sp_consensus_aura::inherents::InherentDataProvider::from_timestamp_and_slot_duration(
+                    *timestamp,
+                    slot_duration,
+                );
                 let dynamic_fee = fp_dynamic_fee::InherentDataProvider(U256::from(target_gas_price));
-                //tracing::info!("parent_ts={}, ts={}, slot_ms={}", parent_ts, ts, slot_ms);
-                // 3) (Optional) ISMP inherent — include it here only if you also include it in the import queue!
-                let ismp = ismp_parachain_inherent::ConsensusInherentProvider::create(
-                     parent, client.clone(), relay_chain_interface.clone()
-                 ).await?;
-
-                // If you include ISMP above, return (slot, timestamp, dynamic_fee, ismp)
-                Ok((slot, timestamp, dynamic_fee, ismp))
+                Ok((slot, timestamp, dynamic_fee))
             }
-        }*/
-        create_inherent_data_providers: move |_, ()| async move { Ok(()) },
+        },
         block_import,
         para_client: client,
         relay_client: relay_chain_interface,
