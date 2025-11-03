@@ -53,11 +53,18 @@ parameter_types! {
     pub const FintraLocation: Location = Location::parent();
 
     pub const RelayLocation: Location = Location::parent();
+    // For Paseo testnet, use ByGenesis with the genesis hash:
+    // pub const RelayNetwork: Option<NetworkId> = Some(NetworkId::ByGenesis([/* Paseo genesis hash */]));
+    // For now, set to None if network identification isn't strictly needed:
     pub const RelayNetwork: Option<NetworkId> = None;
     pub RelayChainOrigin: RuntimeOrigin = cumulus_pallet_xcm::Origin::Relay.into();
     // For the real deployment, it is recommended to set `RelayNetwork` according to the relay chain
     // and prepend `UniversalLocation` with `GlobalConsensus(RelayNetwork::get())`.
     pub UniversalLocation: InteriorLocation = Parachain(ParachainInfo::parachain_id().into()).into();
+// One XCM operation is 1_000_000_000 weight - almost certainly a conservative estimate.
+pub UnitWeightCost: Weight = Weight::from_parts(1_000_000_000, 64 * 1024);
+pub const MaxInstructions: u32 = 100;
+pub const MaxAssetsIntoHolding: u32 = 64;
 }
 
 /// Type for specifying how a `Location` can be converted into an `AccountId`. This is used
@@ -106,13 +113,6 @@ pub type XcmOriginToTransactDispatchOrigin = (
     // Xcm origins can be represented natively under the Xcm pallet's Xcm origin.
     XcmPassthrough<RuntimeOrigin>,
 );
-
-parameter_types! {
-    // One XCM operation is 1_000_000_000 weight - almost certainly a conservative estimate.
-    pub UnitWeightCost: Weight = Weight::from_parts(1_000_000_000, 64 * 1024);
-    pub const MaxInstructions: u32 = 100;
-    pub const MaxAssetsIntoHolding: u32 = 64;
-}
 
 pub struct ParentOrParentsExecutivePlurality;
 impl Contains<Location> for ParentOrParentsExecutivePlurality {

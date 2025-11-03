@@ -557,6 +557,8 @@ mod runtime {
     pub type Hyperbridge = pallet_hyperbridge::Pallet<Runtime>;
     #[runtime::pallet_index(46)]
     pub type TokenGateway = pallet_token_gateway::Pallet<Runtime>;
+    #[runtime::pallet_index(47)]
+    pub type Contracts = pallet_contracts::Pallet<Runtime>;
 }
 
 #[docify::export(register_validate_block)]

@@ -53,7 +53,36 @@ impl pallet_referenda::TracksInfo<Balance, BlockNumber> for TracksInfo {
                 },
             },
         );
-        Box::new(vec![root].into_iter())
+        let gateway = Cow::Owned(
+            pallet_referenda::Track::<Self::Id, Balance, BlockNumber, 25> {
+                id: 33,
+                info: pallet_referenda::TrackInfo {
+                    name: {
+                        let mut name = [0u8; 25];
+                        let raw = b"gateway-admin";
+                        name[..raw.len()].copy_from_slice(raw);
+                        name
+                    },
+                    max_deciding: 1,
+                    decision_deposit: 10 * FINTS,
+                    prepare_period: 2 * DAYS,
+                    decision_period: 7 * DAYS,
+                    confirm_period: 2 * DAYS,
+                    min_enactment_period: 3 * DAYS,
+                    min_approval: pallet_referenda::Curve::LinearDecreasing {
+                        length: Perbill::from_percent(100),
+                        floor: Perbill::from_percent(50),
+                        ceil: Perbill::from_percent(100),
+                    },
+                    min_support: pallet_referenda::Curve::Reciprocal {
+                        factor: 20_000_000.into(),
+                        x_offset: 0.into(),
+                        y_offset: 10_000.into(),
+                    },
+                },
+            },
+        );
+        Box::new(vec![root,gateway].into_iter())
             as Box<
                 dyn Iterator<
                     Item = Cow<'static, pallet_referenda::Track<Self::Id, Balance, BlockNumber>>,

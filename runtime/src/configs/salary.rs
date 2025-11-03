@@ -4,8 +4,7 @@ use crate::{
 use frame_support::{
     parameter_types,
     traits::{
-        tokens::{GetSalary, PayFromAccount},
-        ConstU32,
+        tokens::{GetSalary, PayFromAccount}
     },
 };
 parameter_types! {
@@ -23,7 +22,6 @@ impl GetSalary<u16, AccountId, Balance> for SalaryForRank {
         Balance::from(a) * 1000 * FINTS
     }*/
     fn get_salary(rank: u16, _who: &AccountId) -> Balance {
-        use sp_runtime::traits::{Saturating, Bounded};
         let base   : Balance = 5 * FINTS;
         let per_rank: Balance = 2 * FINTS;
         let cap    : Balance = 100 * FINTS;

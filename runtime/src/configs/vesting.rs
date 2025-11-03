@@ -4,9 +4,9 @@ use crate::{Balance, Balances, Runtime, RuntimeEvent};
 use frame_support::{parameter_types, traits::WithdrawReasons};
 use sp_runtime::traits::ConvertInto;
 parameter_types! {
-    pub const MinVestedTransfer: Balance = 100 * FINTS;
+    pub const MinVestedTransfer: Balance = 1 * FINTS;
     pub UnvestedFundsAllowedWithdrawReasons: WithdrawReasons =
-        WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE);
+        WithdrawReasons::except(WithdrawReasons::TRANSFER | WithdrawReasons::RESERVE | WithdrawReasons::TIP);
 }
 impl pallet_vesting::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;

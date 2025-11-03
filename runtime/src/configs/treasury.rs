@@ -22,7 +22,7 @@
 //use crate::configs::collective::CouncilCollective;
 use crate::{
     constants::{currency::*, time::*},
-    AccountId, AssetRate, Assets, Balance, Balances, BlockNumber, Bounties, PalletId,
+    AccountId, AssetRate, Assets, Balance, Balances, BlockNumber,PalletId,
     Runtime, RuntimeEvent, Treasury,
 };
 use frame_support::{

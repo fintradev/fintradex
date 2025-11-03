@@ -1,7 +1,7 @@
 use crate::{AccountId, CoreFellowship, RankedPolls, Runtime, RuntimeEvent, Salary};
 use frame_support::traits::ConstU16;
 use frame_system::{EnsureRoot, EnsureRootWithSuccess};
-use sp_runtime::traits::{Convert, Identity, MaybeConvert};
+use sp_runtime::traits::{Convert,MaybeConvert};
 
 // Wrapper struct to implement MaybeConvert for MaxMemberCount
 // This converts any u16 rank to a fixed u32 member count limit
