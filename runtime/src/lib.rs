@@ -144,6 +144,7 @@ pub type SignedExtra = (
     frame_system::CheckWeight<Runtime>,
     pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
     cumulus_pallet_weight_reclaim::StorageWeightReclaim<Runtime, ()>,
+    frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 //pub type UncheckedExtrinsic =
@@ -251,10 +252,10 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
     impl_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
     authoring_version: 1,
-    spec_version: 5,
+    spec_version: 6,
     impl_version: 0,
     apis: apis::RUNTIME_API_VERSIONS,
-    transaction_version: 1,
+    transaction_version: 2,
     system_version: 1,
 };
 impl<B: BlockT> fp_rpc::ConvertTransaction<<B as BlockT>::Extrinsic> for TransactionConverter<B> {
@@ -368,9 +369,9 @@ pub BlockWeights: frame_system::limits::BlockWeights =
             NORMAL_DISPATCH_RATIO,
         );
     pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
-        ::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+        ::max_with_normal_ratio(4 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
     pub RuntimeBlockLength: frame_system::limits::BlockLength =
-    frame_system::limits::BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+    frame_system::limits::BlockLength::max_with_normal_ratio(4 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
     pub RuntimeBlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::builder()
         .base_block(BlockExecutionWeight::get())
         .for_class(DispatchClass::all(), |weights| {
