@@ -1,7 +1,7 @@
 use crate::{constants::currency::*, Balances, Runtime, RuntimeEvent};
 use frame_support::parameter_types;
 parameter_types! {
-    pub const IndexDeposit: Balance = DOLLARS;
+    pub const IndexDeposit: Balance = FINTS;
 }
 
 impl pallet_indices::Config for Runtime {

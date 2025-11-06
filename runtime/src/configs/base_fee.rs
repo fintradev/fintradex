@@ -34,6 +34,7 @@ parameter_types! {
 pub struct BaseFeeThreshold;
 impl pallet_base_fee::BaseFeeThreshold for BaseFeeThreshold {
     fn lower() -> Permill {
+        //Permill::from_parts(500_000)
         Permill::zero()
     }
     fn ideal() -> Permill {

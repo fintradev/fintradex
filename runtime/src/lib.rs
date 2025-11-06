@@ -144,6 +144,7 @@ pub type SignedExtra = (
     frame_system::CheckWeight<Runtime>,
     pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
     cumulus_pallet_weight_reclaim::StorageWeightReclaim<Runtime, ()>,
+    frame_metadata_hash_extension::CheckMetadataHash<Runtime>,
 );
 /// Unchecked extrinsic type as expected by this runtime.
 //pub type UncheckedExtrinsic =
@@ -230,13 +231,20 @@ pub mod dynamic_params {
     #[dynamic_pallet_params]
     #[codec(index = 0)]
     pub mod storage {
+        // 1 KB: 0.000246 FINT + 0.1 base ≈ 0.100246 FINT
+
+// 100 KB: 0.0246 FINT + base ≈ 0.1246 FINT
+
+//1 MB: 0.252 FINT + base ≈ 0.352 FINT
+
+//2 MB (runtime code): 0.503 FINT + base ≈ 0.603 FINT
         /// Configures the base deposit of storing some data.
         #[codec(index = 0)]
-        pub static BaseDeposit: Balance = DOLLARS;
+        pub static BaseDeposit: Balance = 100 * MILLI_FINTS; // 0.1 FINT = 100 * ED
 
         /// Configures the per-byte deposit of storing some data.
         #[codec(index = 1)]
-        pub static ByteDeposit: Balance = CENTS;
+        pub static ByteDeposit: Balance = 240_000;           // plancks per byte (~0.25 FINT/MB)
     }
 }
 #[sp_version::runtime_version]
@@ -244,10 +252,10 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
     spec_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
     impl_name: alloc::borrow::Cow::Borrowed("fintradex-runtime"),
     authoring_version: 1,
-    spec_version: 5,
+    spec_version: 6,
     impl_version: 0,
     apis: apis::RUNTIME_API_VERSIONS,
-    transaction_version: 1,
+    transaction_version: 2,
     system_version: 1,
 };
 impl<B: BlockT> fp_rpc::ConvertTransaction<<B as BlockT>::Extrinsic> for TransactionConverter<B> {
@@ -361,9 +369,9 @@ pub BlockWeights: frame_system::limits::BlockWeights =
             NORMAL_DISPATCH_RATIO,
         );
     pub BlockLength: frame_system::limits::BlockLength = frame_system::limits::BlockLength
-        ::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+        ::max_with_normal_ratio(4 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
     pub RuntimeBlockLength: frame_system::limits::BlockLength =
-    frame_system::limits::BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
+    frame_system::limits::BlockLength::max_with_normal_ratio(4 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
     pub RuntimeBlockWeights: frame_system::limits::BlockWeights = frame_system::limits::BlockWeights::builder()
         .base_block(BlockExecutionWeight::get())
         .for_class(DispatchClass::all(), |weights| {
@@ -550,6 +558,8 @@ mod runtime {
     pub type Hyperbridge = pallet_hyperbridge::Pallet<Runtime>;
     #[runtime::pallet_index(46)]
     pub type TokenGateway = pallet_token_gateway::Pallet<Runtime>;
+    #[runtime::pallet_index(47)]
+    pub type Contracts = pallet_contracts::Pallet<Runtime>;
 }
 
 #[docify::export(register_validate_block)]
@@ -561,9 +571,9 @@ cumulus_pallet_parachain_system::register_validate_block! {
 pub struct TransactionConverter<B>(PhantomData<B>);
 
 impl<B> Default for TransactionConverter<B> {
-    fn default() -> Self {
-        Self(PhantomData)
-    }
+	fn default() -> Self {
+		Self(PhantomData)
+	}
 }
 impl sp_core::Get<RuntimeVersion> for Runtime {
     fn get() -> RuntimeVersion {

@@ -8,6 +8,7 @@ use frame_support::{
 use frame_system::EnsureRoot;
 parameter_types! {
     pub const PreimageHoldReason: RuntimeHoldReason = RuntimeHoldReason::Preimage(pallet_preimage::HoldReason::Preimage);
+
 }
 
 impl pallet_preimage::Config for Runtime {

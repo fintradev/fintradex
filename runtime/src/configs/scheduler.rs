@@ -29,7 +29,7 @@ use frame_support::{
 };
 use frame_system::EnsureRoot;
 parameter_types! {
-    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
+    pub MaximumSchedulerWeight: Weight = Perbill::from_percent(70) *
         RuntimeBlockWeights::get().max_block;
 }
 use frame_system::Pallet as System;
@@ -43,7 +43,7 @@ impl pallet_scheduler::Config for Runtime {
     #[cfg(feature = "runtime-benchmarks")]
     type MaxScheduledPerBlock = ConstU32<512>;
     #[cfg(not(feature = "runtime-benchmarks"))]
-    type MaxScheduledPerBlock = ConstU32<50>;
+    type MaxScheduledPerBlock = ConstU32<30>;
     type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
     type OriginPrivilegeCmp = EqualPrivilegeOnly;
     type Preimages = Preimage;

@@ -1,5 +1,5 @@
 use crate::{
-    AccountId, Assets, Balance, Balances, Ismp, IsmpParachain, Runtime, Timestamp, TokenGateway,
+    AccountId, Assets, Balance, Balances, Ismp, IsmpParachain, Runtime, Timestamp,
     Treasury, Weight,
 };
 use alloc::boxed::Box;
@@ -42,7 +42,7 @@ parameter_types! {
     // For example, the hyperbridge parachain on Polkadot
     pub const Coprocessor: Option<StateMachine> = Some(StateMachine::Polkadot(3367));
     // The host state machine of this pallet, your state machine id goes here
-    pub const HostStateMachine: StateMachine = StateMachine::Polkadot(1000); // polkadot
+    pub const HostStateMachine: StateMachine = StateMachine::Polkadot(4910); // polkadot
     // pub const HostStateMachine: StateMachine = StateMachine::Kusama(1000); // kusama
     // pub const HostStateMachine: StateMachine = StateMachine::Substrate(*b"MYID"); // solochain
 }
@@ -98,7 +98,6 @@ impl pallet_token_gateway::Config for Runtime {
     type NativeCurrency = Balances;
     type AssetAdmin = TreasuryAccount;
     #[cfg(not(feature = "runtime-benchmarks"))]
-    //type CreateOrigin = EitherOf<EnsureRoot<Self::AccountId>, EitherOf<pallet_collective::EnsureProportionAtLeast<AccountId, TechnicalCollective, 2, 3>, GeneralAdmin>>;
     type CreateOrigin = EnsureSigned<Self::AccountId>;
     #[cfg(feature = "runtime-benchmarks")]
     type CreateOrigin = frame_system::EnsureSigned<Self::AccountId>;
@@ -113,10 +112,10 @@ impl pallet_token_gateway::Config for Runtime {
 pub struct Router;
 
 impl IsmpRouter for Router {
-    /*fn module_for_id(&self, _bytes: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
+    fn module_for_id(&self, _bytes: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
         Ok(Box::new(ProxyModule::default()))
-    }*/
-    fn module_for_id(&self, id: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
+    }
+    /*fn module_for_id(&self, id: Vec<u8>) -> Result<Box<dyn IsmpModule>, anyhow::Error> {
         match id.as_slice() {
             id if TokenGateway::is_token_gateway(&id) => Ok(Box::new(TokenGateway::default())),
             pallet_hyperbridge::PALLET_HYPERBRIDGE_ID => {
@@ -124,7 +123,7 @@ impl IsmpRouter for Router {
             }
             _ => Err(ismp::Error::ModuleNotFound(id))?,
         }
-    }
+    }*/
 }
 #[derive(Default)]
 pub struct ProxyModule;

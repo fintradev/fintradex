@@ -35,7 +35,7 @@ impl pallet_multisig::Config for Runtime {
 
     /// The maximum number of signatories allowed in a multisig.
     /// Set to 100 to allow for large multisig groups while preventing excessive storage usage.
-    type MaxSignatories = ConstU32<100>;
+    type MaxSignatories = ConstU32<32>;
 
     /// Weight information for the extrinsics in this pallet.
     type WeightInfo = pallet_multisig::weights::SubstrateWeight<Runtime>;

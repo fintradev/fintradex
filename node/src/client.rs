@@ -1,17 +1,14 @@
 use codec::Codec;
-// Substrate
-use sc_executor::WasmExecutor;
+
 use sp_runtime::traits::{Block as BlockT, MaybeDisplay};
 
 use crate::eth::EthCompatRuntimeApiCollection;
 
 /// Full backend.
 pub type FullBackend<B> = sc_service::TFullBackend<B>;
-/// Full client.
-pub type FullClient<B, RA, HF> = sc_service::TFullClient<B, RA, WasmExecutor<HF>>;
 
 /// A set of APIs that every runtime must implement.
-pub trait BaseRuntimeApiCollection<Block: BlockT>:
+pub trait _BaseRuntimeApiCollection<Block: BlockT>:
 	sp_api::ApiExt<Block>
 	+ sp_api::Metadata<Block>
 	+ sp_block_builder::BlockBuilder<Block>
@@ -21,7 +18,7 @@ pub trait BaseRuntimeApiCollection<Block: BlockT>:
 {
 }
 
-impl<Block, Api> BaseRuntimeApiCollection<Block> for Api
+impl<Block, Api> _BaseRuntimeApiCollection<Block> for Api
 where
 	Block: BlockT,
 	Api: sp_api::ApiExt<Block>
@@ -34,14 +31,14 @@ where
 }
 
 /// A set of APIs that template runtime must implement.
-pub trait RuntimeApiCollection<
+pub trait _RuntimeApiCollection<
 	Block: BlockT,
 	AuraId: Codec,
 	AccountId: Codec,
 	Nonce: Codec,
 	Balance: Codec + MaybeDisplay,
 >:
-	BaseRuntimeApiCollection<Block>
+	_BaseRuntimeApiCollection<Block>
 	+ EthCompatRuntimeApiCollection<Block>
 	+ sp_consensus_aura::AuraApi<Block, AuraId>
 	+ sp_consensus_grandpa::GrandpaApi<Block>
@@ -51,14 +48,14 @@ pub trait RuntimeApiCollection<
 }
 
 impl<Block, AuraId, AccountId, Nonce, Balance, Api>
-	RuntimeApiCollection<Block, AuraId, AccountId, Nonce, Balance> for Api
+	_RuntimeApiCollection<Block, AuraId, AccountId, Nonce, Balance> for Api
 where
 	Block: BlockT,
 	AuraId: Codec,
 	AccountId: Codec,
 	Nonce: Codec,
 	Balance: Codec + MaybeDisplay,
-	Api: BaseRuntimeApiCollection<Block>
+	Api: _BaseRuntimeApiCollection<Block>
 		+ EthCompatRuntimeApiCollection<Block>
 		+ sp_consensus_aura::AuraApi<Block, AuraId>
 		+ sp_consensus_grandpa::GrandpaApi<Block>

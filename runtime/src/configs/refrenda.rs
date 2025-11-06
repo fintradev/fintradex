@@ -12,7 +12,7 @@ use sp_runtime::Perbill;
 
 parameter_types! {
     pub const AlarmInterval: BlockNumber = 1;
-    pub const SubmissionDeposit: Balance = 100 * DOLLARS;
+    pub const SubmissionDeposit: Balance = 5 * FINTS;
     pub const UndecidingTimeout: BlockNumber = 28 * DAYS;
 }
 
@@ -35,25 +35,54 @@ impl pallet_referenda::TracksInfo<Balance, BlockNumber> for TracksInfo {
                         name
                     },
                     max_deciding: 1,
-                    decision_deposit: 10 * DOLLARS,
-                    prepare_period: 4 * DAYS,
-                    decision_period: 4 * DAYS,
+                    decision_deposit: 10 * FINTS,
+                    prepare_period: 2 * DAYS,
+                    decision_period: 7 * DAYS,
                     confirm_period: 2 * DAYS,
-                    min_enactment_period: 4 * DAYS,
+                    min_enactment_period: 3 * DAYS,
                     min_approval: pallet_referenda::Curve::LinearDecreasing {
                         length: Perbill::from_percent(100),
                         floor: Perbill::from_percent(50),
                         ceil: Perbill::from_percent(100),
                     },
-                    min_support: pallet_referenda::Curve::LinearDecreasing {
-                        length: Perbill::from_percent(100),
-                        floor: Perbill::from_percent(0),
-                        ceil: Perbill::from_percent(100),
+                    min_support: pallet_referenda::Curve::Reciprocal {
+                        factor: 30_000_000.into(),
+                        x_offset: 0.into(),
+                        y_offset: 10_000.into(),
                     },
                 },
             },
         );
-        Box::new(vec![root].into_iter())
+        let gateway = Cow::Owned(
+            pallet_referenda::Track::<Self::Id, Balance, BlockNumber, 25> {
+                id: 33,
+                info: pallet_referenda::TrackInfo {
+                    name: {
+                        let mut name = [0u8; 25];
+                        let raw = b"gateway-admin";
+                        name[..raw.len()].copy_from_slice(raw);
+                        name
+                    },
+                    max_deciding: 1,
+                    decision_deposit: 10 * FINTS,
+                    prepare_period: 2 * DAYS,
+                    decision_period: 7 * DAYS,
+                    confirm_period: 2 * DAYS,
+                    min_enactment_period: 3 * DAYS,
+                    min_approval: pallet_referenda::Curve::LinearDecreasing {
+                        length: Perbill::from_percent(100),
+                        floor: Perbill::from_percent(50),
+                        ceil: Perbill::from_percent(100),
+                    },
+                    min_support: pallet_referenda::Curve::Reciprocal {
+                        factor: 20_000_000.into(),
+                        x_offset: 0.into(),
+                        y_offset: 10_000.into(),
+                    },
+                },
+            },
+        );
+        Box::new(vec![root,gateway].into_iter())
             as Box<
                 dyn Iterator<
                     Item = Cow<'static, pallet_referenda::Track<Self::Id, Balance, BlockNumber>>,
@@ -86,7 +115,7 @@ impl pallet_referenda::Config for Runtime {
     type Votes = pallet_conviction_voting::VotesOf<Runtime>;
     type Tally = pallet_conviction_voting::TallyOf<Runtime>;
     type SubmissionDeposit = SubmissionDeposit;
-    type MaxQueued = ConstU32<100>;
+    type MaxQueued = ConstU32<50>;
     type UndecidingTimeout = UndecidingTimeout;
     type AlarmInterval = AlarmInterval;
     type Tracks = TracksInfo;

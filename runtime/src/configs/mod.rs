@@ -70,7 +70,7 @@ use frame_support::{
     dispatch::DispatchClass,
     parameter_types,
     traits::{
-        ConstBool, ConstU32, ConstU64, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,
+        ConstBool, ConstU32, ConstU64, ConstU8, EitherOfDiverse, TransformOrigin, VariantCountOf,tokens::imbalance::ResolveTo
     },
     weights::{ConstantMultiplier, Weight},
     PalletId,
@@ -88,7 +88,6 @@ use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_runtime::Perbill;
 use sp_version::RuntimeVersion;
 use xcm::latest::prelude::BodyId;
-
 // Local module imports
 use super::{
     weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight},
@@ -96,7 +95,7 @@ use super::{
     MessageQueue, Nonce, PalletInfo, ParachainSystem, Runtime, RuntimeCall, RuntimeEvent,
     RuntimeFreezeReason, RuntimeHoldReason, RuntimeOrigin, RuntimeTask, Session, SessionKeys,
     System, WeightToFee, XcmpQueue, AVERAGE_ON_INITIALIZE_RATIO, EXISTENTIAL_DEPOSIT, HOURS,
-    MAXIMUM_BLOCK_WEIGHT, MICRO_UNIT, NORMAL_DISPATCH_RATIO, SLOT_DURATION, VERSION,
+    MAXIMUM_BLOCK_WEIGHT, MICRO_UNIT, NORMAL_DISPATCH_RATIO, SLOT_DURATION, VERSION,Treasury,
 };
 use xcm_config::{RelayLocation, XcmOriginToTransactDispatchOrigin};
 
@@ -162,13 +161,7 @@ impl frame_system::Config for Runtime {
     type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl pallet_timestamp::Config for Runtime {
-    /// A timestamp: milliseconds since the unix epoch.
-    type Moment = u64;
-    type OnTimestampSet = Aura;
-    type MinimumPeriod = ConstU64<0>;
-    type WeightInfo = ();
-}
+
 
 impl pallet_authorship::Config for Runtime {
     type FindAuthor = pallet_session::FindAccountFromAuthorIndex<Self, Aura>;
@@ -181,19 +174,20 @@ impl cumulus_pallet_weight_reclaim::Config for Runtime {
 }
 parameter_types! {
     pub const ExistentialDeposit: Balance = EXISTENTIAL_DEPOSIT;
+    pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
 impl pallet_balances::Config for Runtime {
-    type MaxLocks = ConstU32<50>;
+    type MaxLocks = ConstU32<32>;
     /// The type for recording an account's balance.
     type Balance = Balance;
     /// The ubiquitous event type.
     type RuntimeEvent = RuntimeEvent;
-    type DustRemoval = ();
+    type DustRemoval = ResolveTo<TreasuryAccount,Balances>;
     type ExistentialDeposit = ExistentialDeposit;
     type AccountStore = System;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
-    type MaxReserves = ConstU32<50>;
+    type MaxReserves = ConstU32<32>;
     type ReserveIdentifier = [u8; 8];
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
@@ -274,7 +268,7 @@ impl pallet_message_queue::Config for Runtime {
     type IdleMaxServiceWeight = ();
 }
 
-impl cumulus_pallet_aura_ext::Config for Runtime {}
+
 
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
@@ -311,6 +305,14 @@ impl pallet_session::Config for Runtime {
     type WeightInfo = ();
     type DisablingStrategy = ();
 }
+impl pallet_timestamp::Config for Runtime {
+    /// A timestamp: milliseconds since the unix epoch.
+    type Moment = u64;
+    type OnTimestampSet = Aura;
+    //type MinimumPeriod = ConstU64<{SLOT_DURATION/2}>;
+    type MinimumPeriod = ConstU64<0>;
+    type WeightInfo = ();
+}
 #[docify::export(aura_config)]
 impl pallet_aura::Config for Runtime {
     type AuthorityId = AuraId;
@@ -319,7 +321,7 @@ impl pallet_aura::Config for Runtime {
     type AllowMultipleBlocksPerSlot = ConstBool<true>;
     type SlotDuration = ConstU64<SLOT_DURATION>;
 }
-
+impl cumulus_pallet_aura_ext::Config for Runtime {}
 parameter_types! {
     pub const PotId: PalletId = PalletId(*b"PotStake");
     pub const SessionLength: BlockNumber = 6 * HOURS;

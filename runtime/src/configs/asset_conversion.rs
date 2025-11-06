@@ -19,9 +19,9 @@
 //!
 //! For more information, visit [https://fintradex.io/](https://fintradex.io/)
 
-use crate::configs::assets::AssetConversionOrigin;
+//use crate::configs::assets::AssetConversionOrigin;
 use crate::{
-    constants::currency::*, AccountId, Assets, Balance, Balances, PoolAssets, Runtime, RuntimeEvent,
+    constants::currency::*, AccountId, Assets, Balance, Balances,Treasury, PoolAssets, Runtime, RuntimeEvent,
 };
 use frame_support::{
     instances::Instance2,
@@ -31,16 +31,18 @@ use frame_support::{
         tokens::imbalance::ResolveAssetTo,
         ConstU32,
     },
-    PalletId,
+    PalletId
 };
 use pallet_asset_conversion::{AccountIdConverter, Ascending, Chain, WithFirstAsset};
 use sp_runtime::Permill;
+// Near your other imports / types:
 parameter_types! {
     pub const AssetConversionPalletId: PalletId = PalletId(*b"py/ascon");
-    pub const PoolSetupFee: Balance = DOLLARS; // should be more or equal to the existential deposit
-    pub const MintMinLiquidity: Balance = 100;  // 100 is good enough when the main currency has 10-12 decimals.
+    pub const PoolSetupFee: Balance = 10*FINTS; // should be more or equal to the existential deposit
+    pub const MintMinLiquidity: Balance = 10_000_000_000_000_000; // 10k units with 12 decimals; .
     pub const LiquidityWithdrawalFee: Permill = Permill::from_percent(0);
     pub const Native: NativeOrWithId<u32> = NativeOrWithId::Native;
+    pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
 impl pallet_asset_conversion::Config for Runtime {
@@ -67,7 +69,8 @@ impl pallet_asset_conversion::Config for Runtime {
     type PoolAssets = PoolAssets;
     type PoolSetupFee = PoolSetupFee;
     type PoolSetupFeeAsset = Native;
-    type PoolSetupFeeTarget = ResolveAssetTo<AssetConversionOrigin, Self::Assets>;
+    //type PoolSetupFeeTarget = ResolveAssetTo<AssetConversionOrigin, Self::Assets>;
+    type PoolSetupFeeTarget = ResolveAssetTo<TreasuryAccount,Self::Assets>;
     type PalletId = AssetConversionPalletId;
     type LPFee = ConstU32<3>; // means 0.3%
     type LiquidityWithdrawalFee = LiquidityWithdrawalFee;

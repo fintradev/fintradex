@@ -22,7 +22,7 @@
 //use crate::configs::collective::CouncilCollective;
 use crate::{
     constants::{currency::*, time::*},
-    AccountId, AssetRate, Assets, Balance, Balances, BlockNumber, Bounties, Indices, PalletId,
+    AccountId, AssetRate, Assets, Balance, Balances, BlockNumber,PalletId,
     Runtime, RuntimeEvent, Treasury,
 };
 use frame_support::{
@@ -30,23 +30,23 @@ use frame_support::{
     traits::{tokens::pay::PayAssetFromAccount, EitherOfDiverse},
 };
 use frame_system::Pallet as System;
-use frame_system::{EnsureRoot, EnsureWithSuccess};
+use frame_system::{EnsureRoot, EnsureRootWithSuccess};
 use pallet_ranked_collective::EnsureMember;
-use sp_runtime::{Percent, Permill};
+use sp_runtime:: Permill;
 parameter_types! {
-    pub const SpendPeriod: BlockNumber = DAYS;
-    pub const Burn: Permill = Permill::from_percent(50);
-    pub const TipCountdown: BlockNumber = DAYS;
-    pub const TipFindersFee: Percent = Percent::from_percent(20);
-    pub const TipReportDepositBase: Balance = DOLLARS;
-    pub const DataDepositPerByte: Balance = CENTS;
+    pub const SpendPeriod: BlockNumber = 7*DAYS;
+    pub const Burn: Permill = Permill::from_percent(0);
+    //pub const TipCountdown: BlockNumber = DAYS;
+    //pub const TipFindersFee: Percent = Percent::from_percent(20);
+    //pub const TipReportDepositBase: Balance = FINTS;
+    pub const DataDepositPerByte: Balance = 1_000_000;
     pub const TreasuryPalletId: PalletId = PalletId(*b"py/trsry");
     pub const MaximumReasonLength: u32 = 300;
     pub const MaxApprovals: u32 = 100;
     pub const MaxBalance: Balance = Balance::max_value();
     pub const SpendPayoutPeriod: BlockNumber = 30 * DAYS;
     pub const ProposalBond: Permill = Permill::from_percent(5);
-    pub const ProposalBondMinimum: Balance = DOLLARS;
+    pub const ProposalBondMinimum: Balance = FINTS;
     pub TreasuryAccount: AccountId = Treasury::account_id();
 }
 
@@ -62,13 +62,14 @@ impl pallet_treasury::Config for Runtime {
     type SpendPeriod = SpendPeriod;
     type Burn = Burn;
     type BurnDestination = ();
-    type SpendFunds = Bounties;
+    type SpendFunds = (); // no routing; unspent stays in Treasury
     type WeightInfo = pallet_treasury::weights::SubstrateWeight<Runtime>;
     type MaxApprovals = MaxApprovals;
-    type SpendOrigin = EnsureWithSuccess<EnsureRoot<AccountId>, AccountId, MaxBalance>;
+    type SpendOrigin = EnsureRootWithSuccess<AccountId, MaxBalance>;
     type AssetKind = u32;
     type Beneficiary = AccountId;
-    type BeneficiaryLookup = Indices;
+    //type BeneficiaryLookup = Indices;
+    type BeneficiaryLookup = <Runtime as frame_system::Config>::Lookup;
     type Paymaster = PayAssetFromAccount<Assets, TreasuryAccount>;
     type BalanceConverter = AssetRate;
     type PayoutPeriod = SpendPayoutPeriod;
